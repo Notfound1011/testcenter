@@ -320,6 +320,9 @@ name: "TestCaseMinder",
       this.saveModules.push(module);
     },
     buildExtraNode(data, parent, root) {
+      // if (typeof (parent.data) == "undefined") {
+      //   this.$error(this.$t('commons.module_set_failed'));
+      // } else
       if (data.type !== 'node' && data.type !== 'tmp' && parent && isModuleNodeData(parent) && data.changed === true) {
         // 保存额外信息，只保存模块下的一级子节点
         let nodes = this.saveExtraNode[parent.id];

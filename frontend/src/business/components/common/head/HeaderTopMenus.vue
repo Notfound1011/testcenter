@@ -31,9 +31,9 @@
                   v-permission="['PROJECT_PERFORMANCE_TEST:READ','PROJECT_PERFORMANCE_REPORT:READ']">
       {{ $t('commons.performance') }}
     </el-menu-item>
-    <el-menu-item index="/report" v-if="check('reportStat')" onselectstart="return false"
+    <el-menu-item index="/reports" v-if="check('reports')" onselectstart="return false"
                   v-permission="['PROJECT_REPORT_ANALYSIS:READ']">
-      {{ $t('commons.report_statistics.title') }}
+      {{ $t('commons.quality_market.title') }}
     </el-menu-item>
 
     <el-menu-item index="/project" onselectstart="return false"
@@ -92,18 +92,18 @@ export default {
       this.activeIndex = this.$route.matched[0].path;
     }
 
-    axios.get('/license/validate').then(response => {
-      validateAndSetLicense(response.data.data); // 在调用 listModules 之前删除校验失败的 license, axios 失败不弹框
-      if (!hasLicense()) {
-        this.isReport = false;
-      } else {
-        if (module.default) {
-          module.default.listModules(this);
-        }
-      }
-    }).catch(error => {
-      window.console.error(error.response || error.message);
-    });
+    // axios.get('/license/validate').then(response => {
+    //   validateAndSetLicense(response.data.data); // 在调用 listModules 之前删除校验失败的 license, axios 失败不弹框
+    //   if (!hasLicense()) {
+    //     this.isReport = false;
+    //   } else {
+    //     if (module.default) {
+    //       module.default.listModules(this);
+    //     }
+    //   }
+    // }).catch(error => {
+    //   window.console.error(error.response || error.message);
+    // });
 
     this.registerEvents();
   },

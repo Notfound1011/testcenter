@@ -255,6 +255,7 @@ export default {
     };
   },
   mounted() {
+    this.updateProjectId();
     this.getProject();
     let routeTestCase = this.$route.params.testCase;
     if (routeTestCase && routeTestCase.add === true) {
@@ -336,6 +337,12 @@ export default {
     }
   },
   methods: {
+    updateProjectId() {
+      if (this.$route.query.workspaceId !== undefined && this.$route.query.projectId !== undefined){
+        sessionStorage.setItem("workspace_id", this.$route.query.workspaceId);
+        sessionStorage.setItem("project_id", this.$route.query.projectId);
+      }
+    },
     hasPermission,
     handleCommand(e) {
       switch (e) {

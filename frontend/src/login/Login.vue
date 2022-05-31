@@ -130,6 +130,26 @@ export default {
         this.form.authenticate = 'LDAP';
       }
     });
+
+    this.$get("/system/thirdPartyAuth/info", response => {
+      let thirdPartyJson = {};
+      thirdPartyJson.jira_auth = response.data.jira_auth
+      thirdPartyJson.jira_address = response.data.jira_address
+      thirdPartyJson.jenkins_auth = response.data.jenkins_auth
+      localStorage.setItem("ThirdPartyInfo", JSON.stringify(thirdPartyJson));
+      this.$axios.get("/jenkins/crumbIssuer/api/xml",
+        {
+          params: {'xpath': 'concat(//crumbRequestField,":",//crumb)'},
+          headers: {'Authorization': thirdPartyJson.jenkins_auth}
+        }).then(res => {
+        if (res.status === 200) {
+          let json = {};
+          json.Jenkins_Crumb = res.data.split(":")[1];
+          localStorage.setItem("JenkinsInfo", JSON.stringify(json));
+        }
+      });
+    })
+
   },
   created: function () {
     // 主页添加键盘事件,注意,不能直接在焦点事件上添加回车

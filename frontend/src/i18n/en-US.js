@@ -61,6 +61,7 @@ export default {
     save_as: 'Save as',
     update: 'Update',
     save_success: 'Saved successfully',
+    module_set_failed: 'Module saving failed, please set the label and save again',
     send_success: 'Send successfully',
     delete_success: 'Deleted successfully',
     modify_success: 'Modify Success',
@@ -78,7 +79,7 @@ export default {
     operating: 'Operating',
     input_limit: 'Within {0} and {1} characters',
     login: 'Sign In',
-    welcome: 'One-stop open source continuous testing platform',
+    welcome: 'Phemex testing platform',
     theme_color: 'Theme color',
     username: 'Username',
     password: 'Password',
@@ -184,6 +185,7 @@ export default {
     remove_cancel: 'Remove Cancel',
     remove_success: 'Remove Success',
     tips: 'The authentication information has expired, please login again',
+    jenkins_tips: 'jenkins-crumb authentication information has expired,please retry again',
     not_performed_yet: 'Not performed yet',
     incorrect_input: 'Incorrect input',
     delete_confirm: 'Please enter the following to confirm deletion:',
@@ -339,6 +341,24 @@ export default {
     module: {
       select_module: "Select module",
       default_module: "Default module",
+    },
+    quality_market: {
+      title: "Quality market",
+      testcase_statistics: {
+        title: "Function testcase statistics"
+      },
+      testcase_pass_rate:{
+        title: "Testcase passing rate"
+      },
+      bug_statistics:{
+        title: "Bug statistics"
+      },
+      task_statistics:{
+        title: "Task statistics"
+      },
+      api_autotest:{
+        title: "Api AutoTest Quantity"
+      }
     },
     report_statistics: {
       reserved: "Reserved",
@@ -2471,6 +2491,7 @@ export default {
   system_parameter_setting: {
     mailbox_service_settings: 'Mailbox Settings',
     ldap_setting: 'LDAP Setting',
+    third_party_auth_setting: 'Third Party Auth Setting',
     test_connection: 'Test connection',
     SMTP_host: 'SMTP host',
     SMTP_port: 'SMTP port',
@@ -2489,6 +2510,8 @@ export default {
   },
   i18n: {
     home: 'Home',
+    testCaseRecord: 'Case Record',
+    jobScheduler: 'Automated Testing Scheduler',
     definition: 'Api Definition',
     automation: 'Api Automation',
     report: 'Test Report',
@@ -2522,6 +2545,13 @@ export default {
     filter_cannot_be_empty: 'LDAP user filter cannot be empty',
     password_cannot_be_empty: 'LDAP password cannot be empty',
     mapping_cannot_be_empty: 'LDAP mapping cannot be empty',
+  },
+  third_party_auth: {
+    jira_address: 'JIRA address',
+    jira_username: 'JIRA username',
+    jira_password: 'JIRA password',
+    jenkins_username: 'Jenkins username',
+    jenkins_password: 'Jenkins password'
   },
   schedule: {
     input_email: "Please input email account",

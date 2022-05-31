@@ -109,7 +109,7 @@
                         type="textarea"
                         :autosize="{ minRows: 2, maxRows: 4}"
                         :rows="2"
-                        :placeholder="$t('commons.input_content')"></el-input>
+                        :placeholder="'请填写需求的wiki或jira链接，若没有则填无'"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -187,7 +187,10 @@ export default {
         ],
         principals: [{required: true, message: this.$t('test_track.plan.input_plan_principal'), trigger: 'change'}],
         stage: [{required: true, message: this.$t('test_track.plan.input_plan_stage'), trigger: 'change'}],
-        description: [{max: 200, message: this.$t('test_track.length_less_than') + '200', trigger: 'blur'}]
+        description: [
+          {required: true, message: '请填写描述', trigger: 'blur'},
+          {max: 200, message: this.$t('test_track.length_less_than') + '200', trigger: 'blur'}
+        ]
       },
       formLabelWidth: "100px",
       operationType: '',

@@ -78,7 +78,7 @@ export default {
       }
       pram.lang = localStorage.getItem(CURRENT_LANGUAGE);
       generateShareInfoWithExpired(pram, (data) => {
-        let thisHost = window.location.host;
+        let thisHost = window.location.host + ":8081";
         this.shareUrl = thisHost + "/sharePlanReport" + data.shareUrl;
       });
       this.getProjectApplication();

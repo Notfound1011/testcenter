@@ -133,7 +133,7 @@ export default {
       pram.customData = report.id;
       pram.shareType = 'API_REPORT';
       generateShareInfoWithExpired(pram, (data) => {
-        let thisHost = window.location.host;
+        let thisHost = window.location.host + ":8081";
         this.shareUrl = thisHost + "/shareApiReport" + data.shareUrl;
       });
     },

@@ -60,6 +60,7 @@ export default {
     save_as: '另存為',
     update: '更新',
     save_success: '保存成功',
+    module_set_failed: '模塊保存失敗，請設定標籤後再次保存',
     send_success: '發送成功',
     delete_success: '刪除成功',
     copy_success: '復製成功',
@@ -79,7 +80,7 @@ export default {
     operating: '操作',
     input_limit: '長度在 {0} 到 {1} 個字符',
     login: '登錄',
-    welcome: '一站式開源持續測試平臺',
+    welcome: 'Phemex測試管理平臺',
     theme_color: '主題色',
     username: '姓名',
     password: '密碼',
@@ -185,6 +186,7 @@ export default {
     remove_cancel: '移除取消',
     remove_success: '移除成功',
     tips: '認證信息已過期，請重新登錄',
+    jenkins_tips: 'jenkins-crumb認證已過期，請重新進入頁面',
     not_performed_yet: '尚未執行',
     incorrect_input: '輸入內容不正確',
     delete_confirm: '請輸入以下內容，確認刪除：',
@@ -340,6 +342,24 @@ export default {
     module: {
       select_module: "選擇模塊",
       default_module: "默認模塊",
+    },
+    quality_market: {
+      title: "質量大盤",
+      testcase_statistics: {
+        title: "功能用例統計"
+      },
+      testcase_pass_rate:{
+        title: "用例通過率"
+      },
+      bug_statistics:{
+        title: "bug统计"
+      },
+      task_statistics:{
+        title: "需求任務統計"
+      },
+      api_autotest:{
+        title: "接口自動化質量"
+      }
     },
     report_statistics: {
       reserved: "預留模塊敬請期待",
@@ -2474,6 +2494,7 @@ export default {
   system_parameter_setting: {
     mailbox_service_settings: '郵件設置',
     ldap_setting: 'LDAP設置',
+    third_party_auth_setting: '第三方鑑權設置',
     test_connection: '測試連接',
     SMTP_host: 'SMTP主機',
     SMTP_port: 'SMTP端口',
@@ -2492,6 +2513,8 @@ export default {
   },
   i18n: {
     home: '首頁',
+    testCaseRecord: '接口用例录入',
+    jobScheduler: '任務調度',
     definition: '接口定義',
     automation: '接口自動化',
     report: '測試報告',
@@ -2525,6 +2548,13 @@ export default {
     filter_cannot_be_empty: 'LDAP 用戶過濾器不能為空',
     mapping_cannot_be_empty: 'LDAP 用戶屬性映射不能為空',
     password_cannot_be_empty: 'LDAP 密碼不能為空',
+  },
+  third_party_auth: {
+    jira_address: 'JIRA地址',
+    jira_username: 'jira用戶名',
+    jira_password: 'jira密碼',
+    jenkins_username: 'jenkins用戶名',
+    jenkins_password: 'jenkins密碼'
   },
   schedule: {
     input_email: "請輸入郵箱賬號",

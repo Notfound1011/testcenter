@@ -213,6 +213,6 @@ export function getReportMessageSocket(reportId, onmessage) {
   if (window.location.protocol === 'https:') {
     protocol = "wss://";
   }
-  const uri = protocol + window.location.host + "/ws/" + reportId;
+ const uri = protocol + window.location.host + ":8081" + "/ws/" + reportId;
   return new WebSocket(uri);
 }

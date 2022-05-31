@@ -60,6 +60,7 @@ export default {
     save_as: '另存为',
     update: '更新',
     save_success: '保存成功',
+    module_set_failed: '模块保存失败，请设置标签后再次保存',
     send_success: '发送成功',
     delete_success: '删除成功',
     copy_success: '复制成功',
@@ -79,7 +80,7 @@ export default {
     operating: '操作',
     input_limit: '长度在 {0} 到 {1} 个字符',
     login: '登录',
-    welcome: '一站式开源持续测试平台',
+    welcome: 'Phemex测试管理平台',
     theme_color: '主题色',
     username: '姓名',
     password: '密码',
@@ -185,6 +186,7 @@ export default {
     remove_cancel: '移除取消',
     remove_success: '移除成功',
     tips: '认证信息已过期，请重新登录',
+    jenkins_tips: 'jenkins-crumb认证已过期，请重新进入页面',
     not_performed_yet: '尚未执行',
     incorrect_input: '输入内容不正确',
     delete_confirm: '请输入以下内容，确认删除：',
@@ -340,6 +342,24 @@ export default {
     module: {
       select_module: "选择模块",
       default_module: "默认模块",
+    },
+    quality_market: {
+      title: "质量大盘",
+      testcase_statistics: {
+        title: "功能用例统计"
+      },
+      testcase_pass_rate: {
+        title: "用例通过率"
+      },
+      bug_statistics: {
+        title: "bug统计"
+      },
+      task_statistics:{
+        title: "需求任务统计"
+      },
+      api_autotest: {
+        title: "接口自动化质量"
+      }
     },
     report_statistics: {
       reserved: "预留模块敬请期待",
@@ -2475,6 +2495,7 @@ export default {
   system_parameter_setting: {
     mailbox_service_settings: '邮件设置',
     ldap_setting: 'LDAP设置',
+    third_party_auth_setting: '第三方鉴权设置',
     test_connection: '测试连接',
     SMTP_host: 'SMTP主机',
     SMTP_port: 'SMTP端口',
@@ -2493,6 +2514,8 @@ export default {
   },
   i18n: {
     home: '首页',
+    testCaseRecord: '接口用例录入',
+    jobScheduler: '任务调度',
     definition: '接口定义',
     automation: '接口自动化',
     report: '测试报告',
@@ -2526,6 +2549,23 @@ export default {
     filter_cannot_be_empty: 'LDAP 用户过滤器不能为空',
     mapping_cannot_be_empty: 'LDAP 用户属性映射不能为空',
     password_cannot_be_empty: 'LDAP 密码不能为空',
+  },
+  third_party_auth: {
+    jira_address: 'JIRA地址',
+    jira_username: 'jira用户名',
+    jira_password: 'jira密码',
+    jenkins_username: 'jenkins用户名',
+    jenkins_password: 'jenkins密码',
+    input_jira_address: '请输入JIRA地址',
+    input_jira_username: '请输入jira用户名',
+    input_jira_password: '请输入jira密码',
+    input_jenkins_username: '请输入jenkins用户名',
+    input_jenkins_password: '请输入jenkins密码',
+    input_jira_address_placeholder: '请输入JIRA地址',
+    input_jira_username_placeholder: '请输入jira用户名',
+    input_jira_password_placeholder: '请输入jira密码',
+    input_jenkins_username_placeholder: '请输入jenkins用户名',
+    input_jenkins_password_placeholder: '请输入jenkins密码',
   },
   schedule: {
     input_email: "请输入邮箱账号",

@@ -30,11 +30,20 @@
                 </el-dropdown-menu>
               </el-dropdown>
             </el-dropdown-item>
+            <el-dropdown-item @click.native="dialogVisible = true">分享</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
 
       </template>
     </el-input>
+    <el-dialog :visible.sync="dialogVisible" width="30%">
+      <span>{{ shareUrl }}</span>
+      <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" :disabled="!dialogVisible"
+                           v-clipboard:copy="shareUrl">{{ $t("commons.copy") }}</el-button>
+              </span>
+    </el-dialog>
 </template>
 
 <script>
@@ -45,6 +54,11 @@ import {hasPermissions} from "@/common/js/utils";
 export default {
   components:{moduleTrashButton},
   name: "MsSearchBar",
+  data() {
+    return {
+      dialogVisible: false
+    };
+  },
   props: {
     condition: {
       type: Object,
@@ -55,7 +69,23 @@ export default {
     showOperator: Boolean,
     commands: Array
   },
+  computed: {
+    shareUrl: function () {
+      let shareUrl = "http://" + window.location.host + "/#/track/case/all"
+        + "?workspaceId=" + sessionStorage.getItem("workspace_id")
+        + "&projectId=" + sessionStorage.getItem("project_id");
+      return shareUrl
+    },
+  },
   methods: {
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => {
+        });
+    },
     click(item) {
       if (item.callback) {
         item.callback();

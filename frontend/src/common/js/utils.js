@@ -1,11 +1,16 @@
 import {
   COUNT_NUMBER,
   COUNT_NUMBER_SHALLOW,
+  JENKINS_AUTH,
+  JIRA_ADDRESS,
+  JIRA_AUTH,
   LicenseKey,
   ORIGIN_COLOR,
   ORIGIN_COLOR_SHALLOW,
   PRIMARY_COLOR,
   PROJECT_ID,
+  PROJECT_NAME,
+  THIRD_PARTY_INFO,
   TokenKey,
   WORKSPACE_ID
 } from "./constants";
@@ -94,6 +99,30 @@ export function hasLicense() {
   return v && v === 'valid';
 }
 
+export function jenkinsAuth() {
+  try {
+    return JSON.parse(localStorage.getItem(THIRD_PARTY_INFO)).jenkins_auth
+  } catch (e) {
+    return JENKINS_AUTH;
+  }
+}
+
+export function jiraAuth() {
+  try {
+    return JSON.parse(localStorage.getItem(THIRD_PARTY_INFO)).jira_auth
+  } catch (e) {
+    return JIRA_AUTH;
+  }
+}
+
+export function jiraAddress() {
+  try {
+    return JSON.parse(localStorage.getItem(THIRD_PARTY_INFO)).jira_address
+  } catch (e) {
+    return JIRA_ADDRESS;
+  }
+}
+
 export function hasPermissions(...permissions) {
   for (let p of permissions) {
     if (hasPermission(p)) {
@@ -109,6 +138,10 @@ export function getCurrentWorkspaceId() {
 
 export function getCurrentProjectID() {
   return sessionStorage.getItem(PROJECT_ID);
+}
+
+export function getCurrentProjectName() {
+  return sessionStorage.getItem(PROJECT_NAME);
 }
 
 export function getCurrentUser() {
@@ -521,4 +554,341 @@ export function parseTag(data) {
       item.tags = [];
     }
   });
+}
+
+// 自定义函数
+export function removeEmptyFieldDeep(data, defaultStr = null) {
+  // 普通数据类型
+  if (typeof data != 'object' || data == null) {
+    if ((data === '')) {
+      return defaultStr;
+    } else {
+      return data;
+    }
+  }
+  // 引用数据类型
+  for (const v in data) {
+    if (data[v] === '') {
+      data[v] = null;
+    }
+    if (typeof data[v] == 'object') {
+      removeEmptyField(data[v])
+    }
+  }
+}
+
+export function removeEmptyField(data, defaultStr = null) {
+  // 普通数据类型
+  if (typeof data != 'object' || data == null) {
+    if ((data === '')) {
+      return defaultStr;
+    } else {
+      return data;
+    }
+  }
+  // 引用数据类型
+  for (const v in data) {
+    if (data[v] === '') {
+      data[v] = null;
+    }
+  }
+}
+
+export function isObjectValueEqual(a, b) {
+  // 判断两个对象是否指向同一内存，指向同一内存返回true
+  if (a === b) return true
+  // 获取两个对象键值数组
+  let aProps = Object.getOwnPropertyNames(a)
+  let bProps = Object.getOwnPropertyNames(b)
+  // 判断两个对象键值数组长度是否一致，不一致返回false
+  if (aProps.length !== bProps.length) return false
+  // 遍历对象的键值
+  for (let prop in a) {
+    // 判断a的键值，在b中是否存在，不存在，返回false
+    if (b.hasOwnProperty(prop)) {
+      // 判断a的键值是否为对象，是则递归，不是对象直接判断键值是否相等，不相等返回false
+      if (typeof a[prop] === 'object') {
+        if (!isObjectValueEqual(a[prop], b[prop])) return false
+      } else if (a[prop] !== b[prop]) {
+        return false
+      }
+    } else {
+      return false
+    }
+  }
+  return true
+}
+
+export function formatTimeStamp(timeStamp) {
+  let date = new Date(timeStamp);
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let day = date.getDate();
+  let hour = date.getHours();
+  let minute = date.getMinutes();
+  let second = date.getSeconds();
+  month = month < 10 ? "0" + month : month;
+  day = day < 10 ? "0" + day : day;
+  hour = hour < 10 ? "0" + hour : hour;
+  minute = minute < 10 ? "0" + minute : minute;
+  second = second < 10 ? "0" + second : second;
+  return year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
+}
+
+export function formatTimeStampToDay(timeStamp) {
+  let date = new Date(timeStamp);
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let day = date.getDate();
+  month = month < 10 ? "0" + month : month;
+  day = day < 10 ? "0" + day : day;
+  return year + '-' + month + '-' + day + ' ';
+}
+
+export function formatTime(msTime) {
+  let time = msTime / 1000;
+  let hour = Math.floor(time / 60 / 60) % 24;
+  let minute = Math.floor(time / 60) % 60;
+  let second = Math.floor(time) % 60;
+  if (hour === 0 && minute === 0) {
+    return `${second}秒`
+  } else if (hour === 0 && minute !== 0) {
+    return `${minute}分${second}秒`
+  } else {
+    return `${hour}时${minute}分${second}秒`
+  }
+}
+
+export function noRepeat(arr) {
+  let ret = [];
+  let hash = {};
+  for (let i = 0; i < arr.length; i++) {
+    let item = arr[i];
+    let key = typeof (item) + item;
+    if (hash[key] !== 1) {
+      ret.push(item);
+      hash[key] = 1;
+    }
+  }
+  return ret;
+}
+
+// 按周分组
+export function groupByWeek(date, value) {
+  let newDate = [];
+  let newValue = [];
+  let newDate1 = [];
+  let newValue1 = [];
+  const weekArr = [];
+  const indexArr = [];
+  const moment = require('moment');
+
+  /*遍历，把所有日期的年-周取出*/
+  date.forEach((item) => {
+    const yearWeek = `${moment(item).year()}-${moment(item).week()}周`;
+    weekArr.push(yearWeek);
+  });
+  group(weekArr, 0, 0);
+
+  /*根据分好组的下标信息开始截取原始数组*/
+  indexArr.forEach((item) => {
+    newDate1.push(weekArr.slice(item[0], item[item.length - 1] + 1));
+    newValue1.push(value.slice(item[0], item[item.length - 1] + 1));
+  });
+  /*把每个分组的第一项拿出用于图表横坐标的值*/
+  newDate1.forEach((item) => {
+    newDate.push(item[0]);
+  });
+  /*计算纵坐标的和值*/
+  newValue1.forEach((item) => {
+    newValue.push(eval(item.join("+")));
+  });
+  return {
+    newDate: newDate,
+    newValue: newValue
+  };
+
+  //数组相同项合一组记录下标
+  function group(arr, index, index1) {
+    if (index < arr.length) {
+      indexArr[index1] = [index];
+      for (let i = index + 1; i < arr.length; i++) {
+        if (arr[i] == arr[index]) {
+          indexArr[index1].push(i);
+        } else {
+          group(arr, i, index1 + 1);
+          break;
+        }
+      }
+    }
+  }
+}
+
+// 按月分组
+export function groupByMonth(date, value) {
+  const newDate = [];
+  const newValue = [];
+  const newDate1 = [];
+  const newValue1 = [];
+  const monthArr = [];
+  const indexArr = [];
+  /*遍历，把所有日期的月份取出*/
+  date.forEach((item) => {
+    item.split('-');
+    monthArr.push(item.split('-')[1]);
+  });
+  group(monthArr, 0, 0);
+  /*根据分好组的下标信息开始截取原始数组*/
+  indexArr.forEach((item) => {
+    newDate1.push(date.slice(item[0], item[item.length - 1] + 1));
+    newValue1.push(value.slice(item[0], item[item.length - 1] + 1));
+  });
+  /*把每个分组的第一项拿出用于图表横坐标的值*/
+  newDate1.forEach((item) => {
+    newDate.push(item[0].split('-')[0] + "年" + item[0].split('-')[1] + "月");
+  });
+  /*计算纵坐标的和值*/
+  newValue1.forEach((item) => {
+    newValue.push(eval(item.join("+")));
+  });
+  return {
+    newDate: newDate,
+    newValue: newValue
+  };
+
+  //数组相同项合一组记录下标
+  function group(arr, index, index1) {
+    if (index < arr.length) {
+      indexArr[index1] = [index];
+      for (let i = index + 1; i < arr.length; i++) {
+        if (arr[i] == arr[index]) {
+          indexArr[index1].push(i);
+        } else {
+          group(arr, i, index1 + 1);
+          break;
+        }
+      }
+    }
+  }
+}
+
+// 按年分组
+export function groupByYear(date, value) {
+  const newDate = [];
+  const newValue = [];
+  const newDate1 = [];
+  const newValue1 = [];
+  const yearArr = [];
+  const indexArr = [];
+  /*遍历，把所有日期的年份取出*/
+  date.forEach((item) => {
+    item.split('-');
+    yearArr.push(item.split('-')[0]);
+  });
+  group(yearArr, 0, 0);
+  /*根据分好组的下标信息开始截取原始数组*/
+  indexArr.forEach((item) => {
+    newDate1.push(date.slice(item[0], item[item.length - 1] + 1));
+    newValue1.push(value.slice(item[0], item[item.length - 1] + 1));
+  });
+  /*把每个分组的第一项拿出用于图表横坐标的值*/
+  newDate1.forEach((item) => {
+    newDate.push(item[0].split('-')[0] + "年");
+  });
+  /*计算纵坐标的和值*/
+  newValue1.forEach((item) => {
+    newValue.push(eval(item.join("+")));
+  });
+  return {
+    newDate: newDate,
+    newValue: newValue
+  };
+
+  //数组相同项合一组记录下标
+  function group(arr, index, index1) {
+    if (index < arr.length) {
+      indexArr[index1] = [index];
+      for (let i = index + 1; i < arr.length; i++) {
+        if (arr[i] == arr[index]) {
+          indexArr[index1].push(i);
+        } else {
+          group(arr, i, index1 + 1);
+          break;
+        }
+      }
+    }
+  }
+}
+
+export function removeEscape(str) {  //去除转义
+  var arrEntities = {'lt': '<', 'gt': '>', 'nbsp': ' ', 'amp': '&', 'quot': '"'};
+  return str.replace(/&(lt|gt|nbsp|amp|quot);/ig, function (all, t) {
+    return arrEntities[t];
+  });
+}
+
+export function ChangeDecimalToPercentage(data) {
+  let data1 = (data * 100).toFixed(2) + "%"
+  return data1
+}
+
+
+export function groupArray(arr, name) {
+  //创建映射
+  let map = new Map()
+  for (let i = 0; i < arr.length; i++) {
+    if (name === "created") {
+      try {
+        const s = JSON.stringify(arr[i].fields[name]);
+        if (!map.has(s)) {
+          map.set(s, {
+            location: arr[i].fields[name],
+            count: 1,
+          });
+        } else {
+          map.get(s).count++;
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    } else {
+      try {
+        const s = JSON.stringify(arr[i].fields[name].name);
+        if (!map.has(s)) {
+          map.set(s, {
+            location: arr[i].fields[name].name,
+            count: 1,
+          });
+        } else {
+          map.get(s).count++;
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
+  }
+  const new_array = Array.from(map.values()).sort((a, b) => b.count - a.count)
+  return new_array;
+}
+
+
+export function list2Map(list, key) {
+  let map = {};
+  if (list && Array.isArray(list) && list.length > 0) {
+    list.forEach((item) => {
+      item[key] ? (map[item[key]] = item) : "";
+    });
+  }
+  return map;
+}
+
+//map 转 arr 方法
+export function map2List(map) {
+  let list = [];
+  if (map && typeof map === "object") {
+    for (let key in map) {
+      list.push(map[key]);
+    }
+  }
+  return list;
 }

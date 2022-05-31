@@ -8,6 +8,19 @@
           <el-menu-item :index="'/api/home'">
             {{ $t("i18n.home") }}
           </el-menu-item>
+
+          <el-menu-item :index="'/api/testCaseRecord'" v-permission="['PROJECT_API_CASE_RECORD:READ']">
+            {{ $t("i18n.testCaseRecord") }}
+          </el-menu-item>
+
+          <el-menu-item :index="'/api/jobScheduler'" v-permission="['PROJECT_JOB_SCHEDULER:READ']">
+            {{ $t("i18n.jobScheduler") }}
+          </el-menu-item>
+
+          <el-menu-item :index="'/api/dataFactory'">
+            {{ "数据工厂" }}
+          </el-menu-item>
+
           <el-menu-item :index="'/api/definition'" v-permission="['PROJECT_API_DEFINITION:READ']">
             {{ $t("i18n.definition") }}
           </el-menu-item>

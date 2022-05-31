@@ -264,7 +264,7 @@ export default {
       if (window.location.protocol === 'https:') {
         protocol = "wss://";
       }
-      const uri = protocol + window.location.host + "/performance/report/" + this.reportId;
+     const uri = protocol + window.location.host + ":8081" + "/performance/report/" + this.reportId;
       this.websocket = new WebSocket(uri);
       this.websocket.onmessage = this.onMessage;
       this.websocket.onopen = this.onOpen;
@@ -371,7 +371,7 @@ export default {
       pram.customData = report.id;
       pram.shareType = 'PERFORMANCE_REPORT';
       generateShareInfoWithExpired(pram, (data) => {
-        let thisHost = window.location.host;
+        let thisHost = window.location.host + ":8081";
         this.shareUrl = thisHost + "/sharePerformanceReport" + data.shareUrl;
       });
     },
