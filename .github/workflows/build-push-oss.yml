@@ -1,4 +1,4 @@
-name: Build Docker Image and Push without X-Pack Submodules
+name: Build D ocker Image and Push without X-Pack Submodules
 
 on:
   push:

@@ -1,4 +1,5 @@
 <template>
+  <div>
     <el-input class="ms-search-bar" :placeholder="$t('test_track.module.search')" v-model="condition.filterText" size="small">
       <template v-if="showOperator && commands" v-slot:append>
         <el-dropdown>
@@ -44,6 +45,7 @@
                            v-clipboard:copy="shareUrl">{{ $t("commons.copy") }}</el-button>
               </span>
     </el-dialog>
+  </div>
 </template>
 
 <script>

@@ -19,13 +19,6 @@
                   v-permission="['PROJECT_API_DEFINITION:READ','PROJECT_API_SCENARIO:READ','PROJECT_API_REPORT:READ']">
       {{ $t('commons.api') }}
     </el-menu-item>
-    <el-menu-item index="/ui" @click="active()" v-if="hasLicense() && check('ui')" onselectstart="return false"
-                  v-permission="['PROJECT_UI_SCENARIO:READ','PROJECT_UI_REPORT:READ']">
-      {{ $t('commons.ui') }}
-    </el-menu-item>
-    <el-menu-item v-if="!hasLicense()" @click="clickPlanMenu">
-      {{ $t('commons.ui') }}
-    </el-menu-item>
     <el-menu-item index="/performance" v-if="check('performance')"
                   onselectstart="return false"
                   v-permission="['PROJECT_PERFORMANCE_TEST:READ','PROJECT_PERFORMANCE_REPORT:READ']">
@@ -133,14 +126,6 @@ export default {
           });
         }
       });
-    },
-    clickPlanMenu() {
-      this.$message({
-        dangerouslyUseHTMLString: true,
-        showClose: true,
-        message: this.$t('commons.ui_edition_tips'),
-      });
-      return false;
     },
   }
 };
