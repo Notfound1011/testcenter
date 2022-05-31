@@ -326,6 +326,7 @@ public class TestPlanTestCaseService {
 
     public void editTestCaseForMinder(List<TestPlanTestCaseWithBLOBs> testPlanTestCases) {
         testPlanTestCases.forEach(item -> {
+            item.setExecutor(SessionUtils.getUser().getId());
             item.setUpdateTime(System.currentTimeMillis());
             testPlanTestCaseMapper.updateByPrimaryKeySelective(item);
         });

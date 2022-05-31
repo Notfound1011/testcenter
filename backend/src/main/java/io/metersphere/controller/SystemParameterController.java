@@ -9,6 +9,7 @@ import io.metersphere.commons.constants.ParamConstants;
 import io.metersphere.controller.request.HeaderRequest;
 import io.metersphere.dto.BaseSystemConfigDTO;
 import io.metersphere.dto.SystemStatisticData;
+import io.metersphere.dto.ThirdPartyAuthDTO;
 import io.metersphere.ldap.domain.LdapInfo;
 import io.metersphere.log.annotation.MsAuditLog;
 import io.metersphere.notice.domain.MailInfo;
@@ -98,6 +99,16 @@ public class SystemParameterController {
     @GetMapping("/ldap/info")
     public LdapInfo getLdapInfo() {
         return systemParameterService.getLdapInfo(ParamConstants.Classify.LDAP.getValue());
+    }
+
+    @GetMapping("/thirdPartyAuth/info")
+    public ThirdPartyAuthDTO getThirdPartyAuth() {
+        return systemParameterService.getThirdPartyAuth();
+    }
+
+    @PostMapping("/save/thirdPartyAuth")
+    public void saveThirdPartyAuth(@RequestBody List<SystemParameter> systemParameter) {
+        systemParameterService.saveThirdPartyAuth(systemParameter);
     }
 
     @PostMapping("save/header")

@@ -1014,4 +1014,31 @@
         </foreach>
         GROUP BY parent_id
     </select>
+
+    <select id="countCase" resultType="io.metersphere.track.response.TrackCountResult">
+        SELECT from_unixtime(create_time/1000, '%Y-%m-%d') as groupField,count(id) AS countNumber FROM test_case
+        WHERE (test_case.status IS NULL OR test_case.status != 'Trash')
+        <if test="request.startTime >0 and request.endTime >0">
+            and create_time BETWEEN #{request.startTime} and #{request.endTime}
+        </if>
+        <if test="request.createUser != null">
+            and create_user = #{request.createUser}
+        </if>
+        GROUP BY from_unixtime(create_time/1000, '%Y-%m-%d')
+    </select>
+
+    <select id="countTotal" resultType="java.lang.Integer">
+        SELECT count(id) AS countNumber
+        FROM test_case
+        WHERE test_case.status IS NULL
+           OR test_case.status != 'Trash'
+    </select>
+
+    <select id="countTotalByUser" resultType="java.lang.Integer">
+        SELECT count(id) AS countNumber FROM test_case
+        WHERE (test_case.status IS NULL OR test_case.status != 'Trash')
+        <if test="createUser != null">
+            and create_user = #{createUser}
+        </if>
+    </select>
 </mapper>

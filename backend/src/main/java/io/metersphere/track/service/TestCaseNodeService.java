@@ -144,7 +144,7 @@ public class TestCaseNodeService extends NodeTreeService<TestCaseNodeDTO> {
     }
     public List<TestCaseNodeDTO> getNodeTreeByProjectId(String projectId) {
         // 判断当前项目下是否有默认模块，没有添加默认模块
-        this.getDefaultNode(projectId);
+//        this.getDefaultNode(projectId);
         List<TestCaseNodeDTO> testCaseNodes = extTestCaseNodeMapper.getNodeTreeByProjectId(projectId);
         QueryTestCaseRequest request = new QueryTestCaseRequest();
         request.setUserId(SessionUtils.getUserId());
@@ -528,7 +528,7 @@ public class TestCaseNodeService extends NodeTreeService<TestCaseNodeDTO> {
 
         rootPath = rootPath + rootNode.getName();
 
-        if (level > 8) {
+        if (level > TestCaseConstants.MAX_NODE_DEPTH) {
             MSException.throwException(Translator.get("node_deep_limit"));
         }
 
