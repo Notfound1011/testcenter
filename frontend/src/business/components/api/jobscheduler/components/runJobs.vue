@@ -77,7 +77,7 @@
 
             <el-form-item label="现货币对列表" prop="spot_symbol_list">
               <el-tooltip class="tooltip" effect="dark"
-                          content='设置现货默认symbol, 依赖plan_type, 如果plan_type中不包含spot, 将不执行; 多条用","隔开'
+                          content='设置现货symbol, 多条用","隔开; 依赖plan_type, 如果plan_type中不包含spot, 将不执行'
                           placement="right">
                 <i class="el-icon-question"/>
               </el-tooltip>
@@ -86,7 +86,7 @@
             </el-form-item>
             <el-form-item label="合约币对列表" prop="contract_symbol_list">
               <el-tooltip class="tooltip" effect="dark"
-                          content='设置现货默认symbol, 依赖plan_type, 如果plan_type中不包含contract, 将不执行; 多条用","隔开'
+                          content='设置现货symbol, 多条用","隔开; 依赖plan_type, 如果plan_type中不包含contract, 将不执行'
                           placement="right">
                 <i class="el-icon-question"/>
               </el-tooltip>
@@ -94,7 +94,7 @@
                         :style="{ width: width * 0.5+'px'}"></el-input>
             </el-form-item>
             <el-form-item label="case类型" prop="case_type" class="form-item">
-              <el-select v-model="parameters.case_type" multiple placeholder="选择用例类型" style="width: 120%;">
+              <el-select v-model="parameters.case_type" multiple placeholder="选择case类型" style="width: 120%;">
                 <el-option label="rest_api" value="rest_api"></el-option>
                 <el-option label="pub_api" value="pub_api"></el-option>
               </el-select>
@@ -187,7 +187,7 @@
                         :style="{ width: width * 0.16+'px'}"></el-input>
             </el-form-item>
             <el-form-item label="case类型" prop="case_type" class="form-item">
-              <el-select v-model="turkeyParameters.case_type" multiple placeholder="选择用例类型" style="width: 120%;">
+              <el-select v-model="turkeyParameters.case_type" multiple placeholder="选择case类型" style="width: 120%;">
                 <el-option label="rest_api" value="rest_api"></el-option>
                 <el-option label="pub_api" value="pub_api"></el-option>
               </el-select>
@@ -247,7 +247,7 @@ export default {
       if (!value) {
         callback();
       }
-      let pattern = /^([a-zA-Z]+[,])*([a-zA-Z]+)$/;
+      let pattern = /^([a-zA-Z0-9]+[,])*([a-zA-Z0-9]+)$/;
       if (!pattern.test(value)) {
         callback(new Error(this.$t("输入的内容格式不正确").toString()));
       }
@@ -499,19 +499,19 @@ export default {
     },
 
     openDialog(item) {
-      if (['ApiAutoTestToPhemex', 'ApiAutoTestBase', '_DEBUG'].indexOf(item.name) !== -1) {
-        this.resetForm();
-        this.dialogVisible = true;
+      if (['JacocoTest'].indexOf(item.name) !== -1) {
+        this.normalDialogVisible = true;
         this.runName = item.name;
-        this.parametersOrigin = JSON.parse(JSON.stringify(this.parameters));
       } else if (item.name === 'ApiAutoTestToTurkey') {
         this.resetForm();
         this.turkeyDialogVisible = true;
         this.runName = item.name;
         this.turkeyParametersOrigin = JSON.parse(JSON.stringify(this.turkeyParameters));
       } else {
-        this.normalDialogVisible = true;
+        this.resetForm();
+        this.dialogVisible = true;
         this.runName = item.name;
+        this.parametersOrigin = JSON.parse(JSON.stringify(this.parameters));
       }
     },
     resetForm() {
