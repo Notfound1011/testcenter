@@ -16,7 +16,7 @@
           <el-menu-item :index="'/reports/taskStat'">
             {{ $t('commons.quality_market.task_statistics.title') }}
           </el-menu-item>
-          <el-menu-item :index="'/reports/apiQuantity'">
+          <el-menu-item :index="'/reports/apiQuality'">
             {{ $t('commons.quality_market.api_autotest.title') }}
           </el-menu-item>
         </el-menu>

@@ -7,11 +7,11 @@
         <el-submenu index="1">
           <template v-slot:title>
             <i class="el-icon-location"></i>
-            <span>{{ "数据工厂" }}</span>
+            <span>{{ $t('api_test.data_factory.title') }}</span>
           </template>
           <el-menu-item :index="'/api/dataFactory/account'">
             <i class="el-icon-s-custom"></i>
-            <span slot="title"> 账号相关</span>
+            <span slot="title">{{ $t('api_test.data_factory.account_related') }}</span>
           </el-menu-item>
         </el-submenu>
       </el-menu>

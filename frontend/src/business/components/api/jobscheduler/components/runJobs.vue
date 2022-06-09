@@ -1,7 +1,7 @@
 <template>
   <ms-container>
     <ms-main-container>
-      <h2 style="font-weight:bold">任务运行</h2>
+      <h2 style="font-weight:bold">{{ $t('api_test.job_scheduler.run_jobs') }}</h2>
       <div style="margin: 20px">
         <!-- table主体内容 -->
         <el-table :data="tableData" style="width: 100%" border>
@@ -103,7 +103,7 @@
                 <el-option label="pub_api" value="pub_api"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item :label=label.plan_type prop="plan_type"  style="margin-left: 50px;">
+            <el-form-item :label=label.plan_type prop="plan_type" style="margin-left: 50px;">
               <el-select placeholder='请选择计划执行类型' multiple v-model="parameters.plan_type" style="width: 140%;">
                 <el-option label="spot" value="spot"></el-option>
                 <el-option label="contract" value="contract"></el-option>
@@ -115,7 +115,8 @@
                         style="width: 130%;">
               </el-input>
             </el-form-item>
-            <el-form-item :label=label.total_spot_price_multiple prop="total_spot_price_multiple" style="margin-left: 70px;">
+            <el-form-item :label=label.total_spot_price_multiple prop="total_spot_price_multiple"
+                          style="margin-left: 70px;">
               <el-tooltip class="tooltip" effect="dark"
                           content="设置倍数；价值基数为对应币对的最小quote价格" placement="right">
                 <i class="el-icon-question"/>
@@ -157,7 +158,8 @@
             </el-form-item>
             <el-form-item :label=label.assert_socket_switch prop="assert_socket_switch" style="margin-left: 50px;">
               <el-tooltip class="tooltip" effect="dark"
-                          content="合约现货可用, 其余的几乎没有要验证socket的部分 - 目前python使用的socket库连接不稳定, 先关掉后续更新库后打开" placement="right">
+                          content="合约现货可用, 其余的几乎没有要验证socket的部分 - 目前python使用的socket库连接不稳定, 先关掉后续更新库后打开"
+                          placement="right">
                 <i class="el-icon-question"/>
               </el-tooltip>
               <el-switch v-model="parameters.assert_socket_switch"></el-switch>
@@ -228,7 +230,8 @@
             </el-form-item>
             <el-form-item :label=label.assert_socket_switch prop="assert_socket_switch" style="margin-left: 160px;">
               <el-tooltip class="tooltip" effect="dark"
-                          content="合约现货可用, 其余的几乎没有要验证socket的部分 - 目前python使用的socket库连接不稳定, 先关掉后续更新库后打开" placement="right">
+                          content="合约现货可用, 其余的几乎没有要验证socket的部分 - 目前python使用的socket库连接不稳定, 先关掉后续更新库后打开"
+                          placement="right">
                 <i class="el-icon-question"/>
               </el-tooltip>
               <el-switch v-model="parameters.assert_socket_switch"></el-switch>
@@ -358,7 +361,7 @@ export default {
       },
       options: {
         env: [{value: 'fat', label: 'fat'}, {value: 'fat2', label: 'fat2'}, {value: 'fat3', label: 'fat3'},
-          {value: 'ea', label: 'ea'}, {value: 'prod', label: 'prod'}],
+          {value: 'qa', label: 'qa'}, {value: 'ea', label: 'ea'}, {value: 'prod', label: 'prod'}],
         turkeyEnv: [{value: 'fat', label: 'fat'}, {value: 'prod', label: 'prod'}]
       }
     }
@@ -393,6 +396,11 @@ export default {
           this.parameters.rest_api_host = 'https://ea.phemex.com'
           this.parameters.pub_api_host = ''
           this.parameters.ws_host = 'wss://ea.phemex.com'
+          break;
+        case 'qa':
+          this.parameters.rest_api_host = 'https://qa.phemex.com'
+          this.parameters.pub_api_host = 'https://testnet-api.phemex.com'
+          this.parameters.ws_host = 'wss://qa.phemex.com'
           break;
         case 'fat2':
           this.parameters.rest_api_host = 'https://fat2.phemex.com'

@@ -31,8 +31,8 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="search" style='margin-left: 10px'>查询</el-button>
-          <el-button type="primary" @click="reset">{{ $t('api_test.reset') }}</el-button>
+          <el-button type="primary" @click="search" style='margin-left: 10px'>{{ $t('commons.adv_search.search') }}</el-button>
+          <el-button type="primary" @click="reset">{{ $t('commons.adv_search.reset') }}</el-button>
         </el-form-item>
       </el-form>
       <el-row :gutter="20">

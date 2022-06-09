@@ -23,7 +23,7 @@
             end-placeholder="结束日期"
             :default-time="['00:00:00', '23:59:59']">
           </el-date-picker>
-          <el-button type="primary" @click="getInfoAll()" style="margin-left: 20px">查 询</el-button>
+          <el-button type="primary" @click="getInfoAll()" style="margin-left: 20px">{{ $t('commons.adv_search.search') }}</el-button>
         </template>
         <el-row :gutter="20">
           <el-col :span="6" style="margin-left: 30px">

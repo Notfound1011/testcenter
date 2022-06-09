@@ -27,9 +27,9 @@ export default {
       component: () => import('@/business/components/report/taskstat/TaskStat'),
     },
     {
-      path: 'apiQuantity',
-      name: 'apiQuantity',
-      component: () => import('@/business/components/report/apiautotest/ApiAutoTestQuantity'),
+      path: 'apiQuality',
+      name: 'apiQuality',
+      component: () => import('@/business/components/report/apiautotest/ApiAutoTestQuality'),
     }
   ]
 }

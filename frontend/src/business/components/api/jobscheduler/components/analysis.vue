@@ -1,7 +1,7 @@
 <template>
   <div class="ms-div">
     <template>
-      <h2 style="margin-left: 10px;font-weight:bold">报表统计</h2>
+      <h2 style="margin-left: 10px;font-weight:bold">{{ $t('api_test.job_scheduler.analysis') }}</h2>
       <el-select v-model="value" filterable placeholder="切换job"
                  style='margin-left: 40px;margin-bottom: 20px'>
         <el-option
@@ -11,7 +11,7 @@
           :value="item.value">
         </el-option>
       </el-select>
-      <el-button type="primary" @click="getInfoAll(value)" style="margin-left: 20px">查 询</el-button>
+      <el-button type="primary" @click="getInfoAll(value)" style="margin-left: 20px">{{ $t('commons.adv_search.search') }}</el-button>
     </template>
     <el-row :gutter="20">
       <el-col :span="10">

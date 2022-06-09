@@ -12,7 +12,7 @@
             :value="item.value">
           </el-option>
         </el-select>
-        <el-button type="primary" @click="getInfoAll(value)" style="margin-left: 20px">查 询</el-button>
+        <el-button type="primary" @click="getInfoAll(value)" style="margin-left: 20px">{{ $t('commons.adv_search.search') }}</el-button>
         <el-row :gutter="20">
           <el-col :span="10">
             <div id="recentPie" style="width: 500px;height:400px;margin-left: 50px"></div>

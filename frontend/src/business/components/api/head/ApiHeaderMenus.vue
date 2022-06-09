@@ -18,7 +18,7 @@
           </el-menu-item>
 
           <el-menu-item :index="'/api/dataFactory'">
-            {{ "数据工厂" }}
+            {{ $t('api_test.data_factory.title') }}
           </el-menu-item>
 
           <el-menu-item :index="'/api/definition'" v-permission="['PROJECT_API_DEFINITION:READ']">

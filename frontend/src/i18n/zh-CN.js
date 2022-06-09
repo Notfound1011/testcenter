@@ -354,7 +354,7 @@ export default {
       bug_statistics: {
         title: "bug统计"
       },
-      task_statistics:{
+      task_statistics: {
         title: "需求任务统计"
       },
       api_autotest: {
@@ -469,7 +469,7 @@ export default {
     delete_all_version: '全部版本',
     change_password_tips: '您的密码是系统初始密码，请尽快修改密码',
     ui: 'UI 测试',
-    not_eligible_for_deletion:'不符合删除条件'
+    not_eligible_for_deletion: '不符合删除条件'
   },
   login: {
     normal_Login: "普通登录",
@@ -1935,6 +1935,21 @@ export default {
       post_script_exec_order: "后置脚本执行顺序",
       pre_link_scenario_result: "前置关联场景结果",
       post_link_scenario_result: "后置关联场景结果",
+    },
+    case_record: {
+      title: "接口自动化用例录入平台",
+      add_case: "添加测试用例"
+    },
+    data_factory: {
+      title: "数据工厂",
+      account_related: "账号相关",
+      account_deposit: "账号充值",
+      deposit: "充值"
+    },
+    job_scheduler: {
+      analysis: "报表统计",
+      run_jobs: "任务运行",
+      reports: "测试报告"
     }
   },
   api_report: {

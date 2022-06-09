@@ -11,15 +11,15 @@
           </template>
           <el-menu-item :index="'/api/jobScheduler/analysis'">
             <i class="el-icon-pie-chart"></i>
-            <span slot="title"> 报表统计</span>
+            <span slot="title"> {{ $t('api_test.job_scheduler.analysis') }}</span>
           </el-menu-item>
           <el-menu-item :index="'/api/jobScheduler/runJobs'">
             <i class="el-icon-video-play"></i>
-            <span slot="title"> 任务运行</span>
+            <span slot="title"> {{ $t('api_test.job_scheduler.run_jobs') }}</span>
           </el-menu-item>
           <el-menu-item :index="'/api/jobScheduler/reports'">
             <i class="el-icon-document"></i>
-            <span slot="title"> 测试报告</span>
+            <span slot="title"> {{ $t('api_test.job_scheduler.reports') }}</span>
           </el-menu-item>
         </el-submenu>
       </el-menu>

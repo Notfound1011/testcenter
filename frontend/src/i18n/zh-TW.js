@@ -1,7 +1,7 @@
 export default {
   commons: {
     project_permission: '請先添加該項目權限',
-    no_permission:'暫無權限',
+    no_permission: '暫無權限',
     failure_continues: "失敗繼續",
     full_screen_editing: "全屏編輯",
     trash: "回收站",
@@ -51,7 +51,7 @@ export default {
     project: '項目',
     about_us: '關於',
     current_project: '當前項目',
-    not_exist:"不存在",
+    not_exist: "不存在",
     name: '名稱',
     description: '描述',
     annotation: '註釋',
@@ -252,8 +252,8 @@ export default {
     cancel_follow_success: "取消關註成功",
     type: "類型",
     type_of_integer: "請輸入整數類型",
-    type_of_num:"請輸入數字類型",
-    validity_period:'有效期',
+    type_of_num: "請輸入數字類型",
+    validity_period: '有效期',
     please_select_a_deadline: "請選擇截止時間",
     relationship: {
       name: '依賴關系',
@@ -348,16 +348,16 @@ export default {
       testcase_statistics: {
         title: "功能用例統計"
       },
-      testcase_pass_rate:{
+      testcase_pass_rate: {
         title: "用例通過率"
       },
-      bug_statistics:{
+      bug_statistics: {
         title: "bug统计"
       },
-      task_statistics:{
+      task_statistics: {
         title: "需求任務統計"
       },
-      api_autotest:{
+      api_autotest: {
         title: "接口自動化質量"
       }
     },
@@ -469,7 +469,7 @@ export default {
     delete_all_version: '全部版本',
     change_password_tips: '您的密碼是系統初始密碼，請盡快修改密碼',
     ui: 'UI 測試',
-    not_eligible_for_deletion:'不符合删除條件'
+    not_eligible_for_deletion: '不符合删除條件'
   },
   login: {
     normal_Login: "普通登錄",
@@ -1195,14 +1195,14 @@ export default {
       rule: {
         input_code: "請輸入 HTTP Code"
       },
-      range_type:{
+      range_type: {
         value_eq: "值-等於[value=]",
         value_not_eq: "值-不等於[value!=]",
-        value_contain:"值-包含[include=]",
+        value_contain: "值-包含[include=]",
         length_eq: "長度-等于[length=]",
         length_not_eq: "長度-不等於[length!=]",
-        length_large_than:"長度-大於[length>]",
-        length_shot_than:"長度-小於[length<]",
+        length_large_than: "長度-大於[length>]",
+        length_shot_than: "長度-小於[length<]",
         regular_match: "正則匹配",
       }
     },
@@ -1935,6 +1935,21 @@ export default {
       post_script_exec_order: "後置腳本執行順序",
       pre_link_scenario_result: "前置關聯場景結果",
       post_link_scenario_result: "後置關聯場景結果",
+    },
+    case_record: {
+      title: "接口自動化用例錄入平臺",
+      add_case: "添加測試用例"
+    },
+    data_factory: {
+      title: "數據工廠",
+      account_related: "帳號相關",
+      account_deposit: "帳號充值",
+      deposit: "充值"
+    },
+    job_scheduler: {
+      analysis: "報表統計",
+      run_jobs: "任務運行",
+      reports: "測試報告"
     }
   },
   api_report: {
@@ -2513,7 +2528,7 @@ export default {
   },
   i18n: {
     home: '首頁',
-    testCaseRecord: '接口用例录入',
+    testCaseRecord: '接口用例錄入',
     jobScheduler: '任務調度',
     definition: '接口定義',
     automation: '接口自動化',
@@ -3169,8 +3184,8 @@ export default {
       delete: "刪除",
       read: "查看腳本",
     },
-    personal_information:{
-      name:'設置',
+    personal_information: {
+      name: '設置',
       personal_setting: '個人設置',
       api_keys: 'API Keys',
       edit_password: "修改密碼",
@@ -3192,7 +3207,7 @@ export default {
   error_report_library: {
     name: "誤報庫",
     assertion: "誤報斷言",
-    tips:"注：在\"項目設置-設置環境-全局斷言\"中啟用誤報將進行以下規則匹配",
+    tips: "注：在\"項目設置-設置環境-全局斷言\"中啟用誤報將進行以下規則匹配",
     use_error_report: "啟用誤報",
     use_desc: "失敗斷言與誤報規則衝突時統一處理為誤報",
     conflict_with_success: "請求同時包含誤報和成功斷言，請求結果處理為：",

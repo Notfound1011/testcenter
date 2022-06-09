@@ -52,7 +52,7 @@ export default {
     project: 'Project',
     about_us: 'About Us',
     current_project: 'Current Project',
-    not_exist:"Not exist",
+    not_exist: "Not exist",
     name: 'Name',
     description: 'Description',
     annotation: 'Annotation',
@@ -347,17 +347,17 @@ export default {
       testcase_statistics: {
         title: "Function testcase statistics"
       },
-      testcase_pass_rate:{
+      testcase_pass_rate: {
         title: "Testcase passing rate"
       },
-      bug_statistics:{
+      bug_statistics: {
         title: "Bug statistics"
       },
-      task_statistics:{
+      task_statistics: {
         title: "Task statistics"
       },
-      api_autotest:{
-        title: "Api AutoTest Quantity"
+      api_autotest: {
+        title: "Api AutoTest Quality"
       }
     },
     report_statistics: {
@@ -467,7 +467,7 @@ export default {
     delete_all_version: 'All versions',
     change_password_tips: 'Your password is the initial system password, please change it as soon as possible',
     ui: 'UI TEST',
-    not_eligible_for_deletion:'Not Eligible For Deletion'
+    not_eligible_for_deletion: 'Not Eligible For Deletion'
   },
   login: {
     normal_Login: "Normal Login",
@@ -1133,7 +1133,7 @@ export default {
     save_and_run: "Save and Run",
     run: "Run",
     running: "Running",
-    reset: "Rest",
+    reset: "Reset",
     select_all: "Select all",
     invert_select: "Invert select",
     select_or_invert: "Select all/Invert select",
@@ -1930,6 +1930,21 @@ export default {
       post_script_exec_order: "Post script exec order",
       pre_link_scenario_result: "Pre link scenario result",
       post_link_scenario_result: "Post link scenario result",
+    },
+    case_record: {
+      title: "Autotest Case Record Platform",
+      add_case: "Add Case"
+    },
+    data_factory: {
+      title: "Data Factory",
+      account_related: "Account Related",
+      account_deposit: "Account Deposit",
+      deposit: "Deposit"
+    },
+    job_scheduler: {
+      analysis: "Analysis",
+      run_jobs: "Run Jobs",
+      reports: "Reports"
     }
   },
   api_report: {
@@ -3188,7 +3203,7 @@ export default {
   error_report_library: {
     name: "Error report",
     assertion: "Error code assertion",
-    tips:"Tips: Use error report in \"Project Settings - Project environment-Assertions\"",
+    tips: "Tips: Use error report in \"Project Settings - Project environment-Assertions\"",
     use_error_report: "Use error code",
     use_desc: "In case of conflict between error code and error assertions, it is treated as error code",
     conflict_with_success: "If request has error report and success assertion：",

@@ -3,8 +3,8 @@
     <ms-main-container>
 
       <div>
-        <h3>接口自动化用例录入平台</h3>
-        <el-button type="primary" @click="openTestCaseAddDialog" class="add-btn" plain v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']">添加测试用例</el-button>
+        <h3>{{ $t('api_test.case_record.title') }}</h3>
+        <el-button type="primary" @click="openTestCaseAddDialog" class="add-btn" plain v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']">{{ $t('api_test.case_record.add_case') }}</el-button>
 
         <div>
           <el-divider></el-divider>
@@ -49,7 +49,7 @@
               </el-select>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="search(keywords)">查询</el-button>
+              <el-button type="primary" @click="search(keywords)">{{ $t('commons.adv_search.search') }}</el-button>
             </el-form-item>
             <!--高级搜索-->
             <ms-table-adv-search-bar :condition.sync="condition" class="adv-search-bar" @search="combineSearch"

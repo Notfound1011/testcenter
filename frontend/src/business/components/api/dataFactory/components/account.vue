@@ -3,7 +3,7 @@
     <el-row :gutter="10">
       <el-col :span="24" class="grid-content">
         <el-card>
-          <h3 style="margin-left: 20px">{{ "账号充值" }}</h3>
+          <h3 style="margin-left: 20px">{{ $t('api_test.data_factory.account_deposit') }}</h3>
           <el-form :inline="true" :model="request" style="margin: 20px;">
             <el-form-item label="环境">
               <el-select v-model="request.host" placeholder="选择环境" style='width: 80px'>
@@ -25,8 +25,8 @@
               <el-input v-model="request.urlParam.amountEv" placeholder="amountEv" clearable></el-input>
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="onSubmit">充值</el-button>
-              <el-button type="primary" @click="reset">{{ $t('api_test.reset') }}</el-button>
+              <el-button type="primary" @click="onSubmit">{{ $t('api_test.data_factory.deposit') }}</el-button>
+              <el-button type="primary" @click="reset">{{ $t('commons.adv_search.reset') }}</el-button>
             </el-form-item>
             <el-input
               type="textarea"
@@ -43,7 +43,6 @@
 </template>
 
 <script>
-import {request} from "@/common/js/ajax";
 
 export default {
   name: "account",
@@ -53,6 +52,9 @@ export default {
   data() {
     return {
       options: [{
+        value: 'https://fat.phemex.com',
+        label: 'fat'
+      }, {
         value: 'https://qa.phemex.com',
         label: 'qa'
       }, {
@@ -61,7 +63,7 @@ export default {
       }],
       depositResponse: "",
       request: {
-        host: "https://qa.phemex.com",
+        host: "https://fat.phemex.com",
         path: "/api/spot/public/wallet",
         urlParam: {
           userId: "",
@@ -93,7 +95,7 @@ export default {
     },
     reset() {
       this.request = {
-        host: "https://qa.phemex.com",
+        host: "https://fat.phemex.com",
         path: "/api/spot/public/wallet",
         urlParam: {
           userId: "",

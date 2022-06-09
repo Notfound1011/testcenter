@@ -20,7 +20,7 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="search" style='margin-left: 10px'>查询</el-button>
+          <el-button type="primary" @click="search" style='margin-left: 10px'>{{ $t('commons.adv_search.search') }}</el-button>
         </el-form-item>
       </el-form>
       <el-row :gutter="10">
