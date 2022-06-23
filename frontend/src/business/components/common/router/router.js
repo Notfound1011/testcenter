@@ -8,6 +8,7 @@ import Track from "@/business/components/track/router";
 import ReportStatistics from "@/business/components/reportstatistics/router";
 import Project from "@/business/components/project/router";
 import Reports from "@/business/components/report/router";
+import Navigation from "@/business/components/navigation/router";
 import {getCurrentUserId, hasPermissions} from "@/common/js/utils";
 
 Vue.use(VueRouter);
@@ -23,6 +24,7 @@ const router = new VueRouter({
     },
     ...requireContext.keys().map(k => requireContext(k).workstation),
     ...requireContext.keys().map(k => requireContext(k).ui),
+    Navigation,
     Setting,
     API,
     Performance,

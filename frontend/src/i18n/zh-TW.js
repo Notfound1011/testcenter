@@ -343,6 +343,9 @@ export default {
       select_module: "選擇模塊",
       default_module: "默認模塊",
     },
+    site_navigation: {
+      title: "站點導航"
+    },
     quality_market: {
       title: "質量大盤",
       testcase_statistics: {
