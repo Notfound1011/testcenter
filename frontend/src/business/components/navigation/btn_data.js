@@ -8,6 +8,7 @@ export function tipsStatus (type, routePath) {
   }
 }
 
+// 先使用本地化数据
 export function btn_data () {
   return {
     "envBtn":
