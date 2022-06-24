@@ -11,6 +11,7 @@
     <el-menu-item index="/workstation" v-xpack v-if="check('workstation')">
       {{ $t('commons.my_workstation') }}
     </el-menu-item>
+
     <el-menu-item index="/track" v-if="check('testTrack')" onselectstart="return false"
                   v-permission="['PROJECT_TRACK_CASE:READ','PROJECT_TRACK_PLAN:READ','PROJECT_TRACK_REVIEW:READ', 'PROJECT_TRACK_ISSUE:READ', 'PROJECT_TRACK_REPORT:READ']">
       {{ $t('test_track.test_track') }}
@@ -27,6 +28,12 @@
     <el-menu-item index="/reports" v-if="check('reports')" onselectstart="return false"
                   v-permission="['PROJECT_REPORT_ANALYSIS:READ']">
       {{ $t('commons.quality_market.title') }}
+    </el-menu-item>
+
+    <!--  phemex站点导航  -->
+    <el-menu-item index="/navigation" v-if="check('reports')" onselectstart="return false"
+                  v-permission="['PROJECT_REPORT_ANALYSIS:READ']">
+      {{ $t('commons.site_navigation.title') }}
     </el-menu-item>
 
     <el-menu-item index="/project" onselectstart="return false"

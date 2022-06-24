@@ -342,6 +342,9 @@ export default {
       select_module: "Select module",
       default_module: "Default module",
     },
+    site_navigation: {
+      title: "Site Navigation"
+    },
     quality_market: {
       title: "Quality market",
       testcase_statistics: {

@@ -343,6 +343,9 @@ export default {
       select_module: "选择模块",
       default_module: "默认模块",
     },
+    site_navigation: {
+      title: "站点导航"
+    },
     quality_market: {
       title: "质量大盘",
       testcase_statistics: {
