@@ -127,7 +127,7 @@ export default {
       result: {},
       currentYear: new Date().getFullYear().toString(),
       qaCreatedBugJQL: "issuetype = Bug AND status != Cancelled AND Developer is not EMPTY AND creator in membersOf(QA)",
-      onlineBugJQL: "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR key in (CTI-830, CTI-832)) AND Tester in membersOf(QA)",
+      onlineBugJQL: "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR key in (CTI-830, CTI-832) OR Tester in membersOf(QA))",
       timePicker: null,
       pickerMinDate: "",//第一次选中的时间
       pickerOptions: {
@@ -172,10 +172,10 @@ export default {
       let onlineBugJQL = ""
       if (this.timePicker !== null) {
         qaCreatedBugJQL = "issuetype = Bug AND status != Cancelled AND Developer is not EMPTY AND creator in membersOf(QA)" + " AND \"created\" >= " + this.timePicker[0] + " AND \"created\" <= " + this.timePicker[1]
-        onlineBugJQL = "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR key in (CTI-830, CTI-832))" + " AND \"created\" >= " + this.timePicker[0] + " AND \"created\" <= " + this.timePicker[1]   // AND Tester in membersOf(QA)
+        onlineBugJQL = "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR key in (CTI-830, CTI-832) OR Tester in membersOf(QA))" + " AND \"created\" >= " + this.timePicker[0] + " AND \"created\" <= " + this.timePicker[1]   // AND Tester in membersOf(QA)
       } else if (this.timePicker == null) {
         qaCreatedBugJQL = "issuetype = Bug AND status != Cancelled AND Developer is not EMPTY AND creator in membersOf(QA)" + " AND created > startOfYear()"
-        onlineBugJQL = "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR key in (CTI-830, CTI-832))" + " AND created > startOfYear()" // AND Tester in membersOf(QA)
+        onlineBugJQL = "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR key in (CTI-830, CTI-832) OR Tester in membersOf(QA))" + " AND created > startOfYear()" // AND Tester in membersOf(QA)
       }
       if (qaCreatedBugJQL.startsWith(" AND")) {
         qaCreatedBugJQL = qaCreatedBugJQL.replace(/AND/, '').trim()

@@ -67,6 +67,7 @@ export default {
   },
   methods: {
     filterBugByUser(data) {
+      this.tableDataNew = []
       this.total = data.length
       groupArray(data, 'customfield_10300').forEach((value) => { //数组循环
           const valueObj = {};
@@ -78,6 +79,7 @@ export default {
       )
     },
     filterBugByProject(data) {
+      this.tableDataNew1 = []
       groupArray(data, 'project').forEach((value) => { //数组循环
           const valueObj = {};
           valueObj["project"] = value["location"];

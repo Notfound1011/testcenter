@@ -287,7 +287,7 @@ export default {
       parameters: {
         rest_api_host: 'https://fat.phemex.com',
         pub_api_host: 'https://fat-api.phemex.com',
-        ws_host: 'wss://qa.phemex.com',
+        ws_host: 'wss://fat.phemex.com',
         env: 'fat',
         web_site: 'phemex',
         spot_symbol_list: 'sBTCUSDT,sETHUSDT',
@@ -361,7 +361,8 @@ export default {
       },
       options: {
         env: [{value: 'fat', label: 'fat'}, {value: 'fat2', label: 'fat2'}, {value: 'fat3', label: 'fat3'},
-          {value: 'qa', label: 'qa'}, {value: 'ea', label: 'ea'}, {value: 'prod', label: 'prod'}],
+          // {value: 'qa', label: 'qa'},
+          {value: 'ea', label: 'ea'}, {value: 'prod', label: 'prod'}],
         turkeyEnv: [{value: 'fat', label: 'fat'}, {value: 'prod', label: 'prod'}]
       }
     }
@@ -391,31 +392,37 @@ export default {
           this.parameters.rest_api_host = 'https://phemex.com'
           this.parameters.pub_api_host = 'https://api.phemex.com'
           this.parameters.ws_host = 'wss://phemex.com'
+          this.parameters.case_type = ['rest_api', 'pub_api']
           break;
         case 'ea':
           this.parameters.rest_api_host = 'https://ea.phemex.com'
           this.parameters.pub_api_host = ''
           this.parameters.ws_host = 'wss://ea.phemex.com'
+          this.parameters.case_type = ['rest_api']
           break;
-        case 'qa':
-          this.parameters.rest_api_host = 'https://qa.phemex.com'
-          this.parameters.pub_api_host = 'https://testnet-api.phemex.com'
-          this.parameters.ws_host = 'wss://qa.phemex.com'
-          break;
+        // case 'qa':
+        //   this.parameters.rest_api_host = 'https://qa.phemex.com'
+        //   this.parameters.pub_api_host = 'https://testnet-api.phemex.com'
+        //   this.parameters.ws_host = 'wss://qa.phemex.com'
+        //   this.parameters.case_type = ['rest_api', 'pub_api']
+        //   break;
         case 'fat2':
           this.parameters.rest_api_host = 'https://fat2.phemex.com'
           this.parameters.pub_api_host = 'https://api-fat2.phemex.com'
           this.parameters.ws_host = 'wss://fat2.phemex.com'
+          this.parameters.case_type = ['rest_api', 'pub_api']
           break;
         case 'fat3':
           this.parameters.rest_api_host = 'https://fat3.phemex.com'
           this.parameters.pub_api_host = 'https://api-fat3.phemex.com'
           this.parameters.ws_host = 'wss://fat3.phemex.com'
+          this.parameters.case_type = ['rest_api', 'pub_api']
           break;
         default:
           this.parameters.rest_api_host = 'https://fat.phemex.com'
           this.parameters.pub_api_host = 'https://fat-api.phemex.com'
           this.parameters.ws_host = 'wss://fat.phemex.com'
+          this.parameters.case_type = ['rest_api', 'pub_api']
       }
     },
     changeTurkeyHost() {
@@ -490,6 +497,9 @@ export default {
     },
 
     runJobs(name, body) {
+      if (['fat2', 'fat3'].indexOf(body.env) > -1) {
+        body.env = 'fat'
+      }
       // 带参数的build
       if (body !== undefined) {
         let url = "/jenkins/job/" + name + "/buildWithParameters"
@@ -524,8 +534,11 @@ export default {
           this.timer = setInterval(() => {
             setTimeout(this.getJobList, 0)
           }, 1000 * 10)
-        }).catch((e) => {
-          console.log(e);
+        }).catch((error) => {
+          this.$notify.error({
+            title: "job执行失败",
+            message: error,
+          });
         })
       } else {
         // 不带参数的build

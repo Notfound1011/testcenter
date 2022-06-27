@@ -71,27 +71,54 @@ export default {
       let groupLilei = GROUP_LILEI
       let groupLip = GROUP_LIP
       let groupFlexible = GROUP_FLEXIBLE
-      let groupTotalData = [0, 0, 0, 0, 0]
+      let groupOnlineBugTotal = [0, 0, 0, 0, 0]
+      let groupQaBugTotal = [0, 0, 0, 0, 0]
+      let groupBugRateTotal = [0, 0, 0, 0, 0]
 
       Object.values(percentageList).forEach(value => {
         xAxisData.push(value.location);
         totalData.push(value.count);
+      })
+
+      Object.values(dataDenominator).forEach(value => {
         if (groupSunge.includes(value.location)) {
-          groupTotalData[0] = groupTotalData[0] + parseFloat(value.count)
+          groupQaBugTotal[0] = groupQaBugTotal[0] + value.count
         }
         if (groupZhoumin.includes(value.location)) {
-          groupTotalData[1] = groupTotalData[1] + parseFloat(value.count)
+          groupQaBugTotal[1] = groupQaBugTotal[1] + value.count
         }
         if (groupLilei.includes(value.location)) {
-          groupTotalData[2] = groupTotalData[2] + parseFloat(value.count)
+          groupQaBugTotal[2] = groupQaBugTotal[2] + value.count
         }
         if (groupLip.includes(value.location)) {
-          groupTotalData[3] = groupTotalData[3] + parseFloat(value.count)
+          groupQaBugTotal[3] = groupQaBugTotal[3] + value.count
         }
         if (groupFlexible.includes(value.location)) {
-          groupTotalData[4] = groupTotalData[4] + parseFloat(value.count)
+          groupQaBugTotal[4] = groupQaBugTotal[4] + value.count
         }
       });
+      Object.values(dataNumerator).forEach(value => {
+        if (groupSunge.includes(value.location)) {
+          groupOnlineBugTotal[0] = groupOnlineBugTotal[0] + parseFloat(value.count)
+        }
+        if (groupZhoumin.includes(value.location)) {
+          groupOnlineBugTotal[1] = groupOnlineBugTotal[1] + parseFloat(value.count)
+        }
+        if (groupLilei.includes(value.location)) {
+          groupOnlineBugTotal[2] = groupOnlineBugTotal[2] + parseFloat(value.count)
+        }
+        if (groupLip.includes(value.location)) {
+          groupOnlineBugTotal[3] = groupOnlineBugTotal[3] + parseFloat(value.count)
+        }
+        if (groupFlexible.includes(value.location)) {
+          groupOnlineBugTotal[4] = groupOnlineBugTotal[4] + parseFloat(value.count)
+        }
+      });
+
+      for (let i = 0; i < groupQaBugTotal.length; i++) {
+        groupBugRateTotal[i] = (groupOnlineBugTotal[i] * 100 / groupQaBugTotal[i]).toFixed(4);
+      }
+
       let option = {
         title: {
           text: 'ONLINE BUG_RATE (QA)',
@@ -195,7 +222,7 @@ export default {
                 ])
               }
             },
-            data: groupTotalData
+            data: groupBugRateTotal
           }
         ]
       }
