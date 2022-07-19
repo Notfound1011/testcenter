@@ -200,7 +200,7 @@
                         :style="{ width: width * 0.16+'px'}"></el-input>
             </el-form-item>
             <el-form-item :label=label.pub_api_host prop="pub_api_host">
-              <el-input placeholder="填写pub_api_host" v-model="turkeyParameters.pub_api_host" disabled
+              <el-input placeholder="暂不填写" v-model="turkeyParameters.pub_api_host" disabled
                         :style="{ width: width * 0.16+'px'}"></el-input>
             </el-form-item>
             <el-form-item :label=label.case_type prop="case_type" class="form-item">
@@ -285,10 +285,10 @@ export default {
       turkeyDialogVisible: false,
       normalDialogVisible: false,
       parameters: {
-        rest_api_host: 'https://fat.phemex.com',
-        pub_api_host: 'https://fat-api.phemex.com',
-        ws_host: 'wss://fat.phemex.com',
-        env: 'fat',
+        rest_api_host: 'https://fat2.phemex.com',
+        pub_api_host: 'https://fat2-api.phemex.com',
+        ws_host: 'wss://fat2.phemex.com',
+        env: 'fat2',
         web_site: 'phemex',
         spot_symbol_list: 'sBTCUSDT,sETHUSDT',
         contract_symbol_list: 'BTCUSD,uBTCUSD,cETHUSD',
@@ -305,7 +305,7 @@ export default {
       },
       turkeyParameters: {
         rest_api_host: 'https://api.fat.phemex.com.tr',
-        pub_api_host: 'https://testnet-api.phemex.com',
+        // pub_api_host: 'https://testnet-api.phemex.com',
         ws_host: 'wss://ws.fat.phemex.com.tr',
         env: 'fat',
         web_site: 'turkey',
@@ -361,7 +361,7 @@ export default {
       },
       options: {
         env: [{value: 'fat', label: 'fat'}, {value: 'fat2', label: 'fat2'}, {value: 'fat3', label: 'fat3'},
-          // {value: 'qa', label: 'qa'},
+          {value: 'fat4', label: 'fat4'}, {value: 'fat5', label: 'fat5'},
           {value: 'ea', label: 'ea'}, {value: 'prod', label: 'prod'}],
         turkeyEnv: [{value: 'fat', label: 'fat'}, {value: 'prod', label: 'prod'}]
       }
@@ -400,22 +400,28 @@ export default {
           this.parameters.ws_host = 'wss://ea.phemex.com'
           this.parameters.case_type = ['rest_api']
           break;
-        // case 'qa':
-        //   this.parameters.rest_api_host = 'https://qa.phemex.com'
-        //   this.parameters.pub_api_host = 'https://testnet-api.phemex.com'
-        //   this.parameters.ws_host = 'wss://qa.phemex.com'
-        //   this.parameters.case_type = ['rest_api', 'pub_api']
-        //   break;
         case 'fat2':
           this.parameters.rest_api_host = 'https://fat2.phemex.com'
-          this.parameters.pub_api_host = 'https://api-fat2.phemex.com'
+          this.parameters.pub_api_host = 'https://fat2-api.phemex.com'
           this.parameters.ws_host = 'wss://fat2.phemex.com'
           this.parameters.case_type = ['rest_api', 'pub_api']
           break;
         case 'fat3':
           this.parameters.rest_api_host = 'https://fat3.phemex.com'
-          this.parameters.pub_api_host = 'https://api-fat3.phemex.com'
+          this.parameters.pub_api_host = 'https://fat3-api.phemex.com'
           this.parameters.ws_host = 'wss://fat3.phemex.com'
+          this.parameters.case_type = ['rest_api', 'pub_api']
+          break;
+        case 'fat4':
+          this.parameters.rest_api_host = 'https://fat4.phemex.com'
+          this.parameters.pub_api_host = 'https://fat4-api.phemex.com'
+          this.parameters.ws_host = 'wss://fat4.phemex.com'
+          this.parameters.case_type = ['rest_api', 'pub_api']
+          break;
+        case 'fat5':
+          this.parameters.rest_api_host = 'https://fat5.phemex.com'
+          this.parameters.pub_api_host = 'https://fat5-api.phemex.com'
+          this.parameters.ws_host = 'wss://fat5.phemex.com'
           this.parameters.case_type = ['rest_api', 'pub_api']
           break;
         default:
@@ -497,7 +503,7 @@ export default {
     },
 
     runJobs(name, body) {
-      if (['fat2', 'fat3'].indexOf(body.env) > -1) {
+      if (['fat2', 'fat3', 'fat4', 'fat5'].indexOf(body.env) > -1) {
         body.env = 'fat'
       }
       // 带参数的build

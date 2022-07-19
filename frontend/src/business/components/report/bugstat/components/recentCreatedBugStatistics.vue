@@ -96,6 +96,7 @@ export default {
           {
             name: 'task',
             type: 'bar',
+            barMaxWidth: 60,
             itemStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                 {offset: 0, color: '#83bff6'},

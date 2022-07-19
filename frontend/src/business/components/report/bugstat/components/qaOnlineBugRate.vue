@@ -184,6 +184,7 @@ export default {
             name: '按人',
             type: 'bar',
             showSymbol: false,
+            barMaxWidth: 60,
             itemStyle: {
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                 {offset: 0, color: '#83bff6'},

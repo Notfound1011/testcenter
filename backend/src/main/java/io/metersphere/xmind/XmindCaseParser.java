@@ -74,11 +74,11 @@ public class XmindCaseParser {
         errorPath = new ArrayList<>();
     }
 
-    private static final String TC_REGEX = "(?:tc:|tc：|tc)";
-    private static final String PC_REGEX = "(?:pc:|pc：)";
-    private static final String RC_REGEX = "(?:rc:|rc：)";
-    private static final String ID_REGEX = "(?:id:|id：)";
-    private static final String TAG_REGEX = "(?:tag:|tag：)";
+    private static final String TC_REGEX = "(?:^tc:|^tc：)";
+    private static final String PC_REGEX = "(?:^pc:|^pc：)";
+    private static final String RC_REGEX = "(?:^rc:|^rc：)";
+    private static final String ID_REGEX = "(?:^id:|^id：)";
+    private static final String TAG_REGEX = "(?:^tag:|^tag：)";
 
     public void clear() {
         compartDatas.clear();
