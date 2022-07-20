@@ -154,7 +154,7 @@ import MsTableAdvSearchBar from "@/business/components/common/components/search/
 import {AUTO_TEST_SEARCH_CASE} from "../../common/components/search/search-components";
 
 export default {
-  components: {TestCaseEdit, TestCaseModify, TestCaseAdd, MsMainContainer, MsContainer, MsTableAdvSearchBar},
+  components: {TestCaseEdit, TestCaseModify, MsMainContainer, MsContainer, MsTableAdvSearchBar},
   data() {
     return {
       condition: {
