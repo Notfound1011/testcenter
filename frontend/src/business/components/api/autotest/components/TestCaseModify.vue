@@ -1,7 +1,7 @@
 <template>
   <div>
-    <!-- 修改用例编辑框 -->
-    <el-dialog title="修改测试用例" :visible.sync="editCaseDialogVisible" width="70%" :before-close="editCaseHandleClose">
+    <!-- 新增和修改用例编辑框 -->
+    <el-dialog :title=title :visible.sync="editCaseDialogVisible" width="70%" :before-close="editCaseHandleClose">
       <el-form :rules="rules1" ref="editCaseForm1" :model="editCaseObj.update_data" label-width="120px">
         <el-form-item label="用例名称" prop="case_name">
           <el-input placeholder="必填项" type="textarea" :autosize="{ minRows: 1, maxRows: 10 }"
@@ -63,7 +63,7 @@
           <el-switch v-model="editCaseObj.update_data.status"></el-switch>
         </el-form-item>
       </el-form>
-      <el-form ref="form" :model="editCaseObj.update_data" :rules="rules3" label-width="120px">
+      <el-form :model="editCaseObj.update_data" :rules="rules3" ref="editCaseForm3" label-width="120px">
         <el-form-item label="mark" prop="mark">
           <el-select v-model="editCaseObj.update_data.mark" multiple filterable allow-create default-first-option
                      placeholder="支持多选，模糊筛选，自定义标签" style="width: 95%">
@@ -192,6 +192,8 @@ export default {
       callback();
     };
     return {
+      newWindowFlag: true,
+      title: "",
       editCaseDialogVisible: false,
       inputVisible: false,
       inputValue: '',
@@ -278,57 +280,121 @@ export default {
   methods: {
     //编辑弹窗，默认将table中的数据赋值给编辑页面，json数据做json格式化展示
     openTestCaseEditDialog(item, idx) {
+      const adminToken = JSON.parse(localStorage.getItem("Admin-Token"));
+      this.title = "修改测试用例"
       this.getConfig()
       // this.userIndex = idx;
       // this.editCaseObj.update_data = {...item};    // ...item 相当于 name: item.name,testCase: item.testCase,remarks: item.remarks,
-      this.editCaseObj.update_data = {
-        case_name: item.case_name,
-        mark: item.mark,
-        path: item.path,
-        method: item.method,
-        params: item.params,
-        body_by_form: item.body_by_form,
-        body_by_json: item.body_by_json,
-        depend: item.depend,
-        expect: item.expect,
-        case_type: item.case_type,
-        remark: item.remark,
-        template_type: item.template_type,
-        // created_person: item.created_person,
-        updated_person: {},
-        trigger_conditional_order: item.trigger_conditional_order,
-        need_help: item.need_help,
-        web_site: item.web_site,
-        clear_up: item.clear_up,
-        status: item.status,
-        yapi_url: item.yapi_url
-      };
-      this.editCaseObj.case_id = item.id;
-      const adminToken = JSON.parse(localStorage.getItem("Admin-Token"));
-      this.editCaseObj.update_data.updated_person.id = adminToken.id;
-      this.editCaseObj.update_data.updated_person.name = adminToken.name;
-      this.editCaseObj.update_data.updated_person.email = adminToken.email;
-      // 将json转成字符串
-      if (item.params != null) {
-        this.editCaseObj.update_data.params = JSON.stringify(item.params, null, 4);
+      if (item.constructor === Object) {
+        this.newWindowFlag = false;
+        this.editCaseObj.update_data = {
+          case_name: item.case_name,
+          mark: item.mark,
+          path: item.path,
+          method: item.method,
+          params: item.params,
+          body_by_form: item.body_by_form,
+          body_by_json: item.body_by_json,
+          depend: item.depend,
+          expect: item.expect,
+          case_type: item.case_type,
+          remark: item.remark,
+          template_type: item.template_type,
+          created_person: item.created_person,
+          updated_person: {},
+          trigger_conditional_order: item.trigger_conditional_order,
+          need_help: item.need_help,
+          web_site: item.web_site,
+          clear_up: item.clear_up,
+          status: item.status,
+          yapi_url: item.yapi_url
+        };
+        this.editCaseObj.case_id = item.id;
+        console.log("editCaseObj", this.editCaseObj)
+        this.editCaseObj.update_data.updated_person.id = adminToken.id;
+        this.editCaseObj.update_data.updated_person.name = adminToken.name;
+        this.editCaseObj.update_data.updated_person.email = adminToken.email;
+        // 将json转成字符串
+        if (item.params != null) {
+          this.editCaseObj.update_data.params = JSON.stringify(item.params, null, 4);
+        }
+        if (item.body_by_json != null) {
+          this.editCaseObj.update_data.body_by_json = JSON.stringify(item.body_by_json, null, 4);
+        }
+        if (item.body_by_form != null) {
+          this.editCaseObj.update_data.body_by_form = JSON.stringify(item.body_by_form, null, 4);
+        }
+        if (item.depend != null) {
+          this.editCaseObj.update_data.depend = JSON.stringify(item.depend, null, 4);
+        }
+        if (item.expect != null) {
+          this.editCaseObj.update_data.expect = JSON.stringify(item.expect, null, 4);
+        }
+        if (item.clear_up != null) {
+          this.editCaseObj.update_data.clear_up = JSON.stringify(item.clear_up, null, 4);
+        }
+      } else {
+        this.newWindowFlag = true;
+        this.title = "新增测试用例"
+        this.resetForm();
+        this.editCaseObj.update_data.created_person.id = adminToken.id;
+        this.editCaseObj.update_data.created_person.name = adminToken.name;
+        this.editCaseObj.update_data.created_person.email = adminToken.email;
+        console.log("editCaseObj", this.editCaseObj)
       }
-      if (item.body_by_json != null) {
-        this.editCaseObj.update_data.body_by_json = JSON.stringify(item.body_by_json, null, 4);
-      }
-      if (item.body_by_form != null) {
-        this.editCaseObj.update_data.body_by_form = JSON.stringify(item.body_by_form, null, 4);
-      }
-      if (item.depend != null) {
-        this.editCaseObj.update_data.depend = JSON.stringify(item.depend, null, 4);
-      }
-      if (item.expect != null) {
-        this.editCaseObj.update_data.expect = JSON.stringify(item.expect, null, 4);
-      }
-      if (item.clear_up != null) {
-        this.editCaseObj.update_data.clear_up = JSON.stringify(item.clear_up, null, 4);
-      }
+
+
       this.editCaseDialogVisible = true;
       this.update_data_origin = JSON.parse(JSON.stringify(this.editCaseObj.update_data))
+    },
+    //打开后重置dialog中的内容
+    resetForm() {
+      //重置表单
+      if (this.$refs['editCaseForm1']) {
+        this.$refs['editCaseForm1'].validate(() => {
+          this.$refs['editCaseForm1'].resetFields();
+          return true;
+        });
+      }
+      //重置表单
+      if (this.$refs['editCaseForm2']) {
+        this.$refs['editCaseForm2'].validate(() => {
+          this.$refs['editCaseForm2'].resetFields();
+          return true;
+        });
+      }
+      //重置表单
+      if (this.$refs['editCaseForm3']) {
+        this.$refs['editCaseForm3'].validate(() => {
+          this.$refs['editCaseForm3'].resetFields();
+          return true;
+        });
+      }
+      this.editCaseObj = {
+        update_data: {
+          case_name: '',
+          mark: [],
+          path: '',
+          method: '',
+          params: '',
+          body_by_form: '',
+          body_by_json: '',
+          depend: '',
+          expect: '',
+          case_type: '',
+          remark: '',
+          template_type: '',
+          created_person: {},
+          updated_person: {},
+          web_site: '',
+          clear_up: '',
+          trigger_conditional_order: false,
+          need_help: false,
+          status: true,
+          yapi_url: ''
+        },
+        case_id: ''
+      }
     },
     //编辑弹窗取消编辑时，二次确认是否关闭页面
     editCaseHandleClose() {
@@ -431,29 +497,56 @@ export default {
                   this.$warning("\"清理\"：内容格式不正确");
                   return;
                 }
-                removeEmptyField(this.editCaseObjNew);
-                this.$axios.post("/pyServer/TestCase/Update", this.editCaseObjNew).then(res => {
-                  if (res.data.code === 0) {
-                    this.$notify.success({
-                      title: "用例ID: " + this.editCaseObjNew.case_id,
-                      message: this.$t('用例更新成功').toString()
-                    });
-                    this.editCaseDialogVisible = false;
-                    // this.$set(this.tableData, this.userIndex, this.editCaseObjNew.update_data);
-                    this.$emit("refresh");
-                  } else {
+                removeEmptyField(this.editCaseObjNew.update_data);
+                if (this.newWindowFlag) {
+                  this.$axios.post("/pyServer/TestCase/Create", this.editCaseObjNew.update_data).then(res => {
+                    if (res.data.code === 0) {
+                      this.$notify.success({
+                        title: "用例名称: " + this.editCaseObjNew.case_name,
+                        message: this.$t('用例新增成功').toString()
+                      });
+                      this.editCaseDialogVisible = false;
+                      this.$emit("refresh");
+                    } else {
+                      this.$notify.warning({
+                        title: "用例名称: " + this.editCaseObjNew.case_name,
+                        message: res.data
+                      });
+                      this.editCaseDialogVisible = true;
+                    }
+                    // this.$set(this.tableData, this.userIndex, this.addCaseObj);
+                    // this.$emit(this.tableData, this.userIndex, this.addCaseObj);
+                  }).catch((error) => {
                     this.$notify.warning({
-                      title: "用例名称: " + this.editCaseObjNew.case_id,
-                      message: res.data
+                      title: "用例名称: " + this.editCaseObjNew.case_name,
+                      // message: this.$t('用例新增失败，请检查填写的内容').toString()
+                      message: error
                     });
-                  }
-                }).catch((error) => {
-                  this.$notify.error({
-                    title: "用例ID: " + this.editCaseObjNew.case_id,
-                    // message: this.$t('用例新增失败，请检查填写的内容').toString()
-                    message: error
-                  });
-                })
+                  })
+                } else {
+                  this.$axios.post("/pyServer/TestCase/Update", this.editCaseObjNew).then(res => {
+                    if (res.data.code === 0) {
+                      this.$notify.success({
+                        title: "用例ID: " + this.editCaseObjNew.case_id,
+                        message: this.$t('用例更新成功').toString()
+                      });
+                      this.editCaseDialogVisible = false;
+                      // this.$set(this.tableData, this.userIndex, this.editCaseObjNew.update_data);
+                      this.$emit("refresh");
+                    } else {
+                      this.$notify.warning({
+                        title: "用例名称: " + this.editCaseObjNew.case_id,
+                        message: res.data
+                      });
+                    }
+                  }).catch((error) => {
+                    this.$notify.error({
+                      title: "用例ID: " + this.editCaseObjNew.case_id,
+                      // message: this.$t('用例新增失败，请检查填写的内容').toString()
+                      message: error
+                    });
+                  })
+                }
                 return false;
               }
             });
@@ -493,5 +586,9 @@ export default {
 </script>
 
 <style scoped>
+
+.dialog-footer {
+  text-align: center;
+}
 
 </style>

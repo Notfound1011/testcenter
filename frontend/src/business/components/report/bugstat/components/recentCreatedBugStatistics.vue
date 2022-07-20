@@ -44,10 +44,19 @@ export default {
           console.log(e);
         }
       }
-      let data_new = Array.from(map.values())
-      for (let i = data_new.length - 1; i >= 0; i--) {
-        xAxisData.push(data_new[i].location);
-        totalData.push(data_new[i].count);
+      // 转换为数组，并按照key排序
+      let arrayObj = Array.from(map)
+      arrayObj.sort(function (a, b) {
+        return b[0].localeCompare(a[0])
+      })
+      // 再转换为Map对象
+      var tmp = new Map(arrayObj.map(i => [i[0], i[1]]));
+
+      // 获取Map集合中的所有键值对象
+      let result = Array.from(tmp.values())
+      for (let i = result.length - 1; i >= 0; i--) {
+        xAxisData.push(result[i].location);
+        totalData.push(result[i].count);
       }
       let option = {
         title: {

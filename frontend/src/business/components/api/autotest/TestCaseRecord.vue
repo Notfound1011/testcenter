@@ -4,7 +4,7 @@
 
       <div>
         <h3>{{ $t('api_test.case_record.title') }}</h3>
-        <el-button type="primary" @click="openTestCaseAddDialog" class="add-btn" plain v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']">{{ $t('api_test.case_record.add_case') }}</el-button>
+        <el-button type="primary" @click="openTestCaseEditDialog" class="add-btn" plain v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']">{{ $t('api_test.case_record.add_case') }}</el-button>
 
         <div>
           <el-divider></el-divider>
@@ -123,7 +123,7 @@
                        layout="total, sizes, prev, pager, next, jumper" :total="total">
         </el-pagination>
 
-        <test-case-add ref="testCaseAddDialog" @openTestCaseAddDialog="openTestCaseAddDialog" @refresh="getCaseList"/>
+<!--        <test-case-add ref="openTestCaseEditDialog" @openTestCaseEditDialog="openTestCaseEditDialog" @refresh="getCaseList"/>-->
         <test-case-modify v-bind:tableData="tableData" ref="testCaseEditDialog"
                           @openTestCaseEditDialog="openTestCaseEditDialog" @refresh="getCaseList"/>
 
@@ -147,7 +147,6 @@
 
 import MsMainContainer from "@/business/components/common/components/MsMainContainer";
 import MsContainer from "@/business/components/common/components/MsContainer";
-import TestCaseAdd from "./components/TestCaseAdd";
 import TestCaseModify from "./components/TestCaseModify";
 import TestCaseEdit from "../../track/case/components/TestCaseEdit";
 import {humpToLine} from "@/common/js/utils";
@@ -370,9 +369,9 @@ export default {
         });
     },
 
-    openTestCaseAddDialog(data) {
-      this.$refs.testCaseAddDialog.openTestCaseAddDialog(data);
-    },
+    // openTestCaseAddDialog(data) {
+    //   this.$refs.testCaseAddDialog.openTestCaseAddDialog(data);
+    // },
     openTestCaseEditDialog(data) {
       this.$refs.testCaseEditDialog.openTestCaseEditDialog(data);
     }
