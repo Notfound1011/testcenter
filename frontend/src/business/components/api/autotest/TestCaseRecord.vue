@@ -4,7 +4,9 @@
 
       <div>
         <h3>{{ $t('api_test.case_record.title') }}</h3>
-        <el-button type="primary" @click="openTestCaseEditDialog" class="add-btn" plain v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']">{{ $t('api_test.case_record.add_case') }}</el-button>
+        <el-button type="primary" @click="openTestCaseEditDialog" class="add-btn" plain
+                   v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']">{{ $t('api_test.case_record.add_case') }}
+        </el-button>
 
         <div>
           <el-divider></el-divider>
@@ -123,8 +125,7 @@
                        layout="total, sizes, prev, pager, next, jumper" :total="total">
         </el-pagination>
 
-<!--        <test-case-add ref="openTestCaseEditDialog" @openTestCaseEditDialog="openTestCaseEditDialog" @refresh="getCaseList"/>-->
-        <test-case-modify v-bind:tableData="tableData" ref="testCaseEditDialog"
+        <test-case-modify :tableData="tableData" :mark_options="mark_options" ref="testCaseEditDialog"
                           @openTestCaseEditDialog="openTestCaseEditDialog" @refresh="getCaseList"/>
 
         <!--table单元格弹窗-->
@@ -170,6 +171,7 @@ export default {
         {value: 'web_site', label: '站点'},
         {value: 'status', label: '用例状态'},
       ],
+      mark_options: [],
       value: 'case_name',
       keywords: '',
       deleteInfo: {
@@ -190,6 +192,7 @@ export default {
     }
   },
   activated() {
+    this.getConfig()
     this.getCaseList();
   },
   methods: {
@@ -218,9 +221,6 @@ export default {
             message: res.data
           });
         }
-        // this.webSiteFilter = res.data.data.map(u => {
-        //   return {text: u.web_site, value: u.web_site};
-        // })
       }).catch((error) => {
         this.$notify.error({
           title: "用例查询失败",
@@ -272,8 +272,6 @@ export default {
       }
     },
     filter(filters) {
-      // if (!this.queryInfo.filters) {
-      // }
       for (let filter in filters) {
         if (filters.hasOwnProperty(filter)) {
           if (filters[filter] && filters[filter].length > 0) {
@@ -283,7 +281,6 @@ export default {
           }
         }
       }
-      // this.getCaseList(this.queryInfoNew);
     },
     humpToLine(name) {
       return name.replace(/([A-Z])/g, "_$1").toLowerCase();
@@ -305,7 +302,6 @@ export default {
         }
       }
     },
-
     formatObject(row, column) {
       let expect = row[column.property];
       if (expect == null) {
@@ -313,6 +309,7 @@ export default {
       }
       return JSON.stringify(expect, null, 4);
     },
+
     formatCreatedData(row, column) {
       let created_person = row[column.property];
       if (created_person !== null) {
@@ -350,7 +347,7 @@ export default {
       this.getCaseList()
     },
 
-    //删除测试用例
+    //删除测试用例,暂时没用到
     delCase(idx) {
       this.$confirm('确认删除此用例信息？')
         .then(_ => {
@@ -368,10 +365,13 @@ export default {
           });
         });
     },
+    async getConfig() {
+      this.$axios.get("/pyServer/TestConfig/Search", {params: {'config_id': '6ea520fc-691d-11ec-940a-3a27e1d6caa4'}}).then(res => {
+        this.mark_options = res.data.data[0].config_data
+      }).catch(() => {
+      })
+    },
 
-    // openTestCaseAddDialog(data) {
-    //   this.$refs.testCaseAddDialog.openTestCaseAddDialog(data);
-    // },
     openTestCaseEditDialog(data) {
       this.$refs.testCaseEditDialog.openTestCaseEditDialog(data);
     }

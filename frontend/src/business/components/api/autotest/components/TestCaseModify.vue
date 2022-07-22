@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 新增和修改用例编辑框 -->
-    <el-dialog :title=title :visible.sync="editCaseDialogVisible" width="70%" :before-close="editCaseHandleClose">
+    <el-dialog :title=dialogTitle :visible.sync="editCaseDialogVisible" width="70%" :before-close="editCaseHandleClose">
       <el-form :rules="rules1" ref="editCaseForm1" :model="editCaseObj.update_data" label-width="120px">
         <el-form-item label="用例名称" prop="case_name">
           <el-input placeholder="必填项" type="textarea" :autosize="{ minRows: 1, maxRows: 10 }"
@@ -28,7 +28,6 @@
           <el-select v-model="editCaseObj.update_data.case_type" style='width: 178px' placeholder="必选项">
             <el-option label="rest_api" value="rest_api"></el-option>
             <el-option label="pub_api" value="pub_api"></el-option>
-            <!--            <el-option label="debug" value="debug"></el-option>-->
           </el-select>
         </el-form-item>
         <el-form-item label="模板类型" prop="template_type" required>
@@ -36,7 +35,6 @@
             <el-option label="非模板" value="not_template"></el-option>
             <el-option label="现货模板" value="spot"></el-option>
             <el-option label="合约模板" value="contract"></el-option>
-            <!--            <el-option label="debug" value="debug"></el-option>-->
           </el-select>
         </el-form-item>
         <el-form-item label="站点" prop="web_site" required>
@@ -68,7 +66,7 @@
           <el-select v-model="editCaseObj.update_data.mark" multiple filterable allow-create default-first-option
                      placeholder="支持多选，模糊筛选，自定义标签" style="width: 95%">
             <el-option-group
-              v-for="group in options"
+              v-for="group in mark_options"
               :key="group.label"
               :label="group.label">
               <el-option
@@ -79,14 +77,6 @@
               </el-option>
             </el-option-group>
           </el-select>
-          <!-- <el-tag :key="tag" v-for="tag in editCaseObj.update_data.mark" closable
-                        :disable-transitions="false" @close="handleClose(tag)">{{ tag }}
-                </el-tag>
-                <el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue"
-                          ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm"
-                          @blur="handleInputConfirm">
-                </el-input>
-                <el-button v-else class="button-new-tag" size="small" @click="showInput">+ 新标签</el-button> -->
         </el-form-item>
         <el-form-item label="params" prop="params">
           <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 10 }" style="width: 95%"
@@ -168,7 +158,7 @@ import {removeEmptyField, isObjectValueEqual} from "@/common/js/utils";
 
 export default {
   name: "TestCaseModify",
-  props: ['tableData'],
+  props: ['tableData','mark_options'],
   data() {
     let validateInput = (rule, value, callback) => {
       if (!value) {
@@ -192,8 +182,8 @@ export default {
       callback();
     };
     return {
-      newWindowFlag: true,
-      title: "",
+      addNewCaseFlag: true,
+      dialogTitle: "",
       editCaseDialogVisible: false,
       inputVisible: false,
       inputValue: '',
@@ -231,9 +221,6 @@ export default {
         ]
       },
       rules2: {
-        case_name: [
-          {required: true, message: '请填写用例名称', trigger: 'blur'}
-        ],
         path: [
           {validator: validateEmptyString, required: true, message: "请填写接口path", trigger: ['change', 'blur']},
         ],
@@ -272,45 +259,20 @@ export default {
         clear_up: [
           {validator: validateInput, message: "内容格式不正确", trigger: ['change', 'blur']}
         ]
-      },
-      userIndex: 0,
-      options: []
+      }
     }
   },
   methods: {
     //编辑弹窗，默认将table中的数据赋值给编辑页面，json数据做json格式化展示
-    openTestCaseEditDialog(item, idx) {
+    openTestCaseEditDialog(item) {
       const adminToken = JSON.parse(localStorage.getItem("Admin-Token"));
-      this.title = "修改测试用例"
-      this.getConfig()
-      // this.userIndex = idx;
-      // this.editCaseObj.update_data = {...item};    // ...item 相当于 name: item.name,testCase: item.testCase,remarks: item.remarks,
+      this.dialogTitle = "修改测试用例"
       if (item.constructor === Object) {
-        this.newWindowFlag = false;
-        this.editCaseObj.update_data = {
-          case_name: item.case_name,
-          mark: item.mark,
-          path: item.path,
-          method: item.method,
-          params: item.params,
-          body_by_form: item.body_by_form,
-          body_by_json: item.body_by_json,
-          depend: item.depend,
-          expect: item.expect,
-          case_type: item.case_type,
-          remark: item.remark,
-          template_type: item.template_type,
-          created_person: item.created_person,
-          updated_person: {},
-          trigger_conditional_order: item.trigger_conditional_order,
-          need_help: item.need_help,
-          web_site: item.web_site,
-          clear_up: item.clear_up,
-          status: item.status,
-          yapi_url: item.yapi_url
-        };
+        this.addNewCaseFlag = false;
+        this.editCaseObj.update_data = {...item};    // ...item 相当于 name: item.name,testCase: item.testCase,remarks: item.remarks,
+        this.editCaseObj.update_data.created_person = item.created_person
         this.editCaseObj.case_id = item.id;
-        console.log("editCaseObj", this.editCaseObj)
+        this.editCaseObj.update_data.updated_person = {}
         this.editCaseObj.update_data.updated_person.id = adminToken.id;
         this.editCaseObj.update_data.updated_person.name = adminToken.name;
         this.editCaseObj.update_data.updated_person.email = adminToken.email;
@@ -334,8 +296,8 @@ export default {
           this.editCaseObj.update_data.clear_up = JSON.stringify(item.clear_up, null, 4);
         }
       } else {
-        this.newWindowFlag = true;
-        this.title = "新增测试用例"
+        this.addNewCaseFlag = true;
+        this.dialogTitle = "新增测试用例"
         this.resetForm();
         this.editCaseObj.update_data.created_person.id = adminToken.id;
         this.editCaseObj.update_data.created_person.name = adminToken.name;
@@ -498,7 +460,7 @@ export default {
                   return;
                 }
                 removeEmptyField(this.editCaseObjNew.update_data);
-                if (this.newWindowFlag) {
+                if (this.addNewCaseFlag) {
                   this.$axios.post("/pyServer/TestCase/Create", this.editCaseObjNew.update_data).then(res => {
                     if (res.data.code === 0) {
                       this.$notify.success({
@@ -514,12 +476,9 @@ export default {
                       });
                       this.editCaseDialogVisible = true;
                     }
-                    // this.$set(this.tableData, this.userIndex, this.addCaseObj);
-                    // this.$emit(this.tableData, this.userIndex, this.addCaseObj);
                   }).catch((error) => {
                     this.$notify.warning({
                       title: "用例名称: " + this.editCaseObjNew.case_name,
-                      // message: this.$t('用例新增失败，请检查填写的内容').toString()
                       message: error
                     });
                   })
@@ -531,7 +490,6 @@ export default {
                         message: this.$t('用例更新成功').toString()
                       });
                       this.editCaseDialogVisible = false;
-                      // this.$set(this.tableData, this.userIndex, this.editCaseObjNew.update_data);
                       this.$emit("refresh");
                     } else {
                       this.$notify.warning({
@@ -542,7 +500,6 @@ export default {
                   }).catch((error) => {
                     this.$notify.error({
                       title: "用例ID: " + this.editCaseObjNew.case_id,
-                      // message: this.$t('用例新增失败，请检查填写的内容').toString()
                       message: error
                     });
                   })
@@ -553,34 +510,7 @@ export default {
           }
         })
       }
-    },
-    // 处理mark-tag，标签关闭、输入框露出、输入框输入内容确认
-    handleClose(tag) {
-      this.editCaseObj.update_data.mark.splice(this.editCaseObj.update_data.mark.indexOf(tag), 1);
-    },
-    //点击后才会展示输入框
-    showInput() {
-      this.inputVisible = true;
-      this.$nextTick(_ => {
-        this.$refs.saveTagInput.$refs.input.focus();
-      });
-    },
-    //输入框确认后关闭输入框，并把输入框内容push到mark数组中
-    handleInputConfirm() {
-      let inputValue = this.inputValue;
-      if (inputValue) {
-        this.editCaseObj.update_data.mark.push(inputValue);
-      }
-      this.inputVisible = false;
-      this.inputValue = '';
-    },
-    async getConfig() {
-      this.$axios.get("/pyServer/TestConfig/Search", {params: {'config_id': '6ea520fc-691d-11ec-940a-3a27e1d6caa4'}}).then(res => {
-        this.options = res.data.data[0].config_data
-      }).catch(() => {
-      })
     }
-
   }
 }
 </script>
