@@ -164,9 +164,9 @@ export default {
         xAxis: {
           data: xAxisGroupData,
           name: '组人均',
-          nameLocation: 'center',
-          nameGap: 35,
-          axisLabel: {interval: 0, rotate: 30},
+          nameLocation: 'middle',
+          nameGap: 65,
+          axisLabel: {interval: 0, rotate: 30, margin: 10, overflow: "breakAll", width: 120},
           nameTextStyle: {
             padding: 20,
           }
@@ -262,8 +262,8 @@ export default {
             data: xAxisGroupData,
             name: '组人均',
             nameLocation: 'center',
-            nameGap: 35,
-            axisLabel: {interval: 0, rotate: 30},
+            nameGap: 65,
+            axisLabel: {interval: 0, rotate: 30, margin: 10, overflow: "breakAll", width: 120},
             nameTextStyle: {
               padding: 20,
             }
@@ -273,8 +273,8 @@ export default {
             data: xAxisGroupData,
             name: '按组',
             nameLocation: 'center',
-            nameGap: 35,
-            axisLabel: {interval: 0, rotate: 30},
+            nameGap: 65,
+            axisLabel: {interval: 0, rotate: 30, margin: 10, overflow: "breakAll", width: 120},
             nameTextStyle: {
               padding: 20,
             }
@@ -284,8 +284,8 @@ export default {
             data: xAxisData,
             name: '按人',
             nameLocation: 'center',
-            nameGap: 35,
-            axisLabel: {interval: 0, rotate: 30},
+            nameGap: 65,
+            axisLabel: {interval: 0, rotate: 30, margin: 10, overflow: "breakAll", width: 120},
             nameTextStyle: {
               padding: 20,
             }

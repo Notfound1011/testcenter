@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div :id="id" style="width:90%;height:500%;margin: 20px"></div>
+    <div :id="id" style="width:95%;height:500%;margin: 20px"></div>
   </div>
 </template>
 

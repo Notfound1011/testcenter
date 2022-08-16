@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div id="qaOnlineBugRate" style="width:90%;height:450%;margin: 20px"></div>
+    <div id="qaOnlineBugRate" style="width:95%;height:450%;margin: 20px"></div>
   </div>
 </template>
 

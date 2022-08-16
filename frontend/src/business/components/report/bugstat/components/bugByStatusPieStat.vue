@@ -12,7 +12,7 @@
         </el-col>
       </el-row>
     </div>
-    <div :id="id" style="width: 600px;height:450px;margin: 20px"></div>
+    <div :id="id" style="width: 95%;height:450%;margin: 20px"></div>
   </div>
 </template>
 

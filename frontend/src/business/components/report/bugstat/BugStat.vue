@@ -2,7 +2,7 @@
   <ms-container>
     <ms-main-container v-loading="result.loading" style="background: #fbfbfb">
       <h2 style="margin-left: 20px;font-weight:bold">{{ "BUG统计" }}</h2>
-      <el-form :inline="true" style="margin-left: 58%;margin-right: 2%;">
+      <el-form :inline="true" style="margin-left: 56%;margin-right: 2%;">
         <el-form-item label="选择时间">
           <el-tooltip style="margin-right: 10px;" effect="dark"
                       content="默认本年度，可点选时间区间或手动输入">
@@ -24,30 +24,10 @@
         </el-form-item>
       </el-form>
       <el-row :gutter="10">
-        <el-col :span="11" class="grid-content">
+        <el-col :span="23" class="grid-content">
           <el-card class="card">
-            <online-bug-rate ref="onlineBugRate" id="onlineBugRate" :percentage="percentage"
-                             :onlineBugTotal="onlineBugTotal" :onlineBugJQL="onlineBugJQL"></online-bug-rate>
-          </el-card>
-        </el-col>
-        <el-col :span="12" class="grid-content">
-          <el-card class="card">
-            <qa-online-bug-rate :onlineBug="onlineBug" :qaBug="qaBug" :onlineBugJQL="onlineBugJQL"
-                                v-if="onlineBugFlag&&qaBugFlag"></qa-online-bug-rate>
-          </el-card>
-        </el-col>
-      </el-row>
-      <el-row :gutter="10">
-        <el-col :span="11" class="grid-content">
-          <el-card class="card">
-            <online-bug-stat ref="onlineBugStat" id="onlineBugStat"
-                             :onlineBugJQL="onlineBugJQL"></online-bug-stat>
-          </el-card>
-        </el-col>
-        <el-col :span="12" class="grid-content">
-          <el-card class="card">
-            <qa-bug-created-stat ref="qaBugCreatedStat" id="qaBugCreatedStat"
-                                 :qaCreatedBugJQL="qaCreatedBugJQL"></qa-bug-created-stat>
+            <dev-bug-stat ref="devBugStat" id="devBugStat" :qaCreatedBugJQL="qaCreatedBugJQL"
+                          :ldapUser="ldapUser"></dev-bug-stat>
           </el-card>
         </el-col>
       </el-row>
@@ -79,10 +59,30 @@
         </el-col>
       </el-row>
       <el-row :gutter="10">
-        <el-col :span="23" class="grid-content">
+        <el-col :span="11" class="grid-content">
           <el-card class="card">
-            <dev-bug-stat ref="devBugStat" id="devBugStat" :qaCreatedBugJQL="qaCreatedBugJQL"
-                          :ldapUser="ldapUser"></dev-bug-stat>
+            <qa-bug-created-stat ref="qaBugCreatedStat" id="qaBugCreatedStat"
+                                 :qaCreatedBugJQL="qaCreatedBugJQL"></qa-bug-created-stat>
+          </el-card>
+        </el-col>
+        <el-col :span="12" class="grid-content">
+          <el-card class="card">
+            <online-bug-rate ref="onlineBugRate" id="onlineBugRate" :percentage="percentage"
+                             :onlineBugTotal="onlineBugTotal" :onlineBugJQL="onlineBugJQL"></online-bug-rate>
+          </el-card>
+        </el-col>
+      </el-row>
+      <el-row :gutter="10">
+        <el-col :span="11" class="grid-content">
+          <el-card class="card">
+            <qa-online-bug-rate :onlineBug="onlineBug" :qaBug="qaBug" :onlineBugJQL="onlineBugJQL"
+                                v-if="onlineBugFlag&&qaBugFlag"></qa-online-bug-rate>
+          </el-card>
+        </el-col>
+        <el-col :span="12" class="grid-content">
+          <el-card class="card">
+            <online-bug-stat ref="onlineBugStat" id="onlineBugStat"
+                             :onlineBugJQL="onlineBugJQL"></online-bug-stat>
           </el-card>
         </el-col>
       </el-row>
