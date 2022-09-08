@@ -6,7 +6,6 @@
 
 <script>
 import {groupArray, jiraAddress, map2List} from "@/common/js/utils";
-import {GROUP_DATA, GROUP_SUNGE, GROUP_ZHOUMIN, GROUP_LILEI, GROUP_LIP, GROUP_FLEXIBLE} from "@/common/js/constants";
 import * as echarts from 'echarts';
 
 export default {
@@ -121,6 +120,7 @@ export default {
         totalGroupAvgData.push(item.avg)
         totalGroupData.push(item.total)
       })
+      console.log(dest)
 
       let that = this
       if (that.devBugBarChart != null && that.devBugBarChart != "" && that.devBugBarChart != undefined) {
@@ -303,7 +303,7 @@ export default {
           url = url + " = " + obj.name
           window.open(url, '_blank');
         } else {
-          url = url + " in membersOf(" + obj.name + ")"
+          url = url + " in membersOf(" + "\"" + obj.name + "\"" + ")"
           window.open(url, '_blank');
         }
       });

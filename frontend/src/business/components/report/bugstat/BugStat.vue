@@ -20,7 +20,10 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="search" style='margin-left: 10px'>{{ $t('commons.adv_search.search') }}</el-button>
+          <el-button type="primary" @click="search" style='margin-left: 10px'>{{
+              $t('commons.adv_search.search')
+            }}
+          </el-button>
         </el-form-item>
       </el-form>
       <el-row :gutter="10">
@@ -48,8 +51,8 @@
       <el-row :gutter="10">
         <el-col :span="11" class="grid-content">
           <el-card class="card">
-            <recent-created-bug-statistics ref="recentCreatedBugStatistics" id="recentCreatedBugStatistics"
-                                           :qaCreatedBugJQL="qaCreatedBugJQL"></recent-created-bug-statistics>
+            <bug-trend-stat ref="bugTrendStat" id="bugTrendStat"
+                            :qaCreatedBugJQL="qaCreatedBugJQL"></bug-trend-stat>
           </el-card>
         </el-col>
         <el-col :span="12" class="grid-content">
@@ -93,7 +96,7 @@
 <script>
 import MsContainer from "@/business/components/common/components/MsContainer";
 import MsMainContainer from "@/business/components/common/components/MsMainContainer";
-import RecentCreatedBugStatistics from "@/business/components/report/bugstat/components/recentCreatedBugStatistics";
+import BugTrendStat from "@/business/components/report/bugstat/components/bugTrendStat";
 import FilterBugByUser from "@/business/components/report/bugstat/components/filterBugByUser";
 import BugByProjectPieStat from "@/business/components/report/bugstat/components/bugByProjectPieStat";
 import BugByStatusPieStat from "@/business/components/report/bugstat/components/bugByStatusPieStat";
@@ -107,6 +110,7 @@ import DevBugStat from "@/business/components/report/bugstat/components/devBugSt
 export default {
   name: "BugStat",
   components: {
+    BugTrendStat,
     DevBugStat,
     QaOnlineBugRate,
     OnlineBugStat,
@@ -115,8 +119,8 @@ export default {
     BugByStatusPieStat,
     BugByProjectPieStat,
     FilterBugByUser,
-    RecentCreatedBugStatistics,
-    MsMainContainer, MsContainer
+    MsMainContainer,
+    MsContainer
   },
   mounted() {
     this.search()
@@ -127,7 +131,7 @@ export default {
       result: {},
       currentYear: new Date().getFullYear().toString(),
       qaCreatedBugJQL: "issuetype = Bug AND status != Cancelled AND Developer is not EMPTY AND creator in membersOf(QA)",
-      onlineBugJQL: "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR key in (CTI-830, CTI-832) OR Tester in membersOf(QA))",
+      onlineBugJQL: "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR Tester in membersOf(QA))",
       timePicker: null,
       pickerMinDate: "",//第一次选中的时间
       pickerOptions: {
@@ -172,10 +176,10 @@ export default {
       let onlineBugJQL = ""
       if (this.timePicker !== null) {
         qaCreatedBugJQL = "issuetype = Bug AND status != Cancelled AND Developer is not EMPTY AND creator in membersOf(QA)" + " AND \"created\" >= " + this.timePicker[0] + " AND \"created\" <= " + this.timePicker[1]
-        onlineBugJQL = "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR key in (CTI-830, CTI-832) OR Tester in membersOf(QA))" + " AND \"created\" >= " + this.timePicker[0] + " AND \"created\" <= " + this.timePicker[1]   // AND Tester in membersOf(QA)
+        onlineBugJQL = "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR Tester in membersOf(QA))" + " AND \"created\" >= " + this.timePicker[0] + " AND \"created\" <= " + this.timePicker[1]   // AND Tester in membersOf(QA)
       } else if (this.timePicker == null) {
         qaCreatedBugJQL = "issuetype = Bug AND status != Cancelled AND Developer is not EMPTY AND creator in membersOf(QA)" + " AND created > startOfYear()"
-        onlineBugJQL = "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR key in (CTI-830, CTI-832) OR Tester in membersOf(QA))" + " AND created > startOfYear()" // AND Tester in membersOf(QA)
+        onlineBugJQL = "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR Tester in membersOf(QA))" + " AND created > startOfYear()" // AND Tester in membersOf(QA)
       }
       if (qaCreatedBugJQL.startsWith(" AND")) {
         qaCreatedBugJQL = qaCreatedBugJQL.replace(/AND/, '').trim()
@@ -199,33 +203,30 @@ export default {
           'Authorization': that.jira_auth
         }
       });
-      try {
-        const response = await instance.get(initUrl);
-        const totalData = response.data.total;
-        that.bugTotal = totalData
 
-        const totalPages = Math.ceil(totalData / maxResults);
-        const promiseArray = [];
-        for (let i = 0; i < totalPages; i++) {
-          promiseArray.push(instance.get(url + `&startAt=` + maxResults * `${i}`))
-        }
-        let resolvedPromises = await Promise.all(promiseArray)
-        let data = []
-        for (let i = 0; i < resolvedPromises.length; i++) {
-          data = data.concat(resolvedPromises[i].data.issues)
-        }
-        that.qaBugData = data
-        that.qaBugFlag = true
-        that.$refs.qaBugCreatedStat.qaBugCreatedStat(data)
-        that.$refs.bugByStatusPieStat.bugByStatus(data)
-        that.$refs.bugByProjectPieStat.bugByProject(data)
-        that.$refs.filterBugByUser.filterBugByUser(data)
-        that.$refs.filterBugByUser.filterBugByProject(data)
-        that.$refs.devBugStat.devBugStat(data)
-        that.$refs.recentCreatedBugStatistics.recentlyCreated(data)
-      } catch (err) {
-        that.$message.error(err)
+      const response = await instance.get(initUrl);
+      const totalData = response.data.total;
+      that.bugTotal = totalData
+
+      const totalPages = Math.ceil(totalData / maxResults);
+      const promiseArray = [];
+      for (let i = 0; i < totalPages; i++) {
+        promiseArray.push(instance.get(url + `&startAt=` + maxResults * `${i}`))
       }
+      let resolvedPromises = await Promise.all(promiseArray)
+      let data = []
+      for (let i = 0; i < resolvedPromises.length; i++) {
+        data = data.concat(resolvedPromises[i].data.issues)
+      }
+      that.qaBugData = data
+      that.qaBugFlag = true
+      that.$refs.qaBugCreatedStat.qaBugCreatedStat(data)
+      that.$refs.bugByStatusPieStat.bugByStatus(data)
+      that.$refs.bugByProjectPieStat.bugByProject(data)
+      that.$refs.filterBugByUser.filterBugByUser(data)
+      that.$refs.filterBugByUser.filterBugByProject(data)
+      that.$refs.devBugStat.devBugStat(data)
+      that.$refs.bugTrendStat.recentlyCreated(data)
     },
     async onlineBugQuery(JQL) {
       let that = this;
@@ -263,7 +264,7 @@ export default {
     ldapUserQuery() {
       let url = "dataFactory/ldap/getUsers"
       this.$axios.get(url).then(res => {
-          this.ldapUser = res.data
+          this.ldapUser = res.data.data
         }
       )
     },

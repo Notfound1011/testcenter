@@ -59,7 +59,7 @@ export default {
       });
       let option = {
         title: {
-          text: 'ONLINE BUG (QA)',
+          text: 'ONLINE BUG STAT(QA)',
           subtext: 'summary of the online bug qa caused',
           link: that.jira_address + "/issues/?jql=" + this.onlineBugJQL,
           textStyle: {

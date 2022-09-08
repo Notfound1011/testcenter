@@ -3,11 +3,11 @@
 </template>
 
 <script>
-import {groupArray, groupByMonth, jiraAddress, jiraAuth} from "@/common/js/utils";
+import {groupArray, jiraAddress, jiraAuth} from "@/common/js/utils";
 import * as echarts from "echarts";
 
 export default {
-  name: "recentCreatedBugStatistics",
+  name: "bugTrendStat",
   props: ['id', 'qaCreatedBugJQL'],
   data() {
     return {

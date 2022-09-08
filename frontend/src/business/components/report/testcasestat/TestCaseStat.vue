@@ -1,9 +1,8 @@
 <template>
   <ms-container>
-    <ms-main-container v-loading="result.loading">
-      <el-card>
+    <ms-main-container>
+      <el-card v-loading="result.loading">
         <template>
-          <!--      <h2 style="margin-left: 40px;font-weight:bold">功能用例统计</h2>-->
           <el-select v-model="value" filterable placeholder="切换成员" clearable @change="getInfoAll()"
                      style='margin-left: 40px;margin-bottom: 10px;margin-top: 20px'>
             <el-option
@@ -86,7 +85,7 @@ export default {
     },
 
     getUser() {
-      let path = "user/list/";
+      let path = "dataFactory/user/list";
       this.$get(path, res => {
         this.users = res.data
       });
@@ -116,10 +115,14 @@ export default {
           this.allCaseCountNumber = res.data.data.allCaseCountNumber
           this.allCaseCountNumberByUser = res.data.data.allCaseCountNumberByUser
           let data = res.data.data.caseCount //获取数组的长度
+
+          // 销毁图表实例
           if (document.getElementById('main') == null) {
             return
           }
           this.$echarts.dispose(document.getElementById('main'))
+
+          //图表初始化
           let myChart = this.$echarts.init(document.getElementById('main'))
           let xAxisData = []
           let dayX = []
@@ -223,6 +226,7 @@ export default {
             barSeriesDataDay.push(data[i].countNumber);
           }
 
+          // 根据周年月，调整横纵坐标上的数据
           const week = groupByWeek(xAxisData, barSeriesDataDay);
           const month = groupByMonth(xAxisData, barSeriesDataDay);
           const year = groupByYear(xAxisData, barSeriesDataDay);
@@ -238,7 +242,11 @@ export default {
             yearX.push(year.newDate[k]);
             barSeriesDataYear.push(year.newValue[k]);
           }
+
+          //设置图表的option配置项
           myChart.setOption(option, true)
+
+          // 根据legend图例的选择，对应切换x轴数据
           myChart.on('legendselectchanged', obj => {
             var options = myChart.getOption()
             //这里是选择切换什么样的x轴，那么他会进行对Y值的切换
@@ -257,9 +265,12 @@ export default {
                 data: monthX,
                 name: '日期'
               }
-              // 大多数数据更新了后，已经初始化后的图表X轴或者Y轴仍然不变。 因为xAxis或者yAxis，在初始化的时候赋值为一个对象，
-              // 而刷新数据的时候只是刷新xAxis的data部分，这个时候xAxis是找不到数组中到底哪个数据在刷新，
-              // 因此，你可以直接修改整个xAxis的值，而不是xAxis.data
+
+            /**
+             大多数数据更新了后，已经初始化后的图表X轴或者Y轴仍然不变。 因为xAxis或者yAxis，在初始化的时候赋值为一个对象，
+             而刷新数据的时候只是刷新xAxis的data部分，这个时候xAxis是找不到数组中到底哪个数据在刷新，
+             因此，你可以直接修改整个xAxis的值，而不是xAxis.data
+             */
             } else if (obj.name == '按年') {
               options.xAxis = {
                 data: yearX,
@@ -269,8 +280,6 @@ export default {
             myChart.setOption(options, true)
           })
 
-          // const barChartDom = document.getElementById('main');
-          // const myBarChart = this.$echarts.init(barChartDom);
         }
       )
     },
