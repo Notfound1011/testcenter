@@ -2,7 +2,7 @@
   <ms-container>
     <ms-main-container v-loading="result.loading" style="background: #fbfbfb">
       <h2 style="margin-left: 20px;font-weight:bold">{{ "BUG统计" }}</h2>
-      <el-form :inline="true" style="margin-left: 58%;margin-right: 2%;">
+      <el-form :inline="true" style="margin-left: 56%;margin-right: 2%;">
         <el-form-item label="选择时间">
           <el-tooltip style="margin-right: 10px;" effect="dark"
                       content="默认本年度，可点选时间区间或手动输入">
@@ -20,34 +20,17 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="search" style='margin-left: 10px'>{{ $t('commons.adv_search.search') }}</el-button>
+          <el-button type="primary" @click="search" style='margin-left: 10px'>{{
+              $t('commons.adv_search.search')
+            }}
+          </el-button>
         </el-form-item>
       </el-form>
       <el-row :gutter="10">
-        <el-col :span="11" class="grid-content">
+        <el-col :span="23" class="grid-content">
           <el-card class="card">
-            <online-bug-rate ref="onlineBugRate" id="onlineBugRate" :percentage="percentage"
-                             :onlineBugTotal="onlineBugTotal" :onlineBugJQL="onlineBugJQL"></online-bug-rate>
-          </el-card>
-        </el-col>
-        <el-col :span="12" class="grid-content">
-          <el-card class="card">
-            <qa-online-bug-rate :onlineBug="onlineBug" :qaBug="qaBug" :onlineBugJQL="onlineBugJQL"
-                                v-if="onlineBugFlag&&qaBugFlag"></qa-online-bug-rate>
-          </el-card>
-        </el-col>
-      </el-row>
-      <el-row :gutter="10">
-        <el-col :span="11" class="grid-content">
-          <el-card class="card">
-            <online-bug-stat ref="onlineBugStat" id="onlineBugStat"
-                             :onlineBugJQL="onlineBugJQL"></online-bug-stat>
-          </el-card>
-        </el-col>
-        <el-col :span="12" class="grid-content">
-          <el-card class="card">
-            <qa-bug-created-stat ref="qaBugCreatedStat" id="qaBugCreatedStat"
-                                 :qaCreatedBugJQL="qaCreatedBugJQL"></qa-bug-created-stat>
+            <dev-bug-stat ref="devBugStat" id="devBugStat" :qaCreatedBugJQL="qaCreatedBugJQL"
+                          :ldapUser="ldapUser"></dev-bug-stat>
           </el-card>
         </el-col>
       </el-row>
@@ -68,8 +51,8 @@
       <el-row :gutter="10">
         <el-col :span="11" class="grid-content">
           <el-card class="card">
-            <recent-created-bug-statistics ref="recentCreatedBugStatistics" id="recentCreatedBugStatistics"
-                                           :qaCreatedBugJQL="qaCreatedBugJQL"></recent-created-bug-statistics>
+            <bug-trend-stat ref="bugTrendStat" id="bugTrendStat"
+                            :qaCreatedBugJQL="qaCreatedBugJQL"></bug-trend-stat>
           </el-card>
         </el-col>
         <el-col :span="12" class="grid-content">
@@ -79,10 +62,36 @@
         </el-col>
       </el-row>
       <el-row :gutter="10">
-        <el-col :span="23" class="grid-content">
+        <el-col :span="11" class="grid-content">
           <el-card class="card">
-            <dev-bug-stat ref="devBugStat" id="devBugStat" :qaCreatedBugJQL="qaCreatedBugJQL"
-                          :ldapUser="ldapUser"></dev-bug-stat>
+            <qa-bug-created-stat ref="qaBugCreatedStat" id="qaBugCreatedStat"
+                                 :groupData="groupData" :group1="group1" :group2="group2" :group3="group3"
+                                 :group4="group4" :group5="group5" :groupTotalData="groupTotalData"
+                                 :qaCreatedBugJQL="qaCreatedBugJQL"></qa-bug-created-stat>
+          </el-card>
+        </el-col>
+        <el-col :span="12" class="grid-content">
+          <el-card class="card">
+            <online-bug-rate ref="onlineBugRate" id="onlineBugRate" :percentage="percentage"
+                             :onlineBugTotal="onlineBugTotal" :onlineBugJQL="onlineBugJQL"></online-bug-rate>
+          </el-card>
+        </el-col>
+      </el-row>
+      <el-row :gutter="10">
+        <el-col :span="11" class="grid-content">
+          <el-card class="card">
+            <qa-online-bug-rate :onlineBug="onlineBug" :qaBug="qaBug" :onlineBugJQL="onlineBugJQL"
+                                :groupData="groupData" :group1="group1" :group2="group2" :group3="group3"
+                                :group4="group4" :group5="group5" :groupTotalData="groupTotalData"
+                                v-if="onlineBugFlag&&qaBugFlag"></qa-online-bug-rate>
+          </el-card>
+        </el-col>
+        <el-col :span="12" class="grid-content">
+          <el-card class="card">
+            <online-bug-stat ref="onlineBugStat" id="onlineBugStat"
+                             :groupData="groupData" :group1="group1" :group2="group2" :group3="group3"
+                             :group4="group4" :group5="group5" :groupTotalData="groupTotalData"
+                             :onlineBugJQL="onlineBugJQL"></online-bug-stat>
           </el-card>
         </el-col>
       </el-row>
@@ -93,7 +102,7 @@
 <script>
 import MsContainer from "@/business/components/common/components/MsContainer";
 import MsMainContainer from "@/business/components/common/components/MsMainContainer";
-import RecentCreatedBugStatistics from "@/business/components/report/bugstat/components/recentCreatedBugStatistics";
+import BugTrendStat from "@/business/components/report/bugstat/components/bugTrendStat";
 import FilterBugByUser from "@/business/components/report/bugstat/components/filterBugByUser";
 import BugByProjectPieStat from "@/business/components/report/bugstat/components/bugByProjectPieStat";
 import BugByStatusPieStat from "@/business/components/report/bugstat/components/bugByStatusPieStat";
@@ -107,6 +116,7 @@ import DevBugStat from "@/business/components/report/bugstat/components/devBugSt
 export default {
   name: "BugStat",
   components: {
+    BugTrendStat,
     DevBugStat,
     QaOnlineBugRate,
     OnlineBugStat,
@@ -115,8 +125,8 @@ export default {
     BugByStatusPieStat,
     BugByProjectPieStat,
     FilterBugByUser,
-    RecentCreatedBugStatistics,
-    MsMainContainer, MsContainer
+    MsMainContainer,
+    MsContainer
   },
   mounted() {
     this.search()
@@ -127,7 +137,7 @@ export default {
       result: {},
       currentYear: new Date().getFullYear().toString(),
       qaCreatedBugJQL: "issuetype = Bug AND status != Cancelled AND Developer is not EMPTY AND creator in membersOf(QA)",
-      onlineBugJQL: "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR key in (CTI-830, CTI-832) OR Tester in membersOf(QA))",
+      onlineBugJQL: "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR Tester in membersOf(QA))",
       timePicker: null,
       pickerMinDate: "",//第一次选中的时间
       pickerOptions: {
@@ -152,7 +162,14 @@ export default {
       qaBugData: null,
       onlineBugFlag: false,
       qaBugFlag: false,
-      ldapUser: null
+      ldapUser: null,
+      groupData: null,
+      group1: null,
+      group2: null,
+      group3: null,
+      group4: null,
+      group5: null,
+      groupTotalData: null
     }
   },
   computed: {
@@ -172,10 +189,10 @@ export default {
       let onlineBugJQL = ""
       if (this.timePicker !== null) {
         qaCreatedBugJQL = "issuetype = Bug AND status != Cancelled AND Developer is not EMPTY AND creator in membersOf(QA)" + " AND \"created\" >= " + this.timePicker[0] + " AND \"created\" <= " + this.timePicker[1]
-        onlineBugJQL = "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR key in (CTI-830, CTI-832) OR Tester in membersOf(QA))" + " AND \"created\" >= " + this.timePicker[0] + " AND \"created\" <= " + this.timePicker[1]   // AND Tester in membersOf(QA)
+        onlineBugJQL = "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR Tester in membersOf(QA))" + " AND \"created\" >= " + this.timePicker[0] + " AND \"created\" <= " + this.timePicker[1]   // AND Tester in membersOf(QA)
       } else if (this.timePicker == null) {
         qaCreatedBugJQL = "issuetype = Bug AND status != Cancelled AND Developer is not EMPTY AND creator in membersOf(QA)" + " AND created > startOfYear()"
-        onlineBugJQL = "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR key in (CTI-830, CTI-832) OR Tester in membersOf(QA))" + " AND created > startOfYear()" // AND Tester in membersOf(QA)
+        onlineBugJQL = "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR Tester in membersOf(QA))" + " AND created > startOfYear()" // AND Tester in membersOf(QA)
       }
       if (qaCreatedBugJQL.startsWith(" AND")) {
         qaCreatedBugJQL = qaCreatedBugJQL.replace(/AND/, '').trim()
@@ -186,6 +203,7 @@ export default {
       this.onlineBugJQL = onlineBugJQL
       this.onlineBugQuery(onlineBugJQL)
       this.ldapUserQuery()
+      this.qaUserGroupQuery()
       stopFullScreenLoading(loading, 2000);
     },
 
@@ -199,33 +217,30 @@ export default {
           'Authorization': that.jira_auth
         }
       });
-      try {
-        const response = await instance.get(initUrl);
-        const totalData = response.data.total;
-        that.bugTotal = totalData
 
-        const totalPages = Math.ceil(totalData / maxResults);
-        const promiseArray = [];
-        for (let i = 0; i < totalPages; i++) {
-          promiseArray.push(instance.get(url + `&startAt=` + maxResults * `${i}`))
-        }
-        let resolvedPromises = await Promise.all(promiseArray)
-        let data = []
-        for (let i = 0; i < resolvedPromises.length; i++) {
-          data = data.concat(resolvedPromises[i].data.issues)
-        }
-        that.qaBugData = data
-        that.qaBugFlag = true
-        that.$refs.qaBugCreatedStat.qaBugCreatedStat(data)
-        that.$refs.bugByStatusPieStat.bugByStatus(data)
-        that.$refs.bugByProjectPieStat.bugByProject(data)
-        that.$refs.filterBugByUser.filterBugByUser(data)
-        that.$refs.filterBugByUser.filterBugByProject(data)
-        that.$refs.devBugStat.devBugStat(data)
-        that.$refs.recentCreatedBugStatistics.recentlyCreated(data)
-      } catch (err) {
-        that.$message.error(err)
+      const response = await instance.get(initUrl);
+      const totalData = response.data.total;
+      that.bugTotal = totalData
+
+      const totalPages = Math.ceil(totalData / maxResults);
+      const promiseArray = [];
+      for (let i = 0; i < totalPages; i++) {
+        promiseArray.push(instance.get(url + `&startAt=` + maxResults * `${i}`))
       }
+      let resolvedPromises = await Promise.all(promiseArray)
+      let data = []
+      for (let i = 0; i < resolvedPromises.length; i++) {
+        data = data.concat(resolvedPromises[i].data.issues)
+      }
+      that.qaBugData = data
+      that.qaBugFlag = true
+      that.$refs.qaBugCreatedStat.qaBugCreatedStat(data)
+      that.$refs.bugByStatusPieStat.bugByStatus(data)
+      that.$refs.bugByProjectPieStat.bugByProject(data)
+      that.$refs.filterBugByUser.filterBugByUser(data)
+      that.$refs.filterBugByUser.filterBugByProject(data)
+      that.$refs.devBugStat.devBugStat(data)
+      that.$refs.bugTrendStat.recentlyCreated(data)
     },
     async onlineBugQuery(JQL) {
       let that = this;
@@ -263,7 +278,21 @@ export default {
     ldapUserQuery() {
       let url = "dataFactory/ldap/getUsers"
       this.$axios.get(url).then(res => {
-          this.ldapUser = res.data
+          this.ldapUser = res.data.data
+        }
+      )
+    },
+    qaUserGroupQuery() {
+      let url = "dataFactory/group/list"
+      this.$axios.get(url).then(res => {
+          let qaUserGroup = res.data.data
+          this.groupData = qaUserGroup[0].content.split(",")
+          this.group1 = qaUserGroup[1].content.split(",")
+          this.group2 = qaUserGroup[2].content.split(",")
+          this.group3 = qaUserGroup[3].content.split(",")
+          this.group4 = qaUserGroup[4].content.split(",")
+          this.group5 = qaUserGroup[5].content.split(",")
+          this.groupTotalData = qaUserGroup[6].content.split(",").map(Number)
         }
       )
     },

@@ -1,13 +1,13 @@
 <template>
-  <div :id="id" style="width: 600px;height:480px;margin: 20px"></div>
+  <div :id="id" style="width: 95%;height:500%;margin: 20px"></div>
 </template>
 
 <script>
-import {groupArray, groupByMonth, jiraAddress, jiraAuth} from "@/common/js/utils";
+import {groupArray, jiraAddress, jiraAuth} from "@/common/js/utils";
 import * as echarts from "echarts";
 
 export default {
-  name: "recentCreatedBugStatistics",
+  name: "bugTrendStat",
   props: ['id', 'qaCreatedBugJQL'],
   data() {
     return {

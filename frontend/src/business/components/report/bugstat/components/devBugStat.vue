@@ -6,7 +6,6 @@
 
 <script>
 import {groupArray, jiraAddress, map2List} from "@/common/js/utils";
-import {GROUP_DATA, GROUP_SUNGE, GROUP_ZHOUMIN, GROUP_LILEI, GROUP_LIP, GROUP_FLEXIBLE} from "@/common/js/constants";
 import * as echarts from 'echarts';
 
 export default {
@@ -121,6 +120,7 @@ export default {
         totalGroupAvgData.push(item.avg)
         totalGroupData.push(item.total)
       })
+      console.log(dest)
 
       let that = this
       if (that.devBugBarChart != null && that.devBugBarChart != "" && that.devBugBarChart != undefined) {
@@ -164,9 +164,9 @@ export default {
         xAxis: {
           data: xAxisGroupData,
           name: '组人均',
-          nameLocation: 'center',
-          nameGap: 35,
-          axisLabel: {interval: 0, rotate: 30},
+          nameLocation: 'middle',
+          nameGap: 65,
+          axisLabel: {interval: 0, rotate: 30, margin: 10, overflow: "breakAll", width: 120},
           nameTextStyle: {
             padding: 20,
           }
@@ -262,8 +262,8 @@ export default {
             data: xAxisGroupData,
             name: '组人均',
             nameLocation: 'center',
-            nameGap: 35,
-            axisLabel: {interval: 0, rotate: 30},
+            nameGap: 65,
+            axisLabel: {interval: 0, rotate: 30, margin: 10, overflow: "breakAll", width: 120},
             nameTextStyle: {
               padding: 20,
             }
@@ -273,8 +273,8 @@ export default {
             data: xAxisGroupData,
             name: '按组',
             nameLocation: 'center',
-            nameGap: 35,
-            axisLabel: {interval: 0, rotate: 30},
+            nameGap: 65,
+            axisLabel: {interval: 0, rotate: 30, margin: 10, overflow: "breakAll", width: 120},
             nameTextStyle: {
               padding: 20,
             }
@@ -284,8 +284,8 @@ export default {
             data: xAxisData,
             name: '按人',
             nameLocation: 'center',
-            nameGap: 35,
-            axisLabel: {interval: 0, rotate: 30},
+            nameGap: 65,
+            axisLabel: {interval: 0, rotate: 30, margin: 10, overflow: "breakAll", width: 120},
             nameTextStyle: {
               padding: 20,
             }
@@ -303,7 +303,7 @@ export default {
           url = url + " = " + obj.name
           window.open(url, '_blank');
         } else {
-          url = url + " in membersOf(" + obj.name + ")"
+          url = url + " in membersOf(" + "\"" + obj.name + "\"" + ")"
           window.open(url, '_blank');
         }
       });
