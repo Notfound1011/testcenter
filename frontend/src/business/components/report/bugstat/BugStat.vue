@@ -65,6 +65,8 @@
         <el-col :span="11" class="grid-content">
           <el-card class="card">
             <qa-bug-created-stat ref="qaBugCreatedStat" id="qaBugCreatedStat"
+                                 :groupData="groupData" :group1="group1" :group2="group2" :group3="group3"
+                                 :group4="group4" :group5="group5" :groupTotalData="groupTotalData"
                                  :qaCreatedBugJQL="qaCreatedBugJQL"></qa-bug-created-stat>
           </el-card>
         </el-col>
@@ -79,12 +81,16 @@
         <el-col :span="11" class="grid-content">
           <el-card class="card">
             <qa-online-bug-rate :onlineBug="onlineBug" :qaBug="qaBug" :onlineBugJQL="onlineBugJQL"
+                                :groupData="groupData" :group1="group1" :group2="group2" :group3="group3"
+                                :group4="group4" :group5="group5" :groupTotalData="groupTotalData"
                                 v-if="onlineBugFlag&&qaBugFlag"></qa-online-bug-rate>
           </el-card>
         </el-col>
         <el-col :span="12" class="grid-content">
           <el-card class="card">
             <online-bug-stat ref="onlineBugStat" id="onlineBugStat"
+                             :groupData="groupData" :group1="group1" :group2="group2" :group3="group3"
+                             :group4="group4" :group5="group5" :groupTotalData="groupTotalData"
                              :onlineBugJQL="onlineBugJQL"></online-bug-stat>
           </el-card>
         </el-col>
@@ -156,7 +162,14 @@ export default {
       qaBugData: null,
       onlineBugFlag: false,
       qaBugFlag: false,
-      ldapUser: null
+      ldapUser: null,
+      groupData: null,
+      group1: null,
+      group2: null,
+      group3: null,
+      group4: null,
+      group5: null,
+      groupTotalData: null
     }
   },
   computed: {
@@ -190,6 +203,7 @@ export default {
       this.onlineBugJQL = onlineBugJQL
       this.onlineBugQuery(onlineBugJQL)
       this.ldapUserQuery()
+      this.qaUserGroupQuery()
       stopFullScreenLoading(loading, 2000);
     },
 
@@ -265,6 +279,20 @@ export default {
       let url = "dataFactory/ldap/getUsers"
       this.$axios.get(url).then(res => {
           this.ldapUser = res.data.data
+        }
+      )
+    },
+    qaUserGroupQuery() {
+      let url = "dataFactory/group/list"
+      this.$axios.get(url).then(res => {
+          let qaUserGroup = res.data.data
+          this.groupData = qaUserGroup[0].content.split(",")
+          this.group1 = qaUserGroup[1].content.split(",")
+          this.group2 = qaUserGroup[2].content.split(",")
+          this.group3 = qaUserGroup[3].content.split(",")
+          this.group4 = qaUserGroup[4].content.split(",")
+          this.group5 = qaUserGroup[5].content.split(",")
+          this.groupTotalData = qaUserGroup[6].content.split(",").map(Number)
         }
       )
     },
