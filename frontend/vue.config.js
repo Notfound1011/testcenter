@@ -1,5 +1,8 @@
 const path = require('path');
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin')
+const CompressionWebpackPlugin = require("compression-webpack-plugin");
+const webpack = require('webpack');
+const productionGzipExtensions = ["js", "css"];
 
 function resolve(dir) {
   return path.join(__dirname, dir);
@@ -105,6 +108,25 @@ module.exports = {
         '@': resolve('src')
       }
     },
+    // webpack plugins
+    plugins: [
+      // Ignore all locale files of moment.js
+      new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+      // 配置compression-webpack-plugin压缩
+      new CompressionWebpackPlugin({
+        algorithm: "gzip",
+        test: new RegExp("\\.(" + productionGzipExtensions.join("|") + ")$"),
+        threshold: 10240,
+        minRatio: 0.8
+      }),
+      // maxChunks：使用大于或等于 1 的值，来限制 chunk 的最大数量。使用 1 防止添加任何其他额外的 chunk，这是因为 entry/main chunk 也会包含在计数之中。
+      //minChunkSize: 设置 chunk 的最小大小。
+      // 限制打包的个数(减少打包生成的js文件和css文件)
+      new webpack.optimize.LimitChunkCountPlugin({
+        maxChunks: 10,
+        minChunkSize: 100
+      })
+    ],
   },
   chainWebpack: config => {
     // 报告模板打包成一个html

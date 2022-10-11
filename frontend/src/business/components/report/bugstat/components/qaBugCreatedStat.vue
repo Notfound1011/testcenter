@@ -29,11 +29,6 @@ export default {
       let xAxisData = []
       let totalData = []
       //定义QA的四个组和组内成员
-      console.log(this.groupData)
-      console.log(this.group2)
-      console.log(this.group3)
-      console.log(this.group4)
-      console.log(this.groupTotalData)
       let groupData = this.groupData
       let group1 = this.group1
       let group2 = this.group2
@@ -61,7 +56,6 @@ export default {
           groupTotalData[4] = groupTotalData[4] + value.count
         }
       });
-      console.log(this.groupTotalData)
       let option = {
         title: {
           text: 'BUG CREATED BY QA',

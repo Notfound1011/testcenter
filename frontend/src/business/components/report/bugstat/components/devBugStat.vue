@@ -81,7 +81,7 @@ export default {
         userMap[item.user] = userMap[item.user] || {}; //初始化对象
         userMap[item.user].url = item.url;
         userMap[item.user].total = item.total;
-        userMap[item.user].group = userMap[item.user].group || 0;
+        userMap[item.user].group = userMap[item.user].group || '[leave office]';
       });
 
       //map 转 arr
@@ -113,14 +113,16 @@ export default {
       let xAxisGroupData = []
       let totalGroupAvgData = []
       let totalGroupData = []
+      console.log("dest",dest)
       dest.forEach((item) => {
-        let num = item.total / item.people
-        item.avg = Math.floor(num * 100) / 100
-        xAxisGroupData.push(item.group.split("[")[1].split("]")[0])
-        totalGroupAvgData.push(item.avg)
-        totalGroupData.push(item.total)
+        if (item.group !== '[leave office]'){
+          let num = item.total / item.people
+          item.avg = Math.floor(num * 100) / 100
+          xAxisGroupData.push(item.group.split("[")[1].split("]")[0])
+          totalGroupAvgData.push(item.avg)
+          totalGroupData.push(item.total)
+        }
       })
-      console.log(dest)
 
       let that = this
       if (that.devBugBarChart != null && that.devBugBarChart != "" && that.devBugBarChart != undefined) {
