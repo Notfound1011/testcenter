@@ -104,10 +104,10 @@
           </el-table-column>
           <el-table-column prop="case_type" label="用例类型" width="100" column-key="case_type">
           </el-table-column>
-          <el-table-column prop="yapi_url" label="yapi链接" width="80" align="center">
+          <el-table-column prop="docs_url" label="API文档链接" width="80" align="center">
             <template slot-scope="scope">
-              <el-link :href="scope.row.yapi_url" target="_blank">
-                <div v-if="scope.row.yapi_url !== '' && scope.row.yapi_url != null">
+              <el-link :href="scope.row.docs_url" target="_blank">
+                <div v-if="scope.row.docs_url !== '' && scope.row.docs_url != null">
                   <i class="el-icon-link" style="font-size: 15px; color: blue"></i>
                 </div>
               </el-link>
