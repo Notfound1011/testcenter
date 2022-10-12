@@ -1,9 +1,6 @@
 import {
   COUNT_NUMBER,
   COUNT_NUMBER_SHALLOW,
-  JENKINS_AUTH,
-  JIRA_ADDRESS,
-  JIRA_AUTH,
   LicenseKey,
   ORIGIN_COLOR,
   ORIGIN_COLOR_SHALLOW,
@@ -104,7 +101,7 @@ export function jenkinsAuth() {
   try {
     return JSON.parse(localStorage.getItem(THIRD_PARTY_INFO)).jenkins_auth
   } catch (e) {
-    return JENKINS_AUTH;
+    console.log(e)
   }
 }
 
@@ -112,7 +109,7 @@ export function jiraAuth() {
   try {
     return JSON.parse(localStorage.getItem(THIRD_PARTY_INFO)).jira_auth
   } catch (e) {
-    return JIRA_AUTH;
+    console.log(e)
   }
 }
 
@@ -120,7 +117,7 @@ export function jiraAddress() {
   try {
     return JSON.parse(localStorage.getItem(THIRD_PARTY_INFO)).jira_address
   } catch (e) {
-    return JIRA_ADDRESS;
+    console.log(e)
   }
 }
 

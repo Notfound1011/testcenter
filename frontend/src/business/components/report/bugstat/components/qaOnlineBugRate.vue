@@ -1,17 +1,16 @@
 <template>
   <div>
-    <div id="qaOnlineBugRate" style="width:90%;height:450%;margin: 20px"></div>
+    <div id="qaOnlineBugRate" style="width:95%;height:450%;margin: 20px"></div>
   </div>
 </template>
 
 <script>
 import {groupArray, jiraAddress} from "@/common/js/utils";
-import {GROUP_DATA, GROUP_SUNGE, GROUP_ZHOUMIN, GROUP_LILEI, GROUP_LIP, GROUP_FLEXIBLE} from "@/common/js/constants";
 import * as echarts from 'echarts';
 
 export default {
   name: "qaOnlineBugRate",
-  props: ['id', 'onlineBug', 'qaBug', 'onlineBugJQL'],
+  props: ['id', 'onlineBug', 'qaBug', 'onlineBugJQL','groupData','group1','group2','group3','group4','group5','groupTotalData'],
   data() {
     return {
       jira_address: jiraAddress(),
@@ -65,12 +64,12 @@ export default {
       let xAxisData = []
       let totalData = []
       //定义QA的四个组和组内成员
-      let groupData = GROUP_DATA
-      let groupSunge = GROUP_SUNGE
-      let groupZhoumin = GROUP_ZHOUMIN
-      let groupLilei = GROUP_LILEI
-      let groupLip = GROUP_LIP
-      let groupFlexible = GROUP_FLEXIBLE
+      let groupData = this.groupData
+      let group1 = this.group1
+      let group2 = this.group2
+      let group3 = this.group3
+      let group4 = this.group4
+      let group5 = this.group5
       let groupOnlineBugTotal = [0, 0, 0, 0, 0]
       let groupQaBugTotal = [0, 0, 0, 0, 0]
       let groupBugRateTotal = [0, 0, 0, 0, 0]
@@ -81,36 +80,36 @@ export default {
       })
 
       Object.values(dataDenominator).forEach(value => {
-        if (groupSunge.includes(value.location)) {
+        if (group1.includes(value.location)) {
           groupQaBugTotal[0] = groupQaBugTotal[0] + value.count
         }
-        if (groupZhoumin.includes(value.location)) {
+        if (group2.includes(value.location)) {
           groupQaBugTotal[1] = groupQaBugTotal[1] + value.count
         }
-        if (groupLilei.includes(value.location)) {
+        if (group3.includes(value.location)) {
           groupQaBugTotal[2] = groupQaBugTotal[2] + value.count
         }
-        if (groupLip.includes(value.location)) {
+        if (group4.includes(value.location)) {
           groupQaBugTotal[3] = groupQaBugTotal[3] + value.count
         }
-        if (groupFlexible.includes(value.location)) {
+        if (group5.includes(value.location)) {
           groupQaBugTotal[4] = groupQaBugTotal[4] + value.count
         }
       });
       Object.values(dataNumerator).forEach(value => {
-        if (groupSunge.includes(value.location)) {
+        if (group1.includes(value.location)) {
           groupOnlineBugTotal[0] = groupOnlineBugTotal[0] + parseFloat(value.count)
         }
-        if (groupZhoumin.includes(value.location)) {
+        if (group2.includes(value.location)) {
           groupOnlineBugTotal[1] = groupOnlineBugTotal[1] + parseFloat(value.count)
         }
-        if (groupLilei.includes(value.location)) {
+        if (group3.includes(value.location)) {
           groupOnlineBugTotal[2] = groupOnlineBugTotal[2] + parseFloat(value.count)
         }
-        if (groupLip.includes(value.location)) {
+        if (group4.includes(value.location)) {
           groupOnlineBugTotal[3] = groupOnlineBugTotal[3] + parseFloat(value.count)
         }
-        if (groupFlexible.includes(value.location)) {
+        if (group5.includes(value.location)) {
           groupOnlineBugTotal[4] = groupOnlineBugTotal[4] + parseFloat(value.count)
         }
       });
@@ -265,20 +264,20 @@ export default {
         let url = that.jira_address + "/issues/?jql=" + that.onlineBugJQL + " AND tester"
         if (groupData.includes(obj.name)) {
           switch (obj.name) {
-            case "QA1组(孙戈)" :
-              url = url + " in (" + groupSunge + ")"
+            case this.groupData[0] :
+              url = url + " in (" + group1 + ")"
               break;
-            case "QA2组(周敏)" :
-              url = url + " in (" + groupZhoumin + ")"
+            case this.groupData[1] :
+              url = url + " in (" + group2 + ")"
               break;
-            case "QA3组(李磊)" :
-              url = url + " in (" + groupLilei + ")"
+            case this.groupData[2] :
+              url = url + " in (" + group3 + ")"
               break;
-            case "QA4组(lip)" :
-              url = url + " in (" + groupLip + ")"
+            case this.groupData[3] :
+              url = url + " in (" + group4 + ")"
               break;
-            case "机动组" :
-              url = url + " in (" + groupFlexible + ")"
+            case this.groupData[4] :
+              url = url + " in (" + group5 + ")"
               break;
           }
           window.open(url, '_blank');

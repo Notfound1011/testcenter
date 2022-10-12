@@ -31,7 +31,10 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="search" style='margin-left: 10px'>{{ $t('commons.adv_search.search') }}</el-button>
+          <el-button type="primary" @click="search" style='margin-left: 10px'>{{
+              $t('commons.adv_search.search')
+            }}
+          </el-button>
           <el-button type="primary" @click="reset">{{ $t('commons.adv_search.reset') }}</el-button>
         </el-form-item>
       </el-form>
@@ -43,7 +46,10 @@
         <!--        </el-col>-->
         <el-col :span="22" class="grid-content">
           <el-card>
-            <qa-task-statistics ref="qaTaskStat" id="qaTaskStatistics" :JQL="JQL"></qa-task-statistics>
+            <qa-task-statistics ref="qaTaskStat" id="qaTaskStatistics"
+                                :groupData="groupData" :group1="group1" :group2="group2" :group3="group3"
+                                :group4="group4" :group5="group5" :groupTotalData="groupTotalData"
+                                :JQL="JQL"></qa-task-statistics>
           </el-card>
         </el-col>
       </el-row>
@@ -106,7 +112,14 @@ export default {
             return time.getTime() > Date.now()
           }
         }
-      }
+      },
+      groupData: null,
+      group1: null,
+      group2: null,
+      group3: null,
+      group4: null,
+      group5: null,
+      groupTotalData: null
     }
   },
   mounted() {
@@ -135,6 +148,7 @@ export default {
       }
       this.JQL = JQL
       this.query(JQL)
+      this.qaUserGroupQuery()
       this.backToDevJQL = backToDevJQL
       this.backToDev(backToDevJQL);
     },
@@ -219,7 +233,21 @@ export default {
     reset() {
       this.customJQL = []
       this.timePicker = null
-    }
+    },
+    qaUserGroupQuery() {
+      let url = "dataFactory/group/list"
+      this.$axios.get(url).then(res => {
+          let qaUserGroup = res.data.data
+          this.groupData = qaUserGroup[0].content.split(",")
+          this.group1 = qaUserGroup[1].content.split(",")
+          this.group2 = qaUserGroup[2].content.split(",")
+          this.group3 = qaUserGroup[3].content.split(",")
+          this.group4 = qaUserGroup[4].content.split(",")
+          this.group5 = qaUserGroup[5].content.split(",")
+          this.groupTotalData = qaUserGroup[6].content.split(",").map(Number)
+        }
+      )
+    },
   }
 }
 </script>

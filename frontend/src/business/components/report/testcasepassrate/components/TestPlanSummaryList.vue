@@ -1,9 +1,8 @@
 <template>
   <el-card v-loading="cardResult.loading">
     <template v-slot:header>
-
-        <div class="Echarts" id="casePassRate" style="width:90%;height:500%;">
-        </div>
+      <div class="Echarts" id="casePassRate" style="width:100%;height:500%;">
+      </div>
     </template>
     <ms-table-header :create-permission="['']" :condition.sync="condition"
                      @search="initTableData" style="margin-top: 20px"/>
@@ -190,7 +189,6 @@
     <header-custom ref="headerCustom" :initTableData="init" :optionalFields=headerItems
                    :type=type></header-custom>
 
-
     <ms-table-pagination :change="initTableData" :current-page.sync="currentPage" :page-size.sync="pageSize"
                          :total="total"/>
     <ms-delete-confirm :title="$t('test_track.plan.plan_delete')" @delete="_handleDelete" ref="deleteConfirm"
@@ -229,13 +227,7 @@ import HeaderCustom from "@/business/components/common/head/HeaderCustom";
 import HeaderLabelOperate from "@/business/components/common/head/HeaderLabelOperate";
 import MsTag from "@/business/components/common/components/MsTag";
 import MsTestPlanScheduleMaintain from "@/business/components/track/plan/components/ScheduleMaintain";
-import {
-  formatTimeStampToDay,
-  getCurrentProjectID,
-  getCurrentUser,
-  getCurrentUserId, groupByMonth, groupByWeek, groupByYear,
-  hasPermission
-} from "@/common/js/utils";
+import {formatTimeStampToDay, getCurrentProjectID, getCurrentUser, getCurrentUserId} from "@/common/js/utils";
 import PlanRunModeWithEnv from "@/business/components/track/plan/common/PlanRunModeWithEnv";
 import TestPlanReportReview from "@/business/components/track/report/components/TestPlanReportReview";
 import MsTaskCenter from "@/business/components/task/TaskCenter";
@@ -275,7 +267,7 @@ export default {
       pageSize: 10,
       total: 0,
       tableData: [],
-      screenHeight: 'calc(100vh - 100px)',
+      screenHeight: 'calc(60vh - 0px)',
       statusFilters: [
         {text: this.$t('test_track.plan.plan_status_prepare'), value: 'Prepare'},
         {text: this.$t('test_track.plan.plan_status_running'), value: 'Underway'},
@@ -317,10 +309,6 @@ export default {
     init() {
       this.initTableData();
     },
-    customHeader() {
-      const list = deepClone(this.tableLabel);
-      this.$refs.headerCustom.open(list);
-    },
     initTableData() {
       if (this.planId) {
         this.condition.planId = this.planId;
@@ -331,7 +319,7 @@ export default {
       if (!this.projectId) {
         return;
       }
-      // this.condition.projectId = getCurrentProjectID();
+
       this.cardResult = this.$post(this.buildPagePath(this.queryPath), this.condition, response => {
         let data = response.data;
         this.total = data.itemCount;
@@ -451,9 +439,12 @@ export default {
       });
     },
     myEcharts() {
+      // 根据实际开始时间正序查询
       let param = {"orders": [{"name": "actual_start_time", "type": "asc"}]}
       let url = "/test/plan/list/1/0"
       this.$post(url, param, res => {
+
+        // .map()方法-取数组 .sort()方法-数据排序，.slice()方法-数据切片，.filter()方法-过滤器的使用，.reduce()方法将多个值缩减为一个
           var listObject = res.data.listObject
           var passRate = listObject.map(obj => obj.passRate);
           var testRate = listObject.map(obj => obj.testRate);
@@ -463,7 +454,9 @@ export default {
           if (document.getElementById('casePassRate') == null) {
             return
           }
+          // echarts.dispose销毁图表实例
           this.$echarts.dispose(document.getElementById('casePassRate'))
+          // echarts.init图表初始化
           let myChart = this.$echarts.init(document.getElementById('casePassRate'))
           let xAxisData = actualStartTime
           let barSeriesDataPassRate = passRate
@@ -550,35 +543,16 @@ export default {
               }
             ]
           }
+          // 图表设置option配置项
           myChart.setOption(option, true)
-          myChart.on('legendselectchanged', obj => {
-            var options = myChart.getOption()
-            options.xAxis = {
-              data: actualStartTime,
-              name: '日期'
-            }
-            myChart.setOption(options, true)
-          })
         }
       );
-      // this.$axios.post(url, param).then((res) => {}
-      // )
     },
   }
 };
 </script>
 
 <style scoped>
-
-.table-page {
-  padding-top: 20px;
-  margin-right: -9px;
-  float: right;
-}
-
-.el-table {
-  cursor: pointer;
-}
 
 .schedule-btn >>> .el-button {
   margin-left: 10px;

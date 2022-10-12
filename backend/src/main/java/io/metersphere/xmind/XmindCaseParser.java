@@ -74,11 +74,12 @@ public class XmindCaseParser {
         errorPath = new ArrayList<>();
     }
 
-    private static final String TC_REGEX = "(?:^tc:|^tc：)";
-    private static final String PC_REGEX = "(?:^pc:|^pc：)";
-    private static final String RC_REGEX = "(?:^rc:|^rc：)";
-    private static final String ID_REGEX = "(?:^id:|^id：)";
-    private static final String TAG_REGEX = "(?:^tag:|^tag：)";
+    private static final String TC_REGEX = "(?:tc:|tc：|tc)";
+    private static final String TC_REGEX_NEW = "(?:tc:|tc：|tc-p)";
+    private static final String PC_REGEX = "(?:pc:|pc：)";
+    private static final String RC_REGEX = "(?:rc:|rc：)";
+    private static final String ID_REGEX = "(?:id:|id：)";
+    private static final String TAG_REGEX = "(?:tag:|tag：)";
 
     public void clear() {
         compartDatas.clear();
@@ -278,7 +279,7 @@ public class XmindCaseParser {
      */
     private void recursion(Attached parent, int level, List<Attached> attacheds) {
         for (Attached item : attacheds) {
-            if (isAvailable(item.getTitle(), TC_REGEX)) {
+            if (isAvailable(item.getTitle(), TC_REGEX_NEW)) {
                 item.setParent(parent);
                 // 格式化一个用例
                 this.formatTestCase(item.getTitle(), parent.getPath(), item.getChildren() != null ? item.getChildren().getAttached() : null);
@@ -438,8 +439,8 @@ public class XmindCaseParser {
                     // 判断是模块还是用例
                     for (Attached item : root.getRootTopic().getChildren().getAttached()) {
                         // 用例
-                        if (isAvailable(item.getTitle(), TC_REGEX)) {
-                            return process.parse(replace(item.getTitle(), TC_REGEX) + "：" + Translator.get("test_case_create_module_fail"));
+                        if (isAvailable(item.getTitle(), TC_REGEX_NEW)) {
+                            return process.parse(replace(item.getTitle(), TC_REGEX_NEW) + "：" + Translator.get("test_case_create_module_fail"));
                         } else {
                             String nodePath = item.getTitle();
                             item.setPath(nodePath);

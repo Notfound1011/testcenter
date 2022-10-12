@@ -22,7 +22,7 @@
         </el-col>
       </el-row>
     </div>
-    <div :id="id" style="width: 600px;height:370px;margin: 20px">
+    <div :id="id" style="width:95%;height:400%;margin: 20px">
     </div>
   </div>
 </template>

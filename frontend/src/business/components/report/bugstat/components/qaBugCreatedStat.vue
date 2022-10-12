@@ -1,17 +1,16 @@
 <template>
   <div>
-    <div :id="id" style="width:90%;height:500%;margin: 20px"></div>
+    <div :id="id" style="width:95%;height:500%;margin: 20px"></div>
   </div>
 </template>
 
 <script>
 import {groupArray, jiraAddress} from "@/common/js/utils";
-import {GROUP_DATA, GROUP_SUNGE, GROUP_ZHOUMIN, GROUP_LILEI, GROUP_LIP, GROUP_FLEXIBLE} from "@/common/js/constants";
 import * as echarts from 'echarts';
 
 export default {
   name: "qaBugCreatedStat",
-  props: ['id', 'qaCreatedBugJQL'],
+  props: ['id', 'qaCreatedBugJQL', 'groupData', 'group1', 'group2', 'group3', 'group4', 'group5', 'groupTotalData'],
   data() {
     return {
       jira_address: jiraAddress(),
@@ -30,30 +29,30 @@ export default {
       let xAxisData = []
       let totalData = []
       //定义QA的四个组和组内成员
-      let groupData = GROUP_DATA
-      let groupSunge = GROUP_SUNGE
-      let groupZhoumin = GROUP_ZHOUMIN
-      let groupLilei = GROUP_LILEI
-      let groupLip = GROUP_LIP
-      let groupFlexible = GROUP_FLEXIBLE
-      let groupTotalData = [0, 0, 0, 0, 0]
+      let groupData = this.groupData
+      let group1 = this.group1
+      let group2 = this.group2
+      let group3 = this.group3
+      let group4 = this.group4
+      let group5 = this.group5
+      let groupTotalData = this.groupTotalData
 
       Object.values(datas).forEach(value => {
         xAxisData.push(value.location);
         totalData.push(value.count);
-        if (groupSunge.includes(value.location)) {
+        if (group1.includes(value.location)) {
           groupTotalData[0] = groupTotalData[0] + value.count
         }
-        if (groupZhoumin.includes(value.location)) {
+        if (group2.includes(value.location)) {
           groupTotalData[1] = groupTotalData[1] + value.count
         }
-        if (groupLilei.includes(value.location)) {
+        if (group3.includes(value.location)) {
           groupTotalData[2] = groupTotalData[2] + value.count
         }
-        if (groupLip.includes(value.location)) {
+        if (group4.includes(value.location)) {
           groupTotalData[3] = groupTotalData[3] + value.count
         }
-        if (groupFlexible.includes(value.location)) {
+        if (group5.includes(value.location)) {
           groupTotalData[4] = groupTotalData[4] + value.count
         }
       });
@@ -196,20 +195,20 @@ export default {
         let url = that.jira_address + "/issues/?jql=" + that.qaCreatedBugJQL + " AND creator"
         if (groupData.includes(obj.name)) {
           switch (obj.name) {
-            case "QA1组(孙戈)" :
-              url = url + " in (" + groupSunge + ")"
+            case this.groupData[0] :
+              url = url + " in (" + group1 + ")"
               break;
-            case "QA2组(周敏)" :
-              url = url + " in (" + groupZhoumin + ")"
+            case this.groupData[1] :
+              url = url + " in (" + group2 + ")"
               break;
-            case "QA3组(李磊)" :
-              url = url + " in (" + groupLilei + ")"
+            case this.groupData[2] :
+              url = url + " in (" + group3 + ")"
               break;
-            case "QA4组(lip)" :
-              url = url + " in (" + groupLip + ")"
+            case this.groupData[3] :
+              url = url + " in (" + group4 + ")"
               break;
-            case "机动组" :
-              url = url + " in (" + groupFlexible + ")"
+            case this.groupData[4] :
+              url = url + " in (" + group5 + ")"
               break;
           }
           window.open(url, '_blank');

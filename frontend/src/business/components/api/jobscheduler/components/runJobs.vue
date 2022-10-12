@@ -443,7 +443,7 @@ export default {
       }
     },
     getJobList() {
-      this.$axios.post("/jenkins/api/json?tree=jobs[name,url,description,builds[number,result,duration,timestamp,url]{0,1}]", null,
+      this.$axios.post("/jenkins/view/RunTest/api/json?tree=jobs[name,url,description,builds[number,result,duration,timestamp,url]{0,1}]", null,
         {
           headers: {
             'Authorization': this.jenkins_auth,
@@ -470,40 +470,18 @@ export default {
             this.timer = null;
             this.timer = setInterval(() => {
               setTimeout(this.getJobList, 0)
-            }, 1000 * 10)
+            }, 1000 * 5)
           }
         }
       }).catch((e) => {
         console.log(e);
       })
     },
-    refreshJenkinsCrumb() {
-      // Promise 异步处理接口请求，A接口处理完，再请求B接口
-      const promise = new Promise(resolve => {
-          this.$axios.get("/jenkins/crumbIssuer/api/xml",
-            {
-              params: {'xpath': 'concat(//crumbRequestField,":",//crumb)'},
-              headers: {'Authorization': this.jenkins_auth}
-            }).then(res => {
-            if (res.status === 200) {
-              this.json.Jenkins_Crumb = res.data.split(":")[1];
-              localStorage.setItem("JenkinsInfo", JSON.stringify(this.json));
-              const JenkinsInfo = JSON.parse(localStorage.getItem("JenkinsInfo"));
-              this.Jenkins_Crumb = JenkinsInfo.Jenkins_Crumb;
-            }
-            resolve(res);
-          }).catch((err) => {
-            console.log(err)
-          })
-        }
-      );
-      promise.then(() => {
-        this.getJobList()
-      })
-    },
 
     runJobs(name, body) {
       if (['fat2', 'fat3', 'fat4', 'fat5'].indexOf(body.env) > -1) {
+        // indexOf结果就是查找的字符串所在的位置，0代表子串在最开始，大于-1包含，等于-1为不包含
+        // fat在jenkins上共用一个fat参数
         body.env = 'fat'
       }
       // 带参数的build
@@ -531,7 +509,7 @@ export default {
             title: "job执行成功",
             message: res.statusText
           });
-          if (name === 'ApiAutoTestToPhemex' || name === '_DEBUG') {
+          if (name === 'ApiAutoTestToPhemex') {
             this.dialogVisible = false;
           } else if (name === 'ApiAutoTestToTurkey') {
             this.turkeyDialogVisible = false;
@@ -539,7 +517,7 @@ export default {
           this.getJobList()
           this.timer = setInterval(() => {
             setTimeout(this.getJobList, 0)
-          }, 1000 * 10)
+          }, 1000 * 5)
         }).catch((error) => {
           this.$notify.error({
             title: "job执行失败",
@@ -561,7 +539,7 @@ export default {
             this.getJobList()
             this.timer = setInterval(() => {
               setTimeout(this.getJobList, 0)
-            }, 1000 * 10)
+            }, 1000 * 5)
           } else {
             this.$notify.warning({
               title: "job执行失败",
@@ -577,31 +555,32 @@ export default {
       }
     },
 
+    // 打开对话框，按job名称弹出不一样的对话框
     openDialog(item) {
-      if (['JacocoTest'].indexOf(item.name) !== -1) {
-        this.normalDialogVisible = true;
-        this.runName = item.name;
-      } else if (item.name === 'ApiAutoTestToTurkey') {
+      if (item.name === 'ApiAutoTestToTurkey') {
         this.resetForm();
         this.turkeyDialogVisible = true;
         this.runName = item.name;
         this.turkeyParametersOrigin = JSON.parse(JSON.stringify(this.turkeyParameters));
-      } else {
+      } else if (item.name === 'ApiAutoTestToPhemex') {
         this.resetForm();
         this.dialogVisible = true;
         this.runName = item.name;
         this.parametersOrigin = JSON.parse(JSON.stringify(this.parameters));
+      } else {
+        this.normalDialogVisible = true;
+        this.runName = item.name;
       }
     },
     resetForm() {
-      //重置表单
+      // 重置表单
       if (this.$refs['paramForm']) {
         this.$refs['paramForm'].validate(() => {
           this.$refs['paramForm'].resetFields();
           return true;
         });
       }
-      //重置表单
+      // 重置表单
       if (this.$refs['turkeyParamForm']) {
         this.$refs['turkeyParamForm'].validate(() => {
           this.$refs['turkeyParamForm'].resetFields();
@@ -609,6 +588,8 @@ export default {
         });
       }
     },
+
+    // 主站任务调度的弹框关闭
     dialogClose() {
       if (isObjectValueEqual(JSON.parse(JSON.stringify(this.parameters)), this.parametersOrigin)) {
         this.dialogVisible = false;   //如果前后数据没有变化，则直接关闭弹窗
@@ -621,6 +602,7 @@ export default {
           });
       }
     },
+    // 土站任务调度的弹框关闭
     turkeyDialogClose() {
       if (isObjectValueEqual(JSON.parse(JSON.stringify(this.turkeyParameters)), this.turkeyParametersOrigin)) {
         this.turkeyDialogVisible = false;   //如果前后数据没有变化，则直接关闭弹窗
@@ -633,16 +615,20 @@ export default {
           });
       }
     },
+    // 无运行参数的普通任务调度的弹框关闭
     normalDialogClose() {
       this.normalDialogVisible = false;
     },
 
+    // 主站任务调度的弹框确认
     runConfirm() {
       this.runJobs(this.runName, this.parameters)
     },
+    // 土站任务调度的弹框确认
     turkeyRunConfirm() {
       this.runJobs(this.runName, this.turkeyParameters)
     },
+    // 无运行参数的普通任务调度的弹框确认
     normalRunConfirm() {
       this.runJobs(this.runName)
     }

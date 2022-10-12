@@ -13,9 +13,9 @@
           <el-card>
             <!-- table主体内容 -->
             <el-table :data="tableDataNew" style="width: 100% ;margin: 10px" border height="440">
-              <el-table-column type="index" label="序号" width="60"></el-table-column>
-              <el-table-column prop="developer" label="developer" width="160" sortable></el-table-column>
-              <el-table-column prop="total" label="总计" width="80" align="center" sortable>
+              <el-table-column type="index" label="序号" ></el-table-column>
+              <el-table-column prop="developer" label="developer"  sortable></el-table-column>
+              <el-table-column prop="total" label="总计" align="center" sortable>
                 <template slot-scope="scope">
                   <el-link :href='scope.row.url' target="_blank">
                     <div v-if="scope.row.url !== '' && scope.row.url != null" style="font-size: 15px; color: blue">
@@ -30,9 +30,9 @@
         <el-col :span="12">
           <el-card>
             <el-table :data="tableDataNew1" style="width: 100% ;margin: 10px" border height="440">
-              <el-table-column type="index" label="序号" width="60"></el-table-column>
-              <el-table-column prop="project" label="project" width="160" sortable></el-table-column>
-              <el-table-column prop="total" label="总计" width="80" align="center" sortable>
+              <el-table-column type="index" label="序号" ></el-table-column>
+              <el-table-column prop="project" label="project" sortable></el-table-column>
+              <el-table-column prop="total" label="总计" align="center" sortable>
                 <template slot-scope="scope">
                   <el-link :href='scope.row.url' target="_blank">
                     <div v-if="scope.row.url !== '' && scope.row.url != null" style="font-size: 15px; color: blue">

@@ -12,7 +12,7 @@
         </el-col>
       </el-row>
     </div>
-    <div :id="id" style="width: 600px;height:450px;margin: 20px"></div>
+    <div :id="id" style="width: 95%;height:450%;margin: 20px"></div>
   </div>
 </template>
 
@@ -57,7 +57,7 @@ export default {
           },
           toolbox: {
             show: true,
-            right: '70',
+            right: '5%',
             feature: {
               mark: {show: true},
               dataView: {show: true, readOnly: false},
@@ -70,7 +70,7 @@ export default {
           title: {
             text: 'Bug by project',
             // subtext: 'BUG总数 ' + this.pieData.issueCount,
-            left: 'center',
+            left: "50%",
             link: that.jira_address + "/issues/?jql=" + this.qaCreatedBugJQL,
             target: 'blank',
             textStyle: {
@@ -86,6 +86,7 @@ export default {
             {
               name: 'bug 数据统计',
               type: 'pie',
+              left: "40%",
               radius: ['30%', '70%'],
               label: {
                 position: 'center',

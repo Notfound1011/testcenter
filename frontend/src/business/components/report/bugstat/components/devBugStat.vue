@@ -6,7 +6,6 @@
 
 <script>
 import {groupArray, jiraAddress, map2List} from "@/common/js/utils";
-import {GROUP_DATA, GROUP_SUNGE, GROUP_ZHOUMIN, GROUP_LILEI, GROUP_LIP, GROUP_FLEXIBLE} from "@/common/js/constants";
 import * as echarts from 'echarts';
 
 export default {
@@ -82,7 +81,7 @@ export default {
         userMap[item.user] = userMap[item.user] || {}; //初始化对象
         userMap[item.user].url = item.url;
         userMap[item.user].total = item.total;
-        userMap[item.user].group = userMap[item.user].group || 0;
+        userMap[item.user].group = userMap[item.user].group || '[leave office]';
       });
 
       //map 转 arr
@@ -114,12 +113,15 @@ export default {
       let xAxisGroupData = []
       let totalGroupAvgData = []
       let totalGroupData = []
+      console.log("dest",dest)
       dest.forEach((item) => {
-        let num = item.total / item.people
-        item.avg = Math.floor(num * 100) / 100
-        xAxisGroupData.push(item.group.split("[")[1].split("]")[0])
-        totalGroupAvgData.push(item.avg)
-        totalGroupData.push(item.total)
+        if (item.group !== '[leave office]'){
+          let num = item.total / item.people
+          item.avg = Math.floor(num * 100) / 100
+          xAxisGroupData.push(item.group.split("[")[1].split("]")[0])
+          totalGroupAvgData.push(item.avg)
+          totalGroupData.push(item.total)
+        }
       })
 
       let that = this
@@ -164,9 +166,9 @@ export default {
         xAxis: {
           data: xAxisGroupData,
           name: '组人均',
-          nameLocation: 'center',
-          nameGap: 35,
-          axisLabel: {interval: 0, rotate: 30},
+          nameLocation: 'middle',
+          nameGap: 65,
+          axisLabel: {interval: 0, rotate: 30, margin: 10, overflow: "breakAll", width: 120},
           nameTextStyle: {
             padding: 20,
           }
@@ -262,8 +264,8 @@ export default {
             data: xAxisGroupData,
             name: '组人均',
             nameLocation: 'center',
-            nameGap: 35,
-            axisLabel: {interval: 0, rotate: 30},
+            nameGap: 65,
+            axisLabel: {interval: 0, rotate: 30, margin: 10, overflow: "breakAll", width: 120},
             nameTextStyle: {
               padding: 20,
             }
@@ -273,8 +275,8 @@ export default {
             data: xAxisGroupData,
             name: '按组',
             nameLocation: 'center',
-            nameGap: 35,
-            axisLabel: {interval: 0, rotate: 30},
+            nameGap: 65,
+            axisLabel: {interval: 0, rotate: 30, margin: 10, overflow: "breakAll", width: 120},
             nameTextStyle: {
               padding: 20,
             }
@@ -284,8 +286,8 @@ export default {
             data: xAxisData,
             name: '按人',
             nameLocation: 'center',
-            nameGap: 35,
-            axisLabel: {interval: 0, rotate: 30},
+            nameGap: 65,
+            axisLabel: {interval: 0, rotate: 30, margin: 10, overflow: "breakAll", width: 120},
             nameTextStyle: {
               padding: 20,
             }
@@ -303,7 +305,7 @@ export default {
           url = url + " = " + obj.name
           window.open(url, '_blank');
         } else {
-          url = url + " in membersOf(" + obj.name + ")"
+          url = url + " in membersOf(" + "\"" + obj.name + "\"" + ")"
           window.open(url, '_blank');
         }
       });
