@@ -12,7 +12,8 @@ import {
   PROJECT_NAME,
   THIRD_PARTY_INFO,
   TokenKey,
-  WORKSPACE_ID
+  WORKSPACE_ID,
+  API_TEST_CONFIG_DATA
 } from "./constants";
 import {jsPDF} from "jspdf";
 import JSEncrypt from 'jsencrypt';
@@ -891,4 +892,52 @@ export function map2List(map) {
     }
   }
   return list;
+}
+
+/**
+ * @description: 获取关于api自动化的配置uuid
+ * @param {String} typeName 获取的配置类型;
+ * @return {String || null}
+ */
+export function getApiTestConfig(typeName) {
+  let _ = null;
+  for (_ in API_TEST_CONFIG_DATA) {
+    if (API_TEST_CONFIG_DATA[_].type === typeName) {
+      return API_TEST_CONFIG_DATA[_].uuid
+    }
+  }
+  console.log('未获取到配置项!! 返回null!!')
+  return null;
+}
+
+/**
+ * @description 封装一个基本的提醒
+ * @param {object} that this
+ * @param {String} normalString 普通颜色的字符串
+ * @param {String} specialString 带颜色的字符串
+ * @param {String} specialColor 具体颜色
+ * @return {void}
+ */
+export function popUpReminder(that, normalString, specialString, specialColor = 'teal') {
+  console.log('出错了, 要弹窗咯')
+  const h = that.$createElement;
+  that.$message({
+    duration: 5000,
+    center: true,
+    showClose: true,
+    type: 'error',
+    message: h('p', null, [
+      h('i', {style: `color: ${specialColor}`}, specialString ? specialString : ''),
+      h('span', null, ` ${normalString}  `)
+    ])
+  });
+}
+
+/**
+ * @description 判断是否是无效Json(空的)
+ * @param {Object, Array} jsonData
+ * @return {Boolean}
+ */
+export function isNoneJson(jsonData) {
+  return jsonData && jsonData instanceof Object && Object.keys(jsonData).length > 0;
 }

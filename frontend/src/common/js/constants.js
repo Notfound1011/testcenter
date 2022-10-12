@@ -55,7 +55,7 @@ export const JIRA_AUTH = 'Basic anVuc2h1YWkueWFuZzpwaGVtZXhAMkE=';
 
 export const THIRD_PARTY_INFO = 'ThirdPartyInfo';
 
-//定义QA的五个组和组内成员
+// 定义QA的五个组和组内成员
 export const GROUP_DATA = ["QA1组(孙戈)", "QA2组(周敏)", "QA3组(李磊)", "QA4组(lip)", "机动组"]
 export const GROUP_SUNGE = ["ge.sun", "jiaqiang.cai", "dongying.hong", "lucky.wu"]
 export const GROUP_ZHOUMIN = ["min.zhou", "ming.yang", "shengtao.liu", "pauri", "eric.he"]
@@ -218,3 +218,11 @@ export const ENV_TYPE = {
 }
 
 export const DEFAULT_XSS_ATTR = ['style', 'class'];
+
+
+export const API_TEST_CONFIG_DATA = [
+    {'uuid': 'c63b9f8e-e34c-491a-97b0-ebe1a136d3df', 'type': 'getApiTestDependConfig', 'description': '全局依赖配置'},
+    {'uuid': 'c6b06279-dcc3-4751-9878-e0166a8e9501', 'type': 'getSetUpSharedConfig', 'description': '设置共享参数配置'},
+    {'uuid': 'c6e6a242-97c4-42a5-9109-cc689707b3e3', 'type': 'getDependentFunctionConfig', 'description': '单项依赖配置'},
+    {'uuid': 'c68a0d2d-b6b6-474f-a55c-f462daa00f0f', 'type': 'getApiCaseTipsConfig', 'description': 'apiCase的提示信息'}
+]

@@ -4,7 +4,7 @@
 
       <div>
         <h3>{{ $t('api_test.case_record.title') }}</h3>
-        <el-button type="primary" @click="openTestCaseEditDialog" class="add-btn" plain
+        <el-button type="primary" @click="openTestCaseEditDialog(undefined)" class="add-btn" plain
                    v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']">{{ $t('api_test.case_record.add_case') }}
         </el-button>
 
@@ -22,9 +22,9 @@
               </el-select>
             </template>
             <el-form-item>
-              <el-input v-model="keywords" placeholder="请输入查询内容" @keyup.enter.native="search(keywords)" clearable
-                        v-if="value ==='id' || value ==='case_name' "></el-input>
-              <el-input v-model="keywords" placeholder='多条标签用逗号隔开' @keyup.enter.native="search(keywords)" clearable
+              <el-input v-model="keywords" placeholder="请输入查询内容" clearable
+                        v-if="value ==='id' || value ==='case_name'"></el-input>
+              <el-input v-model="keywords" placeholder='多条标签用逗号隔开' clearable
                         v-if="value ==='mark'"></el-input>
               <el-select v-model="keywords" clearable placeholder="请选择" v-if="value==='method'">
                 <el-option label="get" value="get"></el-option>
@@ -53,16 +53,31 @@
             <el-form-item>
               <el-button type="primary" @click="search(keywords)">{{ $t('commons.adv_search.search') }}</el-button>
             </el-form-item>
+            <!--            <el-form-item>-->
+            <!--              <el-button type="primary" @click="resetFilter">重置筛选项</el-button>-->
+            <!--            </el-form-item>-->
             <!--高级搜索-->
-            <ms-table-adv-search-bar :condition.sync="condition" class="adv-search-bar" @search="combineSearch"
-                                     v-if="condition.components !== undefined && condition.components.length > 0"/>
+            <el-form-item>
+              <ms-table-adv-search-bar :condition.sync="condition" class="adv-search-bar" @search="combineSearch"
+                                       v-if="condition.components !== undefined && condition.components.length > 0"/>
+            </el-form-item>
           </el-form>
         </div>
 
         <!-- table主体内容 -->
-        <el-table :data="tableData" style="width: 100%" border @filter-change="filter" @cell-dblclick="cell_dblclick">
-          <el-table-column prop="id" label="ID" width="80" sortable></el-table-column>
-          <el-table-column prop="case_name" label="用例名称" width="300"></el-table-column>
+        <!-- highlight-current-row高亮显示当前行(没加其他触发事件); -->
+        <el-table
+          v-loading="getCaseListStatus"
+          :data="tableData"
+          :border="true"
+          :highlight-current-row="true"
+          :row-class-name="tableRowClassName"
+          height="62vh"
+          @filter-change="filter"
+          @cell-dblclick="cell_dblclick"
+          style="width: 1560px">
+          <el-table-column prop="id" label="ID" width="60" sortable fixed="left"></el-table-column>
+          <el-table-column prop="case_name" label="用例名称" width="230" fixed="left"></el-table-column>
           <el-table-column prop="method" label="请求方法" width="100"
                            column-key="method">
           </el-table-column>
@@ -74,7 +89,7 @@
           <!--                           align="left" width="140" show-overflow-tooltip>-->
           <!--          </el-table-column>-->
           <el-table-column prop="mark" label="mark" header-align="center" width="240">
-            <template slot-scope="scope">
+            <template v-slot="scope">
               <el-tag v-for="item in scope.row.mark" :key="item" type="" effect="plain" class="tag-group">
                 {{ item }}
               </el-tag>
@@ -82,8 +97,7 @@
           </el-table-column>
           <!--          <el-table-column prop="created_at" label="创建时间" sortable></el-table-column>-->
           <!--          <el-table-column prop="updated_at" label="更新时间" sortable></el-table-column>-->
-          <el-table-column prop="web_site" label="站点" width="80"
-                           column-key="web_site">
+          <el-table-column prop="web_site" label="站点" width="80" column-key="web_site">
           </el-table-column>
           <el-table-column prop="template_type" width="120" label="模板类型"
                            column-key="template_type">
@@ -99,34 +113,34 @@
               </el-link>
             </template>
           </el-table-column>
-          <el-table-column prop="remark" label="备注"
-                           align="left" width="200" show-overflow-tooltip>
-          </el-table-column>
-          <el-table-column prop="created_person" label="创建人" :formatter="formatCreatedData"
-                           width="100"></el-table-column>
-          <el-table-column prop="updated_person" label="更新人" :formatter="formatUpdatedData"
-                           width="100"></el-table-column>
+          <!--          <el-table-column prop="remark" label="备注"-->
+          <!--                           align="left" width="200" show-overflow-tooltip>-->
+          <!--          </el-table-column>-->
+          <el-table-column prop="created_person" label="创建人" :formatter="formatCreatedData" width="100"/>
+          <el-table-column prop="updated_person" label="更新人" :formatter="formatUpdatedData" width="100"/>
           <el-table-column prop="status" label="状态" width="80">
-            <template slot-scope="scope">
-              <el-tag v-if="scope.row.status===true" type="success" effect="dark">启用</el-tag>
-              <el-tag v-if="scope.row.status===false" type="danger" effect="dark">停用</el-tag>
+            <template v-slot="scope">
+              <el-tag :type="scope.row.status ? 'success' : 'danger'" effect="dark">
+                {{ scope.row.status ? '启用' : '停用' }}
+              </el-tag>
             </template>
           </el-table-column>
+          <!--          <el-table-column prop="operation" label="操作" width="80" fixed="right">-->
           <el-table-column prop="operation" label="操作" width="80">
-            <template slot-scope="scope">
-              <el-button type="primary" icon="el-icon-edit" @click="openTestCaseEditDialog(scope.row)"
+            <template v-slot="scope">
+              <el-button type="primary" icon="el-icon-edit" @click="openTestCaseEditDialog(scope.row.id)"
                          circle v-permission="['PROJECT_API_CASE_RECORD:READ+EDIT']"></el-button>
               <!--              <el-button type="danger" icon="el-icon-delete" @click="delCase(scope.$index)" circle disabled></el-button>-->
             </template>
           </el-table-column>
         </el-table>
         <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                       :current-page="queryInfo.page" :page-sizes="[10, 20, 50, 100]" :page-size="10"
+                       :current-page="filterData.page" :page-sizes="[30, 50, 100, 200]" :page-size="filterData.limit"
                        layout="total, sizes, prev, pager, next, jumper" :total="total">
         </el-pagination>
 
-        <test-case-modify :tableData="tableData" :mark_options="mark_options" ref="testCaseEditDialog"
-                          @openTestCaseEditDialog="openTestCaseEditDialog" @refresh="getCaseList"/>
+        <test-case-modify :mark_options="mark_options" ref="testCaseEditDialog"
+                          @openTestCaseEditDialog="openTestCaseEditDialog" @refresh="getCaseList(filterData)"/>
 
         <!--table单元格弹窗-->
         <el-dialog title="详细信息" :visible.sync="tableDialogVisible" width="800px" append-to-body>
@@ -188,30 +202,70 @@ export default {
       json_body_detail: [],
       expect: [],
       body_by_json: '',
-      tableDialogVisible: false
+      tableDialogVisible: false,
+
+      filterData: {
+        page: 1,
+        limit: 30
+      },
+      getCaseListStatus: false
     }
   },
   activated() {
     this.getConfig()
-    this.getCaseList();
+    this.getCaseList(this.filterData);
   },
   methods: {
+    /**
+     * 判断每行状态,
+     * @param row
+     * @param rowIndex
+     */
+    tableRowClassName({row, rowIndex}) {
+      if (!row.status) {
+        return 'warning-row'
+      } else if (rowIndex % 2 === 0) {
+        return 'stripe-row'
+      } else {
+        return ''
+      }
+    },
+    /**
+     * 重置筛选项,
+     */
+    resetFilter() {
+      this.filterData = {page: 1, limit: 30};
+      this.keywords = ''
+      this.getCaseList(this.filterData)
+    },
     clearKeywords() {
       this.keywords = ''
     },
     combineSearch() {
-      let combineQuery = JSON.parse(JSON.stringify(this.queryInfo))
+      let filterData = JSON.parse(JSON.stringify(this.filterData))
+      if (!this.condition.combine) {
+        this.resetFilter()
+      }
       for (const i in this.condition.combine) {
         if (i === 'mark') {
-          combineQuery[i] = this.condition.combine[i].value.trim().split(/,|，|\s+/)
+          filterData[i] = this.condition.combine[i].value.trim().split(/,|，|\s+/)
         } else {
-          combineQuery[i] = this.condition.combine[i].value
+          filterData[i] = this.condition.combine[i].value
         }
       }
-      this.getCaseList(combineQuery)
+      this.getCaseList(filterData)
     },
-    getCaseList(body = this.queryInfo) {
-      this.$axios.post("/pyServer/TestCase/Search", body).then(res => {
+    /**
+     * 调整筛选项内容后, 执行筛选, 同一时间不能重复执行请求
+     * @param requestBody json请求体,
+     */
+    getCaseList(requestBody) {
+      if (this.getCaseListStatus) {
+        return;
+      } else {
+        this.getCaseListStatus = true;
+      }
+      this.$axios.post("/pyServer/TestCase/Search", requestBody).then(res => {
         if (res.data.code === 0) {
           this.tableData = this.tableDataList = res.data.data
           this.total = res.data.total
@@ -221,54 +275,49 @@ export default {
             message: res.data
           });
         }
+        this.getCaseListStatus = false;
       }).catch((error) => {
         this.$notify.error({
           title: "用例查询失败",
           message: error
         });
+        this.getCaseListStatus = false;
       })
     },
     search(keywords) {
       if (keywords.split(' ').join('').length === 0) {
-        this.getCaseList()
+        this.getCaseList(this.filterData)
       } else {
+        let filterData = JSON.parse(JSON.stringify(this.filterData))
         switch (this.value) {
           case "id":
-            this.queryInfoNew = JSON.parse(JSON.stringify(this.queryInfo))
-            this.queryInfoNew.id = keywords.trim()
+            filterData.id = keywords.trim()
             break;
           case "case_name":
-            this.queryInfoNew = JSON.parse(JSON.stringify(this.queryInfo))
-            this.queryInfoNew.case_name = keywords.trim()
+            filterData.case_name = keywords.trim()
             break;
           case "method":
-            this.queryInfoNew = JSON.parse(JSON.stringify(this.queryInfo))
-            this.queryInfoNew.method = keywords.trim()
+            filterData.method = keywords.trim()
             break;
           case "template_type":
-            this.queryInfoNew = JSON.parse(JSON.stringify(this.queryInfo))
-            this.queryInfoNew.template_type = keywords.trim()
+            filterData.template_type = keywords.trim()
             break;
           case "case_type":
-            this.queryInfoNew = JSON.parse(JSON.stringify(this.queryInfo))
-            this.queryInfoNew.case_type = keywords.trim()
+            filterData.case_type = keywords.trim()
             break;
           case "mark":
-            this.queryInfoNew = JSON.parse(JSON.stringify(this.queryInfo))
-            this.queryInfoNew.mark = keywords.trim().split(/,|，|\s+/)
+            filterData.mark = keywords.trim().split(/,|，|\s+/)
             break;
           case "web_site":
-            this.queryInfoNew = JSON.parse(JSON.stringify(this.queryInfo))
-            this.queryInfoNew.web_site = keywords.trim()
+            filterData.web_site = keywords.trim()
             break;
           case "status":
-            this.queryInfoNew = JSON.parse(JSON.stringify(this.queryInfo))
-            this.queryInfoNew.status = keywords.trim()
+            filterData.status = keywords.trim()
             break;
           default:
             break;
         }
-        this.getCaseList(this.queryInfoNew)
+        this.getCaseList(filterData)
       }
     },
     filter(filters) {
@@ -315,7 +364,7 @@ export default {
       if (created_person !== null) {
         return created_person.name
       } else {
-        return ''
+        return '-'
       }
     },
     formatUpdatedData(row, column) {
@@ -323,28 +372,18 @@ export default {
       if (updated_person !== null) {
         return updated_person.name
       } else {
-        return ''
+        return '-'
       }
-    },
-
-    formatBoolean(row, column, cellValue) {
-      let ret = '';
-      if (cellValue) {
-        ret = "启用"
-      } else {
-        ret = "停用"
-      }
-      return ret;
     },
     // <!--监听pageSize变化-->
     handleSizeChange(newSize) {
-      this.queryInfo.limit = newSize
-      this.getCaseList()
+      this.filterData.limit = newSize
+      this.getCaseList(this.filterData)
     },
     // <!--监听页码值变化-->
     handleCurrentChange(newPage) {
-      this.queryInfo.page = newPage
-      this.getCaseList()
+      this.filterData.page = newPage
+      this.getCaseList(this.filterData)
     },
 
     //删除测试用例,暂时没用到
@@ -366,22 +405,33 @@ export default {
         });
     },
     async getConfig() {
-      this.$axios.get("/pyServer/TestConfig/Search", {params: {'config_id': '6ea520fc-691d-11ec-940a-3a27e1d6caa4'}}).then(res => {
-        this.mark_options = res.data.data[0].config_data
-      }).catch(() => {
+      this.$axios.get("/pyServer/TestConfig/Search", {params: {'config_id': '6ea520fc-691d-11ec-940a-3a27e1d6caa4'}})
+        .then(res => {
+          this.mark_options = res.data.data[0]['config_data']
+        }).catch(() => {
       })
     },
-
-    openTestCaseEditDialog(data) {
-      this.$refs.testCaseEditDialog.openTestCaseEditDialog(data);
+    /**
+     * @description 传id的话, 防止页面长时间没刷新, 导致异常输入传入
+     * @param {Integer|undefined} caseId, apiCaseId, 变更传整数, 新增传undefined
+     */
+    openTestCaseEditDialog(caseId) {
+      this.$refs.testCaseEditDialog.openTestCaseEditDialog(caseId);
     }
-
   }
 }
 
 </script>
 
-<style scoped>
+<style>
+
+.el-table .warning-row {
+  background: radial-gradient(oldlace, white);
+}
+
+.el-table .stripe-row {
+  background: #F7F7F7;
+}
 
 .add-btn {
   text-align: center;
