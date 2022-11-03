@@ -414,39 +414,41 @@ export default {
               type: 'warning'
             }).then(_ => {
               // removeEmptyField(_that.apiCaseData);
-                _that.submitLoading = true;  // 变更按钮状态为loading
-                let caseRequest = null;
-                if (_that.addNewCaseFlag) {
-                  _that.apiCaseData['created_person'] = _that.personData
-                  caseRequest = _that.$axios.post("/pyServer/TestCase/Create", _that.apiCaseData, {timeout: 2000})
+              _that.submitLoading = true;  // 变更按钮状态为loading
+              let caseRequest = null;
+              _that.apiCaseData['operator'] = _that.personData  // 设置变更人
+              if (_that.addNewCaseFlag) {
+                caseRequest = _that.$axios.post("/pyServer/TestCase/Create", _that.apiCaseData, {timeout: 2000})
+              } else {
+                // _that.apiCaseData['case_id'] = _that.updateCaseId
+                // caseRequest = _that.$axios.post("/pyServer/TestCase/Update", _that.apiCaseData, {timeout: 2000})
+                caseRequest = _that.$axios.post("/pyServer/TestCase/Update", {
+                  'case_id': _that.updateCaseId,
+                  'update_data': _that.apiCaseData
+                }, {timeout: 2000})
+              }
+              caseRequest.then(res => {
+                _that.submitLoading = false;
+                if (res.data.code === 0) {
+                  _that.$notify.success({
+                    title: "用例名称: " + _caseName,
+                    message: _that.$t(`用例${_that.addNewCaseFlag ? '新增' : '修改'}成功`).toString()
+                  });
+                  _that.editCaseDialogVisible = false;
+                  _that.$emit("refresh");
                 } else {
-                  // _that.apiCaseData['case_id'] = _that.updateCaseId
-                  _that.apiCaseData['updated_person'] = _that.personData
-                  // caseRequest = _that.$axios.post("/pyServer/TestCase/Update", _that.apiCaseData, {timeout: 2000})
-                  caseRequest = _that.$axios.post("/pyServer/TestCase/Update", {'case_id': _that.updateCaseId, 'update_data': _that.apiCaseData}, {timeout: 2000})
-                }
-                caseRequest.then(res => {
-                  _that.submitLoading = false;
-                  if (res.data.code === 0) {
-                    _that.$notify.success({
-                      title: "用例名称: " + _caseName,
-                      message: _that.$t(`用例${_that.addNewCaseFlag ? '新增' : '修改'}成功`).toString()
-                    });
-                    _that.editCaseDialogVisible = false;
-                    _that.$emit("refresh");
-                  } else {
-                    _that.$notify.warning({
-                      title: "用例名称: " + _caseName,
-                      message: res.data
-                    });
-                  }
-                }).catch((error) => {
-                  _that.submitLoading = false;  // 变更按钮状态为loading
                   _that.$notify.warning({
                     title: "用例名称: " + _caseName,
-                    message: error
+                    message: res.data
                   });
-                })
+                }
+              }).catch((error) => {
+                _that.submitLoading = false;  // 变更按钮状态为loading
+                _that.$notify.warning({
+                  title: "用例名称: " + _caseName,
+                  message: error
+                });
+              })
             }).catch(_ => {
               // 取消弹窗, 打印下目前数据
               console.log(_that.apiCaseData)
