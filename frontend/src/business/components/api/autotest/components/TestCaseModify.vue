@@ -164,7 +164,7 @@
           </el-tabs>
         </el-form-item>
         <el-form-item label="API文档链接" :rules="apiCaseRules.requiredCheck" prop="docs_url">
-          <el-input placeholder='docs_url' v-model.trim="apiCaseData.docs_url"/>
+          <el-input placeholder='这里设置为yapi的链接即可' v-model.trim="apiCaseData.docs_url"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input placeholder="非必填项, 可以输入一些该case相关介绍、适用范围等, 方便出问题时排查." type="textarea"
@@ -269,7 +269,6 @@ export default {
       const adminToken = JSON.parse(localStorage.getItem("Admin-Token"));
       // update personData
       _that.personData = {'id': adminToken.id, 'name': adminToken.name, 'email': adminToken.email}
-
       // 判断为真就是修改, 反之就是添加, 如果获取失败, 出现异常, 修改状态为 `添加case`
       if (caseId) {
         _that.addNewCaseFlag = false;
@@ -289,11 +288,11 @@ export default {
                 delete _that.apiCaseData['created_at'];
                 delete _that.apiCaseData['created_person'];
                 // 通过转json对象转字符串, 在转json达到深拷贝的目的,  不管添加还是新建都要
-                _that.rawApiCaseData = JSON.parse(JSON.stringify(_that.apiCaseData))
+                _that.rawApiCaseData = JSON.parse(JSON.stringify(_that.apiCaseData));
                 // 处理完数据, 打开 dialog
                 _that.editCaseDialogVisible = true;
                 // 这还有个打印
-                console.log(_that.rawApiCaseData)
+                console.log(_that.rawApiCaseData);
               } else {
                 _that.addNewCaseFlag = true;
                 _that.editCaseDialogVisible = true;
@@ -407,6 +406,7 @@ export default {
             _that.$warning(`${errField.join(', ')} 尚未补充, 请补充后提交, 如果有特殊需求, 请联系开发者.`);
             return false;
           } else {
+            let _caseName = _that.apiCaseData.case_name ? _that.apiCaseData.case_name : _that.rawApiCaseData.case_name
             // 弹出二次确认
             _that.$confirm('确定已完成编辑？', '提示', {
               confirmButtonText: '确定',
@@ -426,24 +426,24 @@ export default {
                   caseRequest = _that.$axios.post("/pyServer/TestCase/Update", {'case_id': _that.updateCaseId, 'update_data': _that.apiCaseData}, {timeout: 2000})
                 }
                 caseRequest.then(res => {
+                  _that.submitLoading = false;
                   if (res.data.code === 0) {
                     _that.$notify.success({
-                      title: "用例名称: " + _that.apiCaseData.case_name,
+                      title: "用例名称: " + _caseName,
                       message: _that.$t(`用例${_that.addNewCaseFlag ? '新增' : '修改'}成功`).toString()
                     });
                     _that.editCaseDialogVisible = false;
                     _that.$emit("refresh");
                   } else {
                     _that.$notify.warning({
-                      title: "用例名称: " + _that.apiCaseData.case_name,
+                      title: "用例名称: " + _caseName,
                       message: res.data
                     });
-                    _that.submitLoading = false;
                   }
                 }).catch((error) => {
                   _that.submitLoading = false;  // 变更按钮状态为loading
                   _that.$notify.warning({
-                    title: "用例名称: " + _that.apiCaseData.case_name,
+                    title: "用例名称: " + _caseName,
                     message: error
                   });
                 })
@@ -465,9 +465,9 @@ export default {
       const _that = this;
       if (editKey === 'response' || editKey === 'socket') {
         if (_that.apiCaseData['expect'] && _that.apiCaseData['expect'] instanceof Object) {
-          _that.apiCaseData['expect'] = {[editKey]: itemValue}
+          _that.apiCaseData['expect'] = {[editKey]: {[itemKey]: itemValue}}
         } else {
-          _that.apiCaseData['expect'][editKey] = itemValue
+          _that.apiCaseData['expect'][editKey] = {[itemKey]: itemValue}
         }
       } else if (['', null, undefined].includes(itemKey)) {
         _that.apiCaseData[editKey] = itemValue;
