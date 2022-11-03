@@ -191,11 +191,6 @@ export default {
       deleteInfo: {
         case_id: 0
       },
-      queryInfo: {
-        page: 1,
-        limit: 10
-      },
-      queryInfoNew: '',
       total: 0,
       tableData: [],
       tableDataList: [],
@@ -285,10 +280,11 @@ export default {
       })
     },
     search(keywords) {
+      // 每次点击按钮搜索, 默认page = 1, limit用当前的限制;
+      let filterData = {'page': 1, 'limit': this.filterData.limit};
       if (keywords.split(' ').join('').length === 0) {
-        this.getCaseList(this.filterData)
+        this.getCaseList(filterData)
       } else {
-        let filterData = JSON.parse(JSON.stringify(this.filterData))
         switch (this.value) {
           case "id":
             filterData.id = keywords.trim()
@@ -324,9 +320,9 @@ export default {
       for (let filter in filters) {
         if (filters.hasOwnProperty(filter)) {
           if (filters[filter] && filters[filter].length > 0) {
-            this.queryInfo[humpToLine(filter)] = filters[filter].toString();
+            this.filterData[humpToLine(filter)] = filters[filter].toString();
           } else {
-            this.queryInfo[humpToLine(filter)] = null;
+            this.filterData[humpToLine(filter)] = null;
           }
         }
       }

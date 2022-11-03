@@ -154,14 +154,14 @@ export default {
       _that.checkInputStatus = setTimeout(() => {
         try {
           if (_that.inputValue === '') {
-            _that.$emit('update_basic_data', _that.editKey, 'data', '')
+            _that.$emit('update_basic_data', _that.editKey, '_EXECUTE_DATA', '')
             return
           }
           let tmpInputJson = JSON.parse(_that.inputValue);
           if (tmpInputJson instanceof Object && !tmpInputJson.hasOwnProperty('length')) {
             _that.inputValue = JSON.stringify(tmpInputJson, null, 4)
             console.log('update_basic_data', tmpInputJson)
-            _that.$emit('update_basic_data', _that.editKey, 'data', tmpInputJson)
+            _that.$emit('update_basic_data', _that.editKey, '_EXECUTE_DATA', tmpInputJson)
           } else {
             return callback(new Error('最外层应当是 key: value; 不应该是array;'));
           }
