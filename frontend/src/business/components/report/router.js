@@ -30,6 +30,11 @@ export default {
       path: 'apiQuality',
       name: 'apiQuality',
       component: () => import('@/business/components/report/apiautotest/ApiAutoTestQuality'),
+    },
+    {
+      path: 'emergencyPublish',
+      name: 'emergencyPublish',
+      component: () => import('@/business/components/report/emergencypublish/emergency_publish'),
     }
   ]
 }

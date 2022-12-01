@@ -19,6 +19,9 @@
           <el-menu-item :index="'/reports/apiQuality'">
             {{ $t('commons.quality_market.api_autotest.title') }}
           </el-menu-item>
+          <el-menu-item :index="'/reports/emergencyPublish'">
+            {{ $t('commons.quality_market.emergency_publish.title') }}
+          </el-menu-item>
         </el-menu>
       </el-col>
     </el-row>
