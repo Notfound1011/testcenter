@@ -5,13 +5,13 @@
         <span>图表区域</span>
       </div>-->
       <div class="table_action">
-        <el-button icon="el-icon-circle-plus-outline" type="primary" size="medium" @click="dialogVisible = true">提交紧急发布</el-button>
+        <el-button style="margin: 0 20px;" icon="el-icon-circle-plus-outline" type="primary" @click="dialogVisible = true">提交紧急发布</el-button>
       </div>
       <div class="table_are">
-        <el-table :key="tableKey" :data="emPublishDataResponse.results" style="width: 100%" highlight-current-row>
+        <el-table :data="emPublishDataResponse.results" style="width: 100%;background: transparent; overflow:auto;" height="100%">
           <!-- <el-table-column type="index" label="#" align="center"></el-table-column> -->
           <el-table-column fixed label="ID" prop="publish_id" align="center" width="55"></el-table-column>
-          <el-table-column label="Serial.No" prop="publish_tid" width="260" align="center"></el-table-column>
+          <!-- <el-table-column label="Serial.No" prop="publish_tid" width="260" align="center"></el-table-column> -->
           <el-table-column label="发布类型" align="center">
             <template slot-scope="scope">
               <el-tag effect="dark" size="mini" style="margin: 2px" v-for="item in scope.row.publish_type" :key="item.Id">{{ item }}</el-tag>
@@ -22,13 +22,14 @@
               <el-tag effect="dark" type="warning" size="mini" style="margin: 2px" v-for="item in scope.row.relation_service" :key="item.Id">{{ item }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="发布原因" align="center">
+          <el-table-column label="发布原因" header-align="center" align="left" prop="publish_reason" width="300"></el-table-column>
+          <!-- <el-table-column label="发布原因" align="center">
             <template slot-scope="scope">
               <el-popover placement="top-start" width="200" trigger="hover" :content="scope.row.publish_reason">
                 <el-button type="text" size="small" icon="el-icon-view" slot="reference">查看</el-button>
               </el-popover>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column label="相关链接" align="center">
             <template slot-scope="scope">
               <el-popover placement="right" width="400" trigger="hover">
@@ -55,28 +56,28 @@
               <el-tag :type="publishStatusTag(scope.row.publish_status.code)">{{ scope.row.publish_status.status }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="Developer" align="center">
+          <el-table-column label="Developer" header-align="center" align="left">
             <template slot-scope="scope">
               <template v-for="publishUser in scope.row.publish_user">
                 <el-tag effect="plain" size="mini" style="margin: 2px" v-for="developer in publishUser.developer" :key="developer.Id">{{ developer }}</el-tag>
               </template>
             </template>
           </el-table-column>
-          <el-table-column label="Reviewer" align="center">
+          <el-table-column label="Reviewer" header-align="center" align="left">
             <template slot-scope="scope">
               <template v-for="publishUser in scope.row.publish_user">
                 <el-tag effect="plain" size="mini" style="margin: 2px" v-for="reviewer in publishUser.reviewer" :key="reviewer.Id">{{ reviewer }}</el-tag>
               </template>
             </template>
           </el-table-column>
-          <el-table-column label="Executor" align="center">
+          <el-table-column label="Executor" header-align="center" align="left">
             <template slot-scope="scope">
               <template v-for="publishUser in scope.row.publish_user">
                 <el-tag effect="plain" size="mini" style="margin: 2px" v-for="executor in publishUser.executor" :key="executor.Id">{{ executor }}</el-tag>
               </template>
             </template>
           </el-table-column>
-          <el-table-column label="Auditor" align="center">
+          <el-table-column label="Auditor" header-align="center" align="left">
             <template slot-scope="scope">
               <template v-for="publishUser in scope.row.publish_user">
                 <el-tag effect="plain" size="mini" style="margin: 2px" v-for="auditor in publishUser.auditor" :key="auditor.Id">{{ auditor }}</el-tag>
@@ -113,34 +114,34 @@
                       </el-select>
                     </el-form-item>
                   </el-col>
-                  <el-col v-if="tableKey" :span="24">
-                    <el-form-item label-width="110px" label="相关JIRA链接" prop="jiraLink">
-                      <el-input v-model="formData.jiraLink" placeholder="请输入JIRA链接相关JIRA链接" clearable
+                  <el-col :span="24">
+                    <el-form-item label-width="110px" label="相关JIRA链接" :rules="[{required: false,message: '请输入JIRA链接',trigger: 'blur'}]">
+                      <el-input v-model="formData.links.jiraLink.link" placeholder="请输入JIRA链接相关JIRA链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="24">
-                    <el-form-item label-width="150px" label="相关Confluence链接" prop="confluenceLink">
-                      <el-input v-model="formData.confluenceLink" placeholder="请输入(若有)相关confluence链接" clearable
+                    <el-form-item label-width="150px" label="相关Confluence链接" :rules="[{required: false,message: '请输入confluence链接',trigger: 'blur'}]">
+                      <el-input v-model="formData.links.confluenceLink.link" placeholder="请输入(若有)相关confluence链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col v-if="configInputShow" :span="24">
-                    <el-form-item label-width="110px" label="newconfig PR 链接" prop="configPrLink">
-                      <el-input v-model="formData.configPrLink" placeholder="请输入JIRA链接newconfig PR 链接" clearable
+                    <el-form-item label-width="110px" label="newconfig PR 链接" :rules="[{required: true,message: '请输入newConfig PR 链接',trigger: 'blur'}]">
+                      <el-input v-model="formData.links.configPrLink.link" placeholder="请输入JIRA链接newconfig PR 链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col v-if="changeAuditShow" :span="24">
-                    <el-form-item label-width="110px" label="change_audit 链接" prop="changeAuditLink">
-                      <el-input v-model="formData.changeAuditLink" placeholder="请输入JIRA链接change_audit 链接" clearable
+                    <el-form-item label-width="110px" label="change_audit 链接" :rules="[{required: true,message: '请输入JIRA链接change_audit 链接',trigger: 'blur'}]">
+                      <el-input v-model="formData.links.changeAuditLink.link" placeholder="请输入JIRA链接change_audit 链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="24">
                     <el-form-item label="紧急变更概述/原因" prop="publish_reason" maxlength="256">
                       <el-input v-model="formData.publish_reason" type="textarea" placeholder="请输入紧急变更概述"
-                                :maxlength="200" show-word-limit :autosize="{minRows: 5, maxRows: 5}" :style="{width: '100%'}"></el-input>
+                                :maxlength="200" show-word-limit :autosize="{minRows: 4, maxRows: 5}" :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
                 </div>
@@ -205,6 +206,7 @@
   }
   .table_are {
     margin-bottom: 10px;
+    height: 80vh;
   }
   .el-drawer__body {
     overflow: auto;
@@ -214,13 +216,15 @@
   .el-drawer__container ::-webkit-scrollbar{
     display: none;
   }
+  .el-table tbody tr:hover>td {
+    background-color: #f5f5f5 !important
+  }
   .el-form-item {
     font-weight: bold;
   }
   .main_submit {
     display: flex;
     flex-direction: column;
-    min-height: 800px;
   }
   .sub_card {
     padding: 15px;
@@ -266,7 +270,7 @@
 <script>
 import MsMainContainer from "@/business/components/common/components/MsMainContainer";
 import MsContainer from "@/business/components/common/components/MsContainer";
-import {messageTips} from "@/business/components/report/emergencypublish/common"
+import {messageTips, notificationTips} from "@/business/components/report/emergencypublish/common"
 
 export default {
   inheritAttrs: false,
@@ -287,26 +291,6 @@ export default {
           type: 'array',
           message: '请至少选择一个相关变更服务',
           trigger: 'change'
-        }],
-        jiraLink: [{
-          required: false,
-          message: '请输入JIRA链接',
-          trigger: 'blur'
-        }],
-        configPrLink: [{
-          required: true,
-          message: '请输入newConfig PR 链接',
-          trigger: 'blur'
-        }],
-        changeAuditLink: [{
-          required: true,
-          message: '请输入JIRA链接change_audit 链接',
-          trigger: 'blur'
-        }],
-        confluenceLink: [{
-          required: false,
-          message: '请输入confluence链接',
-          trigger: 'blur'
         }],
         publish_reason: [{
           required: true,
@@ -343,30 +327,38 @@ export default {
             trigger: 'change'
           }]},
       },
-      tableKey: true,
       serviceInputShow: false,
       configInputShow: false,
       changeAuditShow: false,
       submitLoading: false,
       dialogVisible: false,
-      emPublishDataResponse: [],
+      emPublishDataResponse: {
+        results: []
+      },
       techUserListDataResponse: [],
       serviceNameOptions: [],
       rollbackOptions: [],
       formData: {
         publish_reason: "",
-        publish_service: [],
         publish_time: "",
         publish_type: [],
-        reviewer: {user_type: 4, users: []},
+        publish_service: [],
         rollback_action: [],
-        executor: {user_type: 5, users: []},
-        developer: {user_type: 6, users: []},
-        jiraLink: "",
-        configPrLink: "",
-        changeAuditLink: "",
-        confluenceLink: "",
-        links: {10: this.jiraLink, 12: this.configPrLink, 13: this.changeAuditLink, 11: this.confluenceLink}
+        reviewer: {
+          user_type: 4, users: []
+        },
+        executor: {
+          user_type: 6, users: []
+        },
+        developer: {
+          user_type: 5, users: []
+        },
+        links: {
+          jiraLink: {id: 10, link: ""},
+          confluenceLink: {id: 11, link: ""},
+          configPrLink: {id: 12, link: ""},
+          changeAuditLink: {id: 13, link: ""}
+        }
       },
       submitFormResponse: {},
       emergencyPublishTypeOptions: [],
@@ -414,8 +406,8 @@ export default {
     handleClose(done) {
       this.$confirm('是否确认取消提交紧急发布？')
         .then(_ => {
-          this.$refs['emergencyChangeForm'].resetFields()
           this.dialogVisible = false
+          this.$refs['emergencyChangeForm'].resetFields()
           done();
         })
         .catch(_ => {});
@@ -450,7 +442,7 @@ export default {
         this.submitLoading = true
         const { data: apiResponse } = await this.$axios.post('naguri/em_api/publish', this.formData).catch((error) => {
           console.log(error)
-          messageTips('error', '提交失败，请检查表单内容！或联系 @Pauri')
+          notificationTips('error', '提交失败，请检查表单内容！或联系 @Pauri')
           this.submitLoading = false
         })
         console.log(apiResponse)
