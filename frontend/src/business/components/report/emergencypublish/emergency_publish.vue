@@ -56,28 +56,28 @@
               <el-tag :type="publishStatusTag(scope.row.publish_status.code)">{{ scope.row.publish_status.status }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="Developer" header-align="center" align="left">
+          <el-table-column label="Developer">
             <template slot-scope="scope">
               <template v-for="publishUser in scope.row.publish_user">
                 <el-tag effect="plain" size="mini" style="margin: 2px" v-for="developer in publishUser.developer" :key="developer.Id">{{ developer }}</el-tag>
               </template>
             </template>
           </el-table-column>
-          <el-table-column label="Reviewer" header-align="center" align="left">
+          <el-table-column label="Reviewer">
             <template slot-scope="scope">
               <template v-for="publishUser in scope.row.publish_user">
                 <el-tag effect="plain" size="mini" style="margin: 2px" v-for="reviewer in publishUser.reviewer" :key="reviewer.Id">{{ reviewer }}</el-tag>
               </template>
             </template>
           </el-table-column>
-          <el-table-column label="Executor" header-align="center" align="left">
+          <el-table-column label="Executor">
             <template slot-scope="scope">
               <template v-for="publishUser in scope.row.publish_user">
                 <el-tag effect="plain" size="mini" style="margin: 2px" v-for="executor in publishUser.executor" :key="executor.Id">{{ executor }}</el-tag>
               </template>
             </template>
           </el-table-column>
-          <el-table-column label="Auditor" header-align="center" align="left">
+          <el-table-column label="Auditor">
             <template slot-scope="scope">
               <template v-for="publishUser in scope.row.publish_user">
                 <el-tag effect="plain" size="mini" style="margin: 2px" v-for="auditor in publishUser.auditor" :key="auditor.Id">{{ auditor }}</el-tag>
@@ -115,26 +115,26 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="24">
-                    <el-form-item label-width="110px" label="相关JIRA链接" :rules="[{required: false,message: '请输入JIRA链接',trigger: 'blur'}]">
-                      <el-input v-model="formData.links.jiraLink.link" placeholder="请输入JIRA链接相关JIRA链接" clearable
+                    <el-form-item label-width="110px" label="相关JIRA链接 (若要填写若要填写多个请换行,保持每行一条)" :rules="[{required: false,message: '请输入JIRA链接',trigger: 'blur'}]">
+                      <el-input v-model="formData.links.jiraLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入JIRA链接相关JIRA链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="24">
-                    <el-form-item label-width="150px" label="相关Confluence链接" :rules="[{required: false,message: '请输入confluence链接',trigger: 'blur'}]">
-                      <el-input v-model="formData.links.confluenceLink.link" placeholder="请输入(若有)相关confluence链接" clearable
+                    <el-form-item label-width="150px" label="相关Confluence链接 (若要填写多个请换行,保持每行一条)" :rules="[{required: false,message: '请输入confluence链接',trigger: 'blur'}]">
+                      <el-input v-model="formData.links.confluenceLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入(若有)相关confluence链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col v-if="configInputShow" :span="24">
-                    <el-form-item label-width="110px" label="newconfig PR 链接" :rules="[{required: true,message: '请输入newConfig PR 链接',trigger: 'blur'}]">
-                      <el-input v-model="formData.links.configPrLink.link" placeholder="请输入JIRA链接newconfig PR 链接" clearable
+                    <el-form-item label-width="110px" label="newConfigPR链接 (若要填写多个请换行,保持每行一条)" :rules="[{required: true,message: '请输入newConfig PR 链接',trigger: 'blur'}]">
+                      <el-input v-model="formData.links.configPrLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入JIRA链接newconfig PR 链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col v-if="changeAuditShow" :span="24">
-                    <el-form-item label-width="110px" label="change_audit 链接" :rules="[{required: true,message: '请输入JIRA链接change_audit 链接',trigger: 'blur'}]">
-                      <el-input v-model="formData.links.changeAuditLink.link" placeholder="请输入JIRA链接change_audit 链接" clearable
+                    <el-form-item label-width="110px" label="changeAudit链接 (若要填写多个请换行,保持每行一条)" :rules="[{required: true,message: '请输入JIRA链接change_audit 链接',trigger: 'blur'}]">
+                      <el-input v-model="formData.links.changeAuditLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入JIRA链接change_audit 链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
