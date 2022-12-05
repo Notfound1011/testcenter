@@ -122,25 +122,25 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="24">
-                    <el-form-item label-width="110px" label="相关JIRA链接 (若要填写若要填写多个请换行,保持每行一条)" :rules="[{required: false,message: '请输入JIRA链接',trigger: 'blur'}]">
+                    <el-form-item label-width="110px" label="相关JIRA链接 (若要填写若要填写多个请换行,保持每行一条)" prop="links.jiraLink.link">
                       <el-input v-model="formData.links.jiraLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入JIRA链接相关JIRA链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="24">
-                    <el-form-item label-width="150px" label="相关Confluence链接 (若要填写多个请换行,保持每行一条)" :rules="[{required: false,message: '请输入confluence链接',trigger: 'blur'}]">
+                    <el-form-item label-width="150px" label="相关Confluence链接 (若要填写多个请换行,保持每行一条)" prop="links.confluenceLink.link">
                       <el-input v-model="formData.links.confluenceLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入(若有)相关confluence链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col v-if="configInputShow" :span="24">
-                    <el-form-item label-width="110px" label="newConfigPR链接 (若要填写多个请换行,保持每行一条)" :rules="[{required: true,message: '请输入newConfig PR 链接',trigger: 'blur'}]">
+                    <el-form-item label-width="110px" label="newConfigPR链接 (若要填写多个请换行,保持每行一条)" prop="links.configPrLink.link">
                       <el-input v-model="formData.links.configPrLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入JIRA链接newconfig PR 链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col v-if="changeAuditShow" :span="24">
-                    <el-form-item label-width="110px" label="changeAudit链接 (若要填写多个请换行,保持每行一条)" :rules="[{required: true,message: '请输入JIRA链接change_audit 链接',trigger: 'blur'}]">
+                    <el-form-item label-width="110px" label="changeAudit链接 (若要填写多个请换行,保持每行一条)" prop="links.changeAuditLink.link">
                       <el-input v-model="formData.links.changeAuditLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入JIRA链接change_audit 链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
@@ -189,8 +189,8 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="10">
-                    <el-form-item label="验证人(自测验证请选自己)" prop="executor.users">
-                      <el-select v-model="formData.tester.users" placeholder="请选择验证人" multiple filterable clearable :style="{width: '90%'}">
+                    <el-form-item label="验证人(自测验证请选自己)" prop="tester.users">
+                      <el-select v-model="formData.tester.users" placeholder="请选择验证人, 自测验证请选自己" multiple filterable clearable :style="{width: '90%'}">
                         <el-option v-for="(item, index) in techUserListDataResponse" :key="index" :label="item.display_name" :value="item.user_id"></el-option>
                       </el-select>
                     </el-form-item>
@@ -294,61 +294,28 @@ export default {
   data() {
     return {
       rules: {
-        publish_type: [{
-          required: true,
-          type: 'array',
-          message: '请至少选择一个紧急发布类型',
-          trigger: 'change'
-        }],
-        publish_service: [{
-          required: true,
-          type: 'array',
-          message: '请至少选择一个相关变更服务',
-          trigger: 'change'
-        }],
-        publish_reason: [{
-          required: true,
-          message: '请输入紧急变更概述',
-          trigger: 'blur'
-        }],
-        developer: {users: [{
-            required: true,
-            type: 'array',
-            message: '请至少选择一个相关开发人员',
-            trigger: 'change'
-          }]},
-        reviewer: {users: [{
-            required: true,
-            type: 'array',
-            message: '请至少选择一个开发review人员,无则选自己',
-            trigger: 'change'
-          }]},
-        rollback_action: [{
-          required: true,
-          type: 'array',
-          message: '请至少选择一个回滚策略',
-          trigger: 'change'
-        }],
-        publish_time: [{
-          required: true,
-          message: '请选择预计变更时间',
-          trigger: 'change'
-        }],
-        executor: {users: [{
-            required: true,
-            type: 'array',
-            message: '请至少选择一个执行人',
-            trigger: 'change'
-          }]},
+        publish_type: [{required: true, type: 'array', message: '请至少选择一个紧急发布类型', trigger: 'change'}],
+        publish_service: [{required: true, type: 'array', message: '请至少选择一个相关变更服务', trigger: 'change'}],
+        publish_reason: [{required: true, message: '请输入紧急变更概述',trigger: 'blur'}],
+        links: {
+          jiraLink: {link: [{required: false,message: '请输入JIRA链接',trigger: 'blur'}]},
+          confluenceLink: {link: [{required: false, message: '请输入confluence链接',trigger: 'blur'}]},
+          configPrLink: {link: [{required: true, message: '请输入newConfig PR 链接',trigger: 'blur'}]},
+          changeAuditLink: {link: [{required: true, message: '请输入changeAudit PR链接',trigger: 'blur'}]}
+        },
+        developer: {users: [{required: true, type: 'array', message: '请至少选择一个相关开发人员', trigger: 'change'}]},
+        reviewer: {users: [{required: true, type: 'array', message: '请至少选择一个开发review人员,无则选自己', trigger: 'change'}]},
+        executor: {users: [{required: true, type: 'array', message: '请至少选择一个执行人', trigger: 'change'}]},
+        tester: {users: [{required: true, type: 'array', message: '请至少选择一个验证人，自测选自己', trigger: 'change'}]},
+        rollback_action: [{required: true, type: 'array', message: '请至少选择一个回滚策略', trigger: 'change'}],
+        publish_time: [{required: true, message: '请选择预计变更时间', trigger: 'change'}],
       },
       serviceInputShow: false,
       configInputShow: false,
       changeAuditShow: false,
       submitLoading: false,
       dialogVisible: false,
-      emPublishDataResponse: {
-        results: []
-      },
+      emPublishDataResponse: {results: []},
       techUserListDataResponse: [],
       serviceNameOptions: [],
       rollbackOptions: [],
@@ -358,18 +325,10 @@ export default {
         publish_type: [],
         publish_service: [],
         rollback_action: [],
-        reviewer: {
-          user_type: 4, users: []
-        },
-        executor: {
-          user_type: 6, users: []
-        },
-        developer: {
-          user_type: 5, users: []
-        },
-        tester: {
-          user_type: 29, users: []
-        },
+        reviewer: {user_type: 4, users: []},
+        executor: {user_type: 6, users: []},
+        developer: {user_type: 5, users: []},
+        tester: {user_type: 29, users: []},
         links: {
           jiraLink: {id: 10, link: ""},
           confluenceLink: {id: 11, link: ""},
@@ -395,7 +354,6 @@ export default {
         this.serviceInputShow = newPublishType.includes(16); // 服务变更
         this.configInputShow = newPublishType.includes(19); // 配置变更
         this.changeAuditShow = newPublishType.includes(17); // DB变更
-        console.log(this.configInputShow)
       },
       deep:true
     }
