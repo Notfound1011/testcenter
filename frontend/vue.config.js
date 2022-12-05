@@ -20,19 +20,13 @@ module.exports = {
       //   ws: true,
       // },
       '/api/tc/naguri': {
-        target: "http://0.0.0.0:7001",
+        target: "http://3.1.250.199:7001",
+        // target: "http://0.0.0.0:7001",
         changeOrigin: true,
         pathRewrite: {
           '^/api/tc/naguri': '/'
         }
       },
-      // '/api/tc/naguri': {
-      //   target: "http://3.1.250.199:7001",
-      //   changeOrigin: true,
-      //   pathRewrite: {
-      //     '^/api/tc/naguri': '/'
-      //   }
-      // },
       '/api/tc/pyServer': {
         target: "http://3.1.250.199:6200",
         changeOrigin: true,
