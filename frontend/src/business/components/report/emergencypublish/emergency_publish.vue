@@ -8,7 +8,7 @@
         <el-button style="margin: 0 20px;" icon="el-icon-circle-plus-outline" type="primary" @click="dialogVisible = true">提交紧急发布</el-button>
       </div>
       <div class="table_are">
-        <el-table :data="emPublishDataResponse.results" style="width: 100%;background: transparent; overflow:auto;" height="100%">
+        <el-table :data="emPublishDataResponse.results" style="width: 100%;background: transparent; overflow:auto;" height="100%" border>
           <!-- <el-table-column type="index" label="#" align="center"></el-table-column> -->
           <el-table-column fixed label="ID" prop="publish_id" align="center" width="55"></el-table-column>
           <!-- <el-table-column label="Serial.No" prop="publish_tid" width="260" align="center"></el-table-column> -->
@@ -45,13 +45,13 @@
               </el-popover>
             </template>
           </el-table-column>
-          <el-table-column label="发布时间" width="180" align="center">
+          <el-table-column label="期望发布时间" width="180" align="center">
             <template slot-scope="scope">
               <i class="el-icon-time"></i>
               <span style="margin-left: 5px">{{ scope.row.publish_time }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="审批状态" align="center">
+          <el-table-column label="Tech审批状态" align="center">
             <template slot-scope="scope">
               <el-tag :type="publishStatusTag(scope.row.publish_status.code)">{{ scope.row.publish_status.status }}</el-tag>
             </template>
@@ -74,6 +74,13 @@
             <template slot-scope="scope">
               <template v-for="publishUser in scope.row.publish_user">
                 <el-tag effect="plain" size="mini" style="margin: 2px" v-for="executor in publishUser.executor" :key="executor.Id">{{ executor }}</el-tag>
+              </template>
+            </template>
+          </el-table-column>
+          <el-table-column label="Tester">
+            <template slot-scope="scope">
+              <template v-for="publishUser in scope.row.publish_user">
+                <el-tag effect="plain" size="mini" style="margin: 2px" v-for="tester in publishUser.tester" :key="tester.Id">{{ tester }}</el-tag>
               </template>
             </template>
           </el-table-column>
@@ -168,15 +175,22 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="10">
-                    <el-form-item label="开发review人员" prop="reviewer.users">
+                    <el-form-item label="Review人员" prop="reviewer.users">
                       <el-select v-model="formData.reviewer.users" placeholder="请选择开发review人员" multiple filterable clearable :style="{width: '90%'}">
                         <el-option v-for="(item, index) in techUserListDataResponse" :key="index" :label="item.display_name" :value="item.user_id"></el-option>
                       </el-select>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="24">
-                    <el-form-item label="执行人(测试/开发/OPS)" prop="executor.users">
-                      <el-select v-model="formData.executor.users" placeholder="请选择测试执行人" multiple filterable clearable :style="{width: '90%'}">
+                  <el-col :span="10">
+                    <el-form-item label="变更执行人(测试/开发/OPS)" prop="executor.users">
+                      <el-select v-model="formData.executor.users" placeholder="请选择变更执行人" multiple filterable clearable :style="{width: '90%'}">
+                        <el-option v-for="(item, index) in techUserListDataResponse" :key="index" :label="item.display_name" :value="item.user_id"></el-option>
+                      </el-select>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="10">
+                    <el-form-item label="验证人(自测验证请选自己)" prop="executor.users">
+                      <el-select v-model="formData.tester.users" placeholder="请选择验证人" multiple filterable clearable :style="{width: '90%'}">
                         <el-option v-for="(item, index) in techUserListDataResponse" :key="index" :label="item.display_name" :value="item.user_id"></el-option>
                       </el-select>
                     </el-form-item>
@@ -352,6 +366,9 @@ export default {
         },
         developer: {
           user_type: 5, users: []
+        },
+        tester: {
+          user_type: 29, users: []
         },
         links: {
           jiraLink: {id: 10, link: ""},
