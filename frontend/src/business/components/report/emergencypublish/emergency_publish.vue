@@ -106,6 +106,12 @@
               <div class="form_body">
                 <div class="u_body">
                   <el-col :span="24">
+                    <el-form-item label="紧急变更概述/原因" prop="publish_reason" maxlength="256">
+                      <el-input v-model="formData.publish_reason" type="textarea" placeholder="请输入紧急变更概述"
+                                :maxlength="200" show-word-limit :autosize="{minRows: 3, maxRows: 5}" :style="{width: '100%'}"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="24">
                     <el-form-item label="紧急发布类型" prop="publish_type">
                       <el-cascader v-model="formData.publish_type" :options="emergencyPublishTypeOptions"
                                    :props="emergencyPublishTypeProps" :style="{width: '100%'}" placeholder="请选择紧急发布类型"
@@ -121,34 +127,28 @@
                       </el-select>
                     </el-form-item>
                   </el-col>
-                  <el-col :span="24">
-                    <el-form-item label-width="110px" label="相关JIRA链接 (若要填写若要填写多个请换行,保持每行一条)" prop="links.jiraLink.link">
-                      <el-input v-model="formData.links.jiraLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入JIRA链接相关JIRA链接" clearable
-                                prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
-                    </el-form-item>
-                  </el-col>
-                  <el-col :span="24">
-                    <el-form-item label-width="150px" label="相关Confluence链接 (若要填写多个请换行,保持每行一条)" prop="links.confluenceLink.link">
-                      <el-input v-model="formData.links.confluenceLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入(若有)相关confluence链接" clearable
-                                prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
-                    </el-form-item>
-                  </el-col>
                   <el-col v-if="configInputShow" :span="24">
-                    <el-form-item label-width="110px" label="newConfigPR链接 (若要填写多个请换行,保持每行一条)" prop="links.configPrLink.link">
+                    <el-form-item label-width="110px" label="配置文件PR链接 (NewConfig/Nacos 多个请保持每行一条)" prop="links.configPrLink.link">
                       <el-input v-model="formData.links.configPrLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入JIRA链接newconfig PR 链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col v-if="changeAuditShow" :span="24">
-                    <el-form-item label-width="110px" label="changeAudit链接 (若要填写多个请换行,保持每行一条)" prop="links.changeAuditLink.link">
+                    <el-form-item label-width="110px" label="数据库变更(changeAudit)PR链接 (多个请保持每行一条)" prop="links.changeAuditLink.link">
                       <el-input v-model="formData.links.changeAuditLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入JIRA链接change_audit 链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="24">
-                    <el-form-item label="紧急变更概述/原因" prop="publish_reason" maxlength="256">
-                      <el-input v-model="formData.publish_reason" type="textarea" placeholder="请输入紧急变更概述"
-                                :maxlength="200" show-word-limit :autosize="{minRows: 4, maxRows: 5}" :style="{width: '100%'}"></el-input>
+                    <el-form-item label-width="110px" label="相关JIRA链接 (多个请保持每行一条)" prop="links.jiraLink.link">
+                      <el-input v-model="formData.links.jiraLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入JIRA链接相关JIRA链接" clearable
+                                prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
+                    </el-form-item>
+                  </el-col>
+                  <el-col :span="24">
+                    <el-form-item label-width="150px" label="相关Confluence链接 (多个请保持每行一条)" prop="links.confluenceLink.link">
+                      <el-input v-model="formData.links.confluenceLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入(若有)相关confluence链接" clearable
+                                prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
                 </div>
@@ -163,7 +163,7 @@
                   <el-col :span="10">
                     <el-form-item label="预计变更时间" prop="publish_time">
                       <el-date-picker type="datetime" v-model="formData.publish_time"
-                                      format="yyyy-MM-dd HH:mm:ss" value-format="yyyy-MM-dd HH:mm:ss" :style="{width: '90%'}"
+                                      format="yyyy-MM-dd HH:mm" value-format="yyyy-MM-dd HH:mm" :style="{width: '90%'}"
                                       placeholder="请选择预计变更时间"></el-date-picker>
                     </el-form-item>
                   </el-col>
@@ -190,7 +190,7 @@
                   </el-col>
                   <el-col :span="10">
                     <el-form-item label="验证人(自测验证请选自己)" prop="tester.users">
-                      <el-select v-model="formData.tester.users" placeholder="请选择验证人, 自测验证请选自己" multiple filterable clearable :style="{width: '90%'}">
+                      <el-select v-model="formData.tester.users" placeholder="测试验证人员或自己" multiple filterable clearable :style="{width: '90%'}">
                         <el-option v-for="(item, index) in techUserListDataResponse" :key="index" :label="item.display_name" :value="item.user_id"></el-option>
                       </el-select>
                     </el-form-item>
