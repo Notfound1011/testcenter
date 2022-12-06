@@ -21,6 +21,7 @@ module.exports = {
       // },
       '/api/tc/naguri': {
         target: "http://3.1.250.199:7001",
+        // target: "http://0.0.0.0:7001",
         changeOrigin: true,
         pathRewrite: {
           '^/api/tc/naguri': '/'

@@ -361,6 +361,9 @@ export default {
       },
       api_autotest: {
         title: "Api AutoTest Quality"
+      },
+      emergency_publish: {
+        title: "Emergency Publish"
       }
     },
     report_statistics: {

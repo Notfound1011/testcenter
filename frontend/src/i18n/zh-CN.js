@@ -362,6 +362,9 @@ export default {
       },
       api_autotest: {
         title: "接口自动化质量"
+      },
+      emergency_publish: {
+        title: "紧急发版/变更"
       }
     },
     report_statistics: {
