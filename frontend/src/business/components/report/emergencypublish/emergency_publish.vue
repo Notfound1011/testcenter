@@ -19,7 +19,7 @@
           </el-table-column>
           <el-table-column label="发布服务" align="center">
             <template slot-scope="scope">
-              <el-tag effect="dark" type="warning" size="mini" style="margin: 2px" v-for="item in scope.row.relation_service" :key="item.Id">{{ item }}</el-tag>
+              <el-tag effect="dark" type="warning" size="mini" style="margin: 2px" v-for="item in scope.row['relation_service']" :key="item.Id">{{ item }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="发布原因" header-align="center" align="left" prop="publish_reason" width="300"></el-table-column>
@@ -33,11 +33,11 @@
           <el-table-column label="相关链接" align="center">
             <template slot-scope="scope">
               <el-popover placement="right" width="400" trigger="hover">
-                <el-table :data="scope.row.publish_link">
+                <el-table :data="scope.row['publish_link']">
                   <el-table-column property="link_type" label="链接类型"></el-table-column>
                   <el-table-column property="link_alias" label="链接别名">
                     <template slot-scope="scope">
-                      <a type="primary" :href="scope.row.ori_link" target="_blank">{{ scope.row.link_alias }}</a>
+                      <a type="primary" :href="scope.row['ori_link']" target="_blank">{{ scope.row['link_alias'] }}</a>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -53,40 +53,40 @@
           </el-table-column>
           <el-table-column label="Tech审批状态" align="center">
             <template slot-scope="scope">
-              <el-tag :type="publishStatusTag(scope.row.publish_status.code)">{{ scope.row.publish_status.status }}</el-tag>
+              <el-tag :type="publishStatusTag(scope.row['publish_status'].code)">{{ scope.row['publish_status'].status }}</el-tag>
             </template>
           </el-table-column>
           <el-table-column label="Developer">
             <template slot-scope="scope">
-              <template v-for="publishUser in scope.row.publish_user">
+              <template v-for="publishUser in scope.row['publish_user']">
                 <el-tag effect="plain" size="mini" style="margin: 2px" v-for="developer in publishUser.developer" :key="developer.Id">{{ developer }}</el-tag>
               </template>
             </template>
           </el-table-column>
           <el-table-column label="Reviewer">
             <template slot-scope="scope">
-              <template v-for="publishUser in scope.row.publish_user">
+              <template v-for="publishUser in scope.row['publish_user']">
                 <el-tag effect="plain" size="mini" style="margin: 2px" v-for="reviewer in publishUser.reviewer" :key="reviewer.Id">{{ reviewer }}</el-tag>
               </template>
             </template>
           </el-table-column>
           <el-table-column label="Executor">
             <template slot-scope="scope">
-              <template v-for="publishUser in scope.row.publish_user">
+              <template v-for="publishUser in scope.row['publish_user']">
                 <el-tag effect="plain" size="mini" style="margin: 2px" v-for="executor in publishUser.executor" :key="executor.Id">{{ executor }}</el-tag>
               </template>
             </template>
           </el-table-column>
           <el-table-column label="Tester">
             <template slot-scope="scope">
-              <template v-for="publishUser in scope.row.publish_user">
+              <template v-for="publishUser in scope.row['publish_user']">
                 <el-tag effect="plain" size="mini" style="margin: 2px" v-for="tester in publishUser.tester" :key="tester.Id">{{ tester }}</el-tag>
               </template>
             </template>
           </el-table-column>
           <el-table-column label="Auditor">
             <template slot-scope="scope">
-              <template v-for="publishUser in scope.row.publish_user">
+              <template v-for="publishUser in scope.row['publish_user']">
                 <el-tag effect="plain" size="mini" style="margin: 2px" v-for="auditor in publishUser.auditor" :key="auditor.Id">{{ auditor }}</el-tag>
               </template>
             </template>
@@ -122,8 +122,8 @@
                     <el-form-item label-width="80px" label="相关变更服务" prop="publish_service">
                       <el-select v-model="formData.publish_service" placeholder="请选择服务相关变更服务" multiple filterable
                                  clearable :style="{width: '100%'}">
-                        <el-option v-for="(item, index) in serviceNameOptions" :key="index" :label="item.service_name"
-                                   :value="item.service_id"></el-option>
+                        <el-option v-for="(item, index) in serviceNameOptions" :key="index" :label="item['service_name']"
+                                   :value="item['service_id']"></el-option>
                       </el-select>
                     </el-form-item>
                   </el-col>
@@ -156,7 +156,7 @@
                   <el-col :span="10">
                     <el-form-item label="回滚策略" prop="rollback_action">
                       <el-select v-model="formData.rollback_action" placeholder="请择选回滚策略" multiple filterable clearable :style="{width: '90%'}">
-                        <el-option v-for="(item, index) in rollbackOptions" :key="index" :label="item.type_name" :value="item.type_id"></el-option>
+                        <el-option v-for="(item, index) in rollbackOptions" :key="index" :label="item['type_name']" :value="item['type_id']"></el-option>
                       </el-select>
                     </el-form-item>
                   </el-col>
@@ -168,30 +168,30 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="10">
-                    <el-form-item label="相关开发人员" prop="developer.users">
+                    <el-form-item label="开发人员" prop="developer.users">
                       <el-select v-model="formData.developer.users" placeholder="请选择相关开发人员" multiple filterable clearable :style="{width: '90%'}">
-                        <el-option v-for="(item, index) in techUserListDataResponse" :key="index" :label="item.display_name" :value="item.user_id"></el-option>
+                        <el-option v-for="developer in techUserListDataResponse" :key="developer['user_id']" :label="developer['display_name']" :value="developer['user_id']"></el-option>
                       </el-select>
                     </el-form-item>
                   </el-col>
                   <el-col :span="10">
                     <el-form-item label="Review人员" prop="reviewer.users">
                       <el-select v-model="formData.reviewer.users" placeholder="请选择开发review人员" multiple filterable clearable :style="{width: '90%'}">
-                        <el-option v-for="(item, index) in techUserListDataResponse" :key="index" :label="item.display_name" :value="item.user_id"></el-option>
+                        <el-option v-for="reviewer in techUserListDataResponse" :key="reviewer['user_id']" :label="reviewer['display_name']" :value="reviewer['user_id']"></el-option>
                       </el-select>
                     </el-form-item>
                   </el-col>
                   <el-col :span="10">
                     <el-form-item label="变更执行人(测试/开发/OPS)" prop="executor.users">
                       <el-select v-model="formData.executor.users" placeholder="请选择变更执行人" multiple filterable clearable :style="{width: '90%'}">
-                        <el-option v-for="(item, index) in techUserListDataResponse" :key="index" :label="item.display_name" :value="item.user_id"></el-option>
+                        <el-option v-for="executor in techUserListDataResponse" :key="executor['id']" :label="executor['display_name']" :value="executor['user_id']"></el-option>
                       </el-select>
                     </el-form-item>
                   </el-col>
                   <el-col :span="10">
                     <el-form-item label="验证人(自测验证请选自己)" prop="tester.users">
                       <el-select v-model="formData.tester.users" placeholder="测试验证人员或自己" multiple filterable clearable :style="{width: '90%'}">
-                        <el-option v-for="(item, index) in techUserListDataResponse" :key="index" :label="item.display_name" :value="item.user_id"></el-option>
+                        <el-option v-for="tester in techUserListDataResponse" :key="tester['user_id']" :label="tester['display_name']" :value="tester['user_id']"></el-option>
                       </el-select>
                     </el-form-item>
                   </el-col>
@@ -351,19 +351,20 @@ export default {
     formData: {
       handler:function(changeValue){
         const newPublishType = Array.from(new Set(changeValue.publish_type.reduce((prev, curr) => (prev.concat(curr)), [])))
-        this.serviceInputShow = newPublishType.includes(16); // 服务变更
-        this.configInputShow = newPublishType.includes(19); // 配置变更
+        this.serviceInputShow = newPublishType.includes(18) || newPublishType.includes(19) || newPublishType.includes(20); // 服务变更
+        this.configInputShow = newPublishType.includes(19) || newPublishType.includes(30); // 配置变更
         this.changeAuditShow = newPublishType.includes(17); // DB变更
       },
       deep:true
     }
   },
   created() {
+    this.techUserListResponse()
     this.serviceResponse()
     this.publishTypeResponse()
     this.publishResponse()
-    this.techUserListResponse()
     this.getRollbackAction()
+    this.emUserInfoResponse()
   },
   inject: ["reload"],
   methods: {
@@ -405,6 +406,11 @@ export default {
     async techUserListResponse () {
       const { data: apiResponse } = await this.$axios.get('naguri/em_api/tech_user_list')
       this.techUserListDataResponse = apiResponse
+    },
+    async emUserInfoResponse () {
+      const { data: apiResponse } = await this.$axios.put('naguri/em_api/tech_user_list', {"email": JSON.parse(window.localStorage.getItem('Admin-Token'))['email']})
+      this.formData.developer.users = [apiResponse['user_id']]
+      this.formData.reviewer.users = [apiResponse['user_id']]
     },
     async getRollbackAction () {
       const { data: apiResponse } = await this.$axios.get('naguri/em_api/get_collect_type?type=2')
