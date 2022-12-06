@@ -140,7 +140,7 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="24">
-                    <el-form-item label-width="110px" label="相关JIRA链接 (多个请保持每行一条)" prop="links.jiraLink.link">
+                    <el-form-item label-width="110px" label="相关JIRA链接 (多个请保持每行一条)" prop="links.jiraLink.link" :required="jiraRequire">
                       <el-input v-model="formData.links.jiraLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入JIRA链接相关JIRA链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
@@ -298,7 +298,7 @@ export default {
         publish_service: [{required: true, type: 'array', message: '请至少选择一个相关变更服务', trigger: 'change'}],
         publish_reason: [{required: true, message: '请输入紧急变更概述',trigger: 'blur'}],
         links: {
-          jiraLink: {link: [{required: false,message: '请输入JIRA链接',trigger: 'blur'}]},
+          jiraLink: {link: [{required: false, message: '请输入JIRA链接', trigger: 'blur'}]},
           confluenceLink: {link: [{required: false, message: '请输入confluence链接',trigger: 'blur'}]},
           configPrLink: {link: [{required: true, message: '请输入newConfig PR 链接',trigger: 'blur'}]},
           changeAuditLink: {link: [{required: true, message: '请输入changeAudit PR链接',trigger: 'blur'}]}
@@ -310,6 +310,7 @@ export default {
         rollback_action: [{required: true, type: 'array', message: '请至少选择一个回滚策略', trigger: 'change'}],
         publish_time: [{required: true, message: '请选择预计变更时间', trigger: 'change'}],
       },
+      jiraRequire: false,
       serviceInputShow: false,
       configInputShow: false,
       changeAuditShow: false,
@@ -354,6 +355,7 @@ export default {
         this.serviceInputShow = newPublishType.includes(18) || newPublishType.includes(19) || newPublishType.includes(20); // 服务变更
         this.configInputShow = newPublishType.includes(19) || newPublishType.includes(30); // 配置变更
         this.changeAuditShow = newPublishType.includes(17); // DB变更
+        this.jiraRequire = newPublishType.includes(31) || newPublishType.includes(32); //数据订正jira修改为必填
       },
       deep:true
     }
