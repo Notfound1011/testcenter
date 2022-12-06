@@ -91,6 +91,11 @@
               </template>
             </template>
           </el-table-column>
+          <el-table-column label="Slack消息列直达">
+            <template slot-scope="scope">
+              <el-link type="primary" :href="scope.row['slack_msg_thread']" target="_blank">定位到聊天位置</el-link>
+            </template>
+          </el-table-column>
           <el-table-column label="提交时间" prop="c_time" width="160" align="center"></el-table-column>
         </el-table>
       </div>
