@@ -8,10 +8,8 @@
         <el-button style="margin: 0 20px;" icon="el-icon-circle-plus-outline" type="primary" @click="dialogVisible = true">提交紧急发布</el-button>
       </div>
       <div class="table_are">
-        <el-table :data="emPublishDataResponse.results" style="width: 100%;background: transparent; overflow:auto;" height="100%" border>
-          <!-- <el-table-column type="index" label="#" align="center"></el-table-column> -->
+        <el-table :data="emPublishDataResponse.results" :header-cell-style="{background:'#eef1f6',color:'#606266'}" style="width: 100%;background: transparent; overflow:auto;" height="100%" border>
           <el-table-column fixed label="ID" prop="publish_id" align="center" width="55"></el-table-column>
-          <!-- <el-table-column label="Serial.No" prop="publish_tid" width="260" align="center"></el-table-column> -->
           <el-table-column label="发布类型" align="center">
             <template slot-scope="scope">
               <el-tag effect="dark" size="mini" style="margin: 2px" v-for="item in scope.row.publish_type" :key="item.Id">{{ item }}</el-tag>
@@ -19,17 +17,13 @@
           </el-table-column>
           <el-table-column label="发布服务" align="center">
             <template slot-scope="scope">
-              <el-tag effect="dark" type="warning" size="mini" style="margin: 2px" v-for="item in scope.row['relation_service']" :key="item.Id">{{ item }}</el-tag>
+              <div v-if="scope.row['relation_service'].length > 0">
+                <el-tag effect="dark" type="warning" size="mini" style="margin: 2px" v-for="item in scope.row['relation_service']" :key="item.Id">{{ item }}</el-tag>
+              </div>
+              <span v-else> -- </span>
             </template>
           </el-table-column>
           <el-table-column label="发布原因" header-align="center" align="left" prop="publish_reason" width="300"></el-table-column>
-          <!-- <el-table-column label="发布原因" align="center">
-            <template slot-scope="scope">
-              <el-popover placement="top-start" width="200" trigger="hover" :content="scope.row.publish_reason">
-                <el-button type="text" size="small" icon="el-icon-view" slot="reference">查看</el-button>
-              </el-popover>
-            </template>
-          </el-table-column> -->
           <el-table-column label="相关链接" align="center">
             <template slot-scope="scope">
               <el-popover placement="right" width="400" trigger="hover">
@@ -45,13 +39,13 @@
               </el-popover>
             </template>
           </el-table-column>
-          <el-table-column label="期望发布时间" width="180" align="center">
+          <el-table-column label="变更时间" width="180" align="center">
             <template slot-scope="scope">
               <i class="el-icon-time"></i>
               <span style="margin-left: 5px">{{ scope.row.publish_time }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="Tech审批状态" align="center">
+          <el-table-column label="审批状态" align="center">
             <template slot-scope="scope">
               <el-tag :type="publishStatusTag(scope.row['publish_status'].code)">{{ scope.row['publish_status'].status }}</el-tag>
             </template>
@@ -87,11 +81,11 @@
           <el-table-column label="Auditor">
             <template slot-scope="scope">
               <template v-for="publishUser in scope.row['publish_user']">
-                <el-tag effect="plain" size="mini" style="margin: 2px" v-for="auditor in publishUser.auditor" :key="auditor.Id">{{ auditor }}</el-tag>
+                <el-tag effect="plain" size="mini" style="margin: 2px" v-for="auditor in publishUser['auditor']" :key="auditor.Id">{{ auditor }}</el-tag>
               </template>
             </template>
           </el-table-column>
-          <el-table-column label="Slack消息列直达">
+          <el-table-column label="消息列直达">
             <template slot-scope="scope">
               <el-link type="primary" :href="scope.row['slack_msg_thread']" target="_blank">定位到聊天位置</el-link>
             </template>
@@ -210,6 +204,16 @@
           <el-button size="medium" type="primary" @click="on_submit_form" :loading="submitLoading">提交发布审批</el-button>
         </div>
       </el-drawer>
+
+      <el-pagination
+        background
+        :pager-count=21
+        :current-page = "publishPage.currentPage"
+        layout="prev, pager, next"
+        :total="publishPage.emPublishCount"
+        @current-change="handleCurrentChange"
+        :page-size=20>
+      </el-pagination>
     </ms-main-container>
   </ms-container>
 </template>
@@ -220,7 +224,7 @@
     flex-direction: column;
   }
   .table_action {
-    margin-bottom: 10px;
+    margin-bottom: 6px;
     display: flex;
   }
   .table_are {
@@ -250,6 +254,10 @@
   }
   .sub_btn {
     display: flex;
+  }
+  .el-pagination {
+    display: flex;
+    justify-content: center;
   }
   .sub_btn button {
     flex: 1;
@@ -321,6 +329,10 @@ export default {
       changeAuditShow: false,
       submitLoading: false,
       dialogVisible: false,
+      publishPage: {
+        emPublishCount: 0,
+        currentPage: 1,
+      },
       emPublishDataResponse: {results: []},
       techUserListDataResponse: [],
       serviceNameOptions: [],
@@ -369,12 +381,16 @@ export default {
     this.techUserListResponse()
     this.serviceResponse()
     this.publishTypeResponse()
-    this.publishResponse()
+    this.publishListResponse()
     this.getRollbackAction()
     this.emUserInfoResponse()
   },
   inject: ["reload"],
   methods: {
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`);
+      this.publishListResponse(val)
+    },
     publishStatusTag (status) {
       if (status === 0) {
         return 'warning'
@@ -406,9 +422,10 @@ export default {
       const { data: apiResponse } = await this.$axios.get('naguri/em_api/publish_type_list')
       this.emergencyPublishTypeOptions = apiResponse
     },
-    async publishResponse () {
-      const { data: apiResponse } = await this.$axios.get('naguri/em_api/publish')
+    async publishListResponse (page=1, pageSize=20) {
+      const { data: apiResponse } = await this.$axios.get('naguri/em_api/publish?page='+page+'&page_size='+pageSize)
       this.emPublishDataResponse = apiResponse
+      this.publishPage.emPublishCount = apiResponse['count']
     },
     async techUserListResponse () {
       const { data: apiResponse } = await this.$axios.get('naguri/em_api/tech_user_list')
@@ -441,7 +458,7 @@ export default {
         } else {
           messageTips('success', '提交成功，请关注Slack审批！')
           this.$refs['emergencyChangeForm'].resetFields()
-          this.sleep(1000).then(() => {
+          this.sleep(500).then(() => {
             this.submitLoading = false
             this.dialogVisible = false
             this.reload()
