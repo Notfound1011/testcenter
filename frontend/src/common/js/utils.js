@@ -913,16 +913,16 @@ export function getApiTestConfig(typeName) {
  * @param {String} normalString 普通颜色的字符串
  * @param {String} specialString 带颜色的字符串
  * @param {String} specialColor 具体颜色
+ * @param {String} msgType 消息等级 success/warning/info/error
  * @return {void}
  */
-export function popUpReminder(that, normalString, specialString, specialColor = 'teal') {
-  console.log('出错了, 要弹窗咯')
+export function popUpReminder(that, normalString, specialString= '', specialColor = 'teal', msgType = 'error') {
   const h = that.$createElement;
   that.$message({
     duration: 5000,
     center: true,
     showClose: true,
-    type: 'error',
+    type: msgType,
     message: h('p', null, [
       h('i', {style: `color: ${specialColor}`}, specialString ? specialString : ''),
       h('span', null, ` ${normalString}  `)
@@ -937,4 +937,30 @@ export function popUpReminder(that, normalString, specialString, specialColor = 
  */
 export function isNoneJson(jsonData) {
   return jsonData && jsonData instanceof Object && Object.keys(jsonData).length > 0;
+}
+
+/**
+ * @description 时间戳转字符串
+ * @param {String, Number} timestamp
+ * @param {Boolean} utcTime 获取utc时间
+ * @param {Boolean} dateOnly 仅日期
+ * @return {String}
+ */
+export function timestampToTimeFormat(timestamp, utcTime = true, dateOnly = false) {
+  if (timestamp instanceof String){
+    timestamp = parseInt(timestamp)
+  }
+  if (timestamp < 1000000000000){
+    timestamp = timestamp * 1000
+  }
+  let date = new Date(timestamp)
+  if (utcTime && dateOnly) {
+    return `${date.getUTCFullYear()}-${('0' + (date.getUTCMonth() + 1)).slice(-2)}-${('0' + date.getUTCDate()).slice(-2)}`
+  }else if (utcTime && !dateOnly){
+    return `${date.getUTCFullYear()}-${('0' + (date.getUTCMonth() + 1)).slice(-2)}-${('0' + date.getUTCDate()).slice(-2)} ${('0' + date.getUTCHours()).slice(-2)}:${('0' + date.getUTCMinutes()).slice(-2)}:${('0' + date.getUTCSeconds()).slice(-2)}`;
+  }else if (dateOnly) {
+    return `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}-${('0' + date.getDate()).slice(-2)}`
+  }else{
+      return `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}-${('0' + date.getDate()).slice(-2)} ${('0' + date.getHours()).slice(-2)}:${('0' + date.getMinutes()).slice(-2)}:${('0' + date.getSeconds()).slice(-2)}`;
+  }
 }

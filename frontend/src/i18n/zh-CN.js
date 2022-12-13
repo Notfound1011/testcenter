@@ -365,7 +365,10 @@ export default {
       },
       emergency_publish: {
         title: "紧急发版/变更"
-      }
+      },
+      api_case_coverage: {
+        title: "接口覆盖率"
+      },
     },
     report_statistics: {
       reserved: "预留模块敬请期待",
@@ -2539,7 +2542,7 @@ export default {
     jobScheduler: '任务调度',
     definition: '接口定义',
     automation: '接口自动化',
-    report: '测试报告',
+    report: '测试报告'
   },
   ldap: {
     url: 'LDAP地址',

@@ -170,7 +170,7 @@ export default {
         } finally {
           _that.checkInputStatus = null;
         }
-      }, 1000);
+      }, 500);
     };
     return {
       displayInputString: 'json格式, 如果该值为空 & 设置`共享参数`或`依赖项`, 此时强行保存会移除该项的内容! 样例: \n{"key":"value"}',
@@ -185,7 +185,7 @@ export default {
       // 输入框内容
       inputValue: '', // 输入框内的数据
       inputRules: {
-        'oneInputRules': {validator: checkInput, trigger: 'change'}
+        'oneInputRules': {validator: checkInput, trigger: 'blur'}
       },
       rawDataToBeProcessed: [], // 待处理数据的原数据,
       dataToBeProcessed: [], // 待处理的实际数据 drawer内操作的数据, 均是list

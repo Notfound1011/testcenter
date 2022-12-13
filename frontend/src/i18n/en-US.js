@@ -364,6 +364,9 @@ export default {
       },
       emergency_publish: {
         title: "Emergency Publish"
+      },
+      api_case_coverage: {
+        title: "ApiCaseCoverage"
       }
     },
     report_statistics: {
@@ -2535,7 +2538,7 @@ export default {
     jobScheduler: 'Automated Testing Scheduler',
     definition: 'Api Definition',
     automation: 'Api Automation',
-    report: 'Test Report',
+    report: 'Test Report'
   },
   ldap: {
     url: 'LDAP URL',
