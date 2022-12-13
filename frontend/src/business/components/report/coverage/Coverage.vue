@@ -23,31 +23,22 @@
     </div>
     <el-dialog :title="dialogTitle" :visible.sync="dialogStatus">
       <el-table :data="dialogFormData" height="60vh" stripe>
-        <el-table-column property="title" label="名称" width="200" fixed></el-table-column>
-        <el-table-column property="projectName" label="所属项目" width="200"></el-table-column>
-        <el-table-column property="tag" label="标签" width="200">
+        <el-table-column property="title" label="名称" min-width="200" fixed></el-table-column>
+        <el-table-column property="projectName" label="所属项目" min-width="200"></el-table-column>
+        <el-table-column property="tag" label="标签" min-width="200">
           <template v-slot="scope">
             <el-tag v-for="item in scope.row.tag" :key="item" type="" effect="plain" class="tag-group">
               {{ item }}
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column property="docsUrl" label="docs链接" width="90">
+        <el-table-column property="docsUrl" label="docs链接" min-width="90">
           <template v-slot="scope">
             <el-link v-if="scope.row['docsUrl']" :href="scope.row['docsUrl']" class="el-icon-link" style="font-size: 15px; color: blue" target="_blank"></el-link>
           </template>
         </el-table-column>
-        <el-table-column property="status" label="状态" width="90"></el-table-column>
-        <el-table-column property="addTime" label="创建时间" width="220"></el-table-column>
-
-<!--        <el-table-column align="right">-->
-<!--          <template slot="header" slot-scope="scope">-->
-<!--            <el-input-->
-<!--              v-model="searchStr"-->
-<!--              size="mini"-->
-<!--              placeholder="输入关键字搜索"/>-->
-<!--          </template>-->
-<!--        </el-table-column>-->
+        <el-table-column property="status" label="状态" min-width="90"></el-table-column>
+        <el-table-column property="addTime" label="创建时间" min-width="220"></el-table-column>
       </el-table>
     </el-dialog>
   </div>
@@ -288,7 +279,7 @@ export default {
         tooltip: {},
         xAxis: {
           data: xData,
-          // name: '组人均',
+          name: '标签名称',
           nameLocation: 'middle',
           nameGap: 65,
           axisLabel: {interval: 0, rotate: 50, margin: 10, overflow: "breakAll", width: 120},
@@ -298,10 +289,13 @@ export default {
         },
         yAxis: [
           {
-            name: '数量',
-          },
-          {
             type: 'value',
+            name: '数量',
+            axisLabel: {
+              show: true,
+              interval: 'auto',
+              // formatter: '{value}%'
+            },
           }
         ],
         grid: {
@@ -334,7 +328,7 @@ export default {
       });
       // 绑定点击事件
       chartObj.on('click', (e) => {
-        that.createApiData(e.data['id_list'], e.seriesName)
+        that.createApiData(that.caseDataByMark[e.name]['idList'], e.name)
       });
     },
     /**
@@ -420,7 +414,7 @@ export default {
       });
       // 绑定点击事件
       chartObj.on('click', (e) => {
-        that.createApiData(e.data['id_list'], e.seriesName)
+        that.createApiData(e.data['idList'], e.seriesName)
       });
     }
   },
