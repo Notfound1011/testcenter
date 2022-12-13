@@ -365,7 +365,10 @@ export default {
       },
       emergency_publish: {
         title: "緊急發布/變更"
-      }
+      },
+      api_case_coverage: {
+        title: "接口覆蓋率"
+      },
     },
     report_statistics: {
       reserved: "預留模塊敬請期待",
@@ -2538,7 +2541,7 @@ export default {
     jobScheduler: '任務調度',
     definition: '接口定義',
     automation: '接口自動化',
-    report: '測試報告',
+    report: '測試報告'
   },
   ldap: {
     url: 'LDAP地址',

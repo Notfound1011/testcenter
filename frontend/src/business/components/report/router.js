@@ -35,6 +35,11 @@ export default {
       path: 'emergencyPublish',
       name: 'emergencyPublish',
       component: () => import('@/business/components/report/emergencypublish/emergency_publish'),
+    },
+    {
+      path: 'coverage',
+      name: 'Coverage',
+      component: () => import('@/business/components/report/coverage/Coverage'),
     }
   ]
 }

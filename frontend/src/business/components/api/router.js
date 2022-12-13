@@ -88,6 +88,6 @@ export default {
       path: 'definition/edit/:definitionId',
       name: 'editCompleteContainer',
       component: () => import('@/business/components/api/definition/ApiDefinition'),
-    },
+    }
   ]
 };
