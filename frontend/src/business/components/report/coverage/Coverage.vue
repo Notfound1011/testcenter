@@ -19,7 +19,7 @@
       </el-card>
     </div>
     <div v-else class="chart-content-null">
-      咋是空啊
+      阿! 彩蛋!
     </div>
     <el-dialog :title="dialogTitle" :visible.sync="dialogStatus">
       <el-table :data="dialogFormData" height="60vh" stripe>
@@ -264,7 +264,7 @@ export default {
       let chartObj = that.$echarts.init(document.getElementById('histogram-charts'));
       chartObj.setOption({
         title: {
-          text: '根据mark筛选',
+          text: '根据Case标签筛选',
           // subtext: 'summary of developer bug',
           // link: '',
           textStyle: {
@@ -353,7 +353,7 @@ export default {
           max: 600
         },
         title: {
-          text: 'ApiCase增长曲线',
+          text: 'ApiCase增长和下线曲线',
           // subtext: 'Trend Chart of TestCase PassRate',
           // left: '0%',
           textStyle: {
@@ -362,7 +362,7 @@ export default {
           }
         },
         legend: {
-          data: ['增长曲线', '下线曲线'],
+          data: ['增长', '下线'],
         },
         toolbox: {
           show: true,
@@ -407,12 +407,12 @@ export default {
         },
         series: [
           {
-            name: '增长曲线',
+            name: '增长',
             type: 'line',
             data: that.caseDataByTime['creation_time']
           },
           {
-            name: '下线曲线',
+            name: '下线',
             type: 'line',
             data: that.caseDataByTime['disabled']
           }

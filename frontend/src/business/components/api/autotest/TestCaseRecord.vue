@@ -75,20 +75,20 @@
           height="62vh"
           @filter-change="filter"
           @cell-dblclick="cell_dblclick"
-          style="width: 1560px">
-          <el-table-column prop="id" label="ID" width="60" sortable fixed="left"></el-table-column>
-          <el-table-column prop="case_name" label="用例名称" width="230" fixed="left"></el-table-column>
-          <el-table-column prop="method" label="请求方法" width="100"
+          style="width: 100%">
+          <el-table-column prop="id" label="ID" min-width="60" sortable fixed="left"></el-table-column>
+          <el-table-column prop="case_name" label="用例名称" min-width="230" fixed="left"></el-table-column>
+          <el-table-column prop="method" label="请求方法" min-width="100"
                            column-key="method">
           </el-table-column>
-          <el-table-column prop="path" label="接口path" width="180"></el-table-column>
+          <el-table-column prop="path" label="接口path" min-width="180"></el-table-column>
           <!--          <el-table-column prop="body_by_json" label="json" :formatter="formatObject"-->
-          <!--                           align="left" width="140" show-overflow-tooltip>-->
+          <!--                           align="left" min-width="140" show-overflow-tooltip>-->
           <!--          </el-table-column>-->
           <!--          <el-table-column prop="expect" label="预期结果" :formatter="formatObject"-->
-          <!--                           align="left" width="140" show-overflow-tooltip>-->
+          <!--                           align="left" min-width="140" show-overflow-tooltip>-->
           <!--          </el-table-column>-->
-          <el-table-column prop="mark" label="mark" header-align="center" width="240">
+          <el-table-column prop="mark" label="mark" header-align="center" min-width="240">
             <template v-slot="scope">
               <el-tag v-for="item in scope.row.mark" :key="item" type="" effect="plain" class="tag-group">
                 {{ item }}
@@ -97,14 +97,14 @@
           </el-table-column>
           <!--          <el-table-column prop="created_at" label="创建时间" sortable></el-table-column>-->
           <!--          <el-table-column prop="updated_at" label="更新时间" sortable></el-table-column>-->
-          <el-table-column prop="web_site" label="站点" width="80" column-key="web_site">
+          <el-table-column prop="web_site" label="站点" min-width="80" column-key="web_site">
           </el-table-column>
-          <el-table-column prop="template_type" width="120" label="模板类型"
+          <el-table-column prop="template_type" min-width="120" label="模板类型"
                            column-key="template_type">
           </el-table-column>
-          <el-table-column prop="case_type" label="用例类型" width="100" column-key="case_type">
+          <el-table-column prop="case_type" label="用例类型" min-width="100" column-key="case_type">
           </el-table-column>
-          <el-table-column prop="docs_url" label="API文档链接" width="80" align="center">
+          <el-table-column prop="docs_url" label="API文档链接" min-width="80" align="center">
             <template slot-scope="scope">
               <el-link :href="scope.row.docs_url" target="_blank">
                 <div v-if="scope.row.docs_url !== '' && scope.row.docs_url != null">
@@ -113,20 +113,18 @@
               </el-link>
             </template>
           </el-table-column>
-          <!--          <el-table-column prop="remark" label="备注"-->
-          <!--                           align="left" width="200" show-overflow-tooltip>-->
-          <!--          </el-table-column>-->
-          <el-table-column prop="created_person" label="创建人" :formatter="formatCreatedData" width="100"/>
-          <el-table-column prop="updated_person" label="更新人" :formatter="formatUpdatedData" width="100"/>
-          <el-table-column prop="status" label="状态" width="80">
+          <el-table-column prop="created_person" label="创建人" :formatter="formatCreatedData" min-width="100"/>
+          <el-table-column prop="updated_person" label="更新人" :formatter="formatUpdatedData" min-width="100"/>
+          <el-table-column prop="remark" label="备注" align="left" min-width="200" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="status" label="状态" min-width="80">
             <template v-slot="scope">
               <el-tag :type="scope.row.status ? 'success' : 'danger'" effect="dark">
                 {{ scope.row.status ? '启用' : '停用' }}
               </el-tag>
             </template>
           </el-table-column>
-          <!--          <el-table-column prop="operation" label="操作" width="80" fixed="right">-->
-          <el-table-column prop="operation" label="操作" width="80">
+          <!--          <el-table-column prop="operation" label="操作" min-width="80" fixed="right">-->
+          <el-table-column prop="operation" label="操作" min-width="80">
             <template v-slot="scope">
               <el-button type="primary" icon="el-icon-edit" @click="openTestCaseEditDialog(scope.row.id)"
                          circle v-permission="['PROJECT_API_CASE_RECORD:READ+EDIT']"></el-button>
