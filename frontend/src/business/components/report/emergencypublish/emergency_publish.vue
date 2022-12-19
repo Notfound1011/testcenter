@@ -1,21 +1,26 @@
 <template>
   <ms-container>
     <ms-main-container class="container_main">
-      <!--<div class="chart_are">
+      <!-- <div class="chart_are">
         <span>图表区域</span>
-      </div>-->
+      </div> -->
       <div class="table_action">
         <el-button style="margin: 0 20px;" icon="el-icon-circle-plus-outline" type="primary" @click="dialogVisible = true">提交紧急发布</el-button>
       </div>
       <div class="table_are">
-        <el-table :data="emPublishDataResponse.results" :header-cell-style="{background:'#eef1f6',color:'#606266'}" style="width: 100%;background: transparent; overflow:auto;" height="100%" border>
-          <el-table-column fixed label="ID" prop="publish_id" align="center" width="55"></el-table-column>
-          <el-table-column label="发布类型" align="center">
+        <el-table
+          :data="emPublishDataResponse.results"
+          :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+          style="width: 100%;background: transparent; overflow:auto;"
+          height="100%"
+          border highlight-current-row>
+          <el-table-column label="ID" prop="publish_id" align="center" width="55"></el-table-column>
+          <el-table-column label="发布类型" align="center" width="150">
             <template slot-scope="scope">
               <el-tag effect="dark" size="mini" style="margin: 2px" v-for="item in scope.row.publish_type" :key="item.Id">{{ item }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="发布服务" align="center">
+          <el-table-column label="发布服务" align="center" width="180">
             <template slot-scope="scope">
               <div v-if="scope.row['relation_service'].length > 0">
                 <el-tag effect="dark" type="warning" size="mini" style="margin: 2px" v-for="item in scope.row['relation_service']" :key="item.Id">{{ item }}</el-tag>
@@ -23,13 +28,13 @@
               <span v-else> -- </span>
             </template>
           </el-table-column>
-          <el-table-column label="发布原因" header-align="center" align="left" prop="publish_reason" width="300"></el-table-column>
-          <el-table-column label="相关链接" align="center">
+          <el-table-column label="变更原因/简述" header-align="center" align="left" prop="publish_reason" width="300"></el-table-column>
+          <el-table-column label="相关链接" align="center" width="81">
             <template slot-scope="scope">
-              <el-popover placement="right" width="400" trigger="hover">
-                <el-table :data="scope.row['publish_link']">
-                  <el-table-column property="link_type" label="链接类型"></el-table-column>
-                  <el-table-column property="link_alias" label="链接别名">
+              <el-popover placement="right" width="273" trigger="hover">
+                <el-table :data="scope.row['publish_link']" border :header-cell-style="{background:'#eef1f6',color:'#606266'}">
+                  <el-table-column property="link_type" label="链接类型" width="120"></el-table-column>
+                  <el-table-column property="link_alias" label="链接别名" width="150">
                     <template slot-scope="scope">
                       <a type="primary" :href="scope.row['ori_link']" target="_blank">{{ scope.row['link_alias'] }}</a>
                     </template>
@@ -39,13 +44,13 @@
               </el-popover>
             </template>
           </el-table-column>
-          <el-table-column label="变更时间" width="180" align="center">
+          <el-table-column label="变更时间" width="155" align="center">
             <template slot-scope="scope">
               <i class="el-icon-time"></i>
               <span style="margin-left: 5px">{{ scope.row.publish_time }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="审批状态" align="center">
+          <el-table-column label="审批状态" align="center" width="91">
             <template slot-scope="scope">
               <el-tag :type="publishStatusTag(scope.row['publish_status'].code)">{{ scope.row['publish_status'].status }}</el-tag>
             </template>
@@ -91,6 +96,13 @@
             </template>
           </el-table-column>
           <el-table-column label="提交时间" prop="c_time" width="160" align="center"></el-table-column>
+          <!-- <el-table-column label="操作">
+            <template slot-scope="scope">
+              <el-button :v-show="currentUser(scope.$index, scope.row)"
+                size="mini" icon="el-icon-edit"
+                @click="currentUser(scope.$index, scope.row)">编辑</el-button>
+            </template>
+          </el-table-column> -->
         </el-table>
       </div>
 
@@ -228,6 +240,7 @@
     display: flex;
   }
   .table_are {
+    display: flex;
     margin-bottom: 10px;
     height: 80vh;
   }
@@ -238,9 +251,6 @@
   }
   .el-drawer__container ::-webkit-scrollbar{
     display: none;
-  }
-  .el-table tbody tr:hover>td {
-    background-color: #f5f5f5 !important
   }
   .el-form-item {
     font-weight: bold;
@@ -347,6 +357,7 @@ export default {
         executor: {user_type: 6, users: []},
         developer: {user_type: 5, users: []},
         tester: {user_type: 29, users: []},
+        submitter: {user_type: 32, users: []},
         links: {
           jiraLink: {id: 10, link: ""},
           confluenceLink: {id: 11, link: ""},
@@ -387,6 +398,12 @@ export default {
   },
   inject: ["reload"],
   methods: {
+    currentUser (index, row) {
+      // console.log(row)
+        // if (row.publishUser.includes(this.currentUserId)) {
+        //   return true
+        // }
+    },
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`);
       this.publishListResponse(val)
@@ -433,8 +450,7 @@ export default {
     },
     async emUserInfoResponse () {
       const { data: apiResponse } = await this.$axios.put('naguri/em_api/tech_user_list', {"email": JSON.parse(window.localStorage.getItem('Admin-Token'))['email']})
-      this.formData.developer.users = [apiResponse['user_id']]
-      this.formData.reviewer.users = [apiResponse['user_id']]
+      this.formData.developer.users = this.formData.reviewer.users = this.formData.submitter.users = [apiResponse['user_id']]
     },
     async getRollbackAction () {
       const { data: apiResponse } = await this.$axios.get('naguri/em_api/get_collect_type?type=2')
