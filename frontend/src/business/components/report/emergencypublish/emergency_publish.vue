@@ -5,7 +5,8 @@
         <span>图表区域</span>
       </div> -->
       <div class="table_action">
-        <el-button style="margin: 0 20px;" icon="el-icon-circle-plus-outline" type="primary" @click="dialogVisible = true">提交紧急发布</el-button>
+        <el-button style="margin: 0 auto 0 20px;" icon="el-icon-circle-plus-outline" type="primary" @click="dialogVisible = true">提交紧急发布</el-button>
+        <!-- <el-button style="margin: 0 20px" icon="el-icon-odometer" @click="chartVisible = true">统计图</el-button> -->
       </div>
       <div class="table_are">
         <el-table
@@ -226,6 +227,10 @@
         @current-change="handleCurrentChange"
         :page-size=20>
       </el-pagination>
+
+      <el-drawer :visible.sync="chartVisible" direction="rtl" :show-close="false" size="60%">
+        <div class="Echarts" id="emChart">123</div>
+      </el-drawer>
     </ms-main-container>
   </ms-container>
 </template>
@@ -238,6 +243,7 @@
   .table_action {
     margin-bottom: 6px;
     display: flex;
+    justify-content: flex-end;
   }
   .table_are {
     display: flex;
@@ -308,6 +314,7 @@
 import MsMainContainer from "@/business/components/common/components/MsMainContainer";
 import MsContainer from "@/business/components/common/components/MsContainer";
 import {messageTips, notificationTips} from "@/business/components/report/emergencypublish/common"
+// import * as echarts from 'echarts';
 
 export default {
   inheritAttrs: false,
@@ -339,6 +346,7 @@ export default {
       changeAuditShow: false,
       submitLoading: false,
       dialogVisible: false,
+      chartVisible: false,
       publishPage: {
         emPublishCount: 0,
         currentPage: 1,
@@ -398,12 +406,12 @@ export default {
   },
   inject: ["reload"],
   methods: {
-    currentUser (index, row) {
-      // console.log(row)
-        // if (row.publishUser.includes(this.currentUserId)) {
-        //   return true
-        // }
-    },
+    // currentUser (index, row) {
+    //   console.log(row)
+    //     if (row.publishUser.includes(this.currentUserId)) {
+    //       return true
+    //     }
+    // },
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`);
       this.publishListResponse(val)
