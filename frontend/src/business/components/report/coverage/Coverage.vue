@@ -61,9 +61,9 @@ export default {
       caseDataByTime: null,
       caseDataByMark: null,
       creationTime: null,
+      enabledQuantity: 0,
+      disabledQuantity: 0,
       getUTCTime: true,
-
-      searchStr: '',
       dialogStatus: false,
       dialogTitle: '',
       dialogFormData: []
@@ -107,6 +107,7 @@ export default {
         .then(res => {
           console.log(res.data)
           let tmpData = res.data.data
+          // let tmpData = require('./debug.json');
           that.echartsDataStatus = true
           that.projectData = tmpData.projectData
           that.unfinishedData = that.batchConvertTimestamps(tmpData.unfinishedData)
@@ -116,6 +117,8 @@ export default {
           that.caseDataByTime = tmpData.caseDataByTime
           that.caseDataByMark = tmpData.caseDataByMark
           that.creationTime = `${timestampToTimeFormat(tmpData.creationTime, that.getUTCTime)} UTC`
+          that.enabledQuantity = tmpData.enabledQuantity
+          that.disabledQuantity = tmpData.disabledQuantity
 
           return that.echartsDataStatus;
         }).catch(() => {
@@ -256,7 +259,7 @@ export default {
       chartObj.setOption({
         title: {
           text: '根据Case标签筛选',
-          // subtext: 'summary of developer bug',
+          subtext: `ApiCase总数${that.enabledQuantity + that.disabledQuantity}.`,
           // link: '',
           textStyle: {
             fontSize: 18,
@@ -336,7 +339,7 @@ export default {
      */
     lineChart(){
       const that = this;
-      let xData = that.getLineXData(that.caseDataByTime['creation_time']);
+      let xData = that.getLineXData(that.caseDataByTime['creationTime']);
       let chartObj = that.$echarts.init(document.getElementById('line-charts'));
       chartObj.setOption({
         visualMap: {
@@ -348,7 +351,7 @@ export default {
         },
         title: {
           text: 'ApiCase增长和下线曲线',
-          // subtext: 'Trend Chart of TestCase PassRate',
+          subtext: `ApiCase启用总数: ${that.enabledQuantity}, ApiCase停用总数: ${that.disabledQuantity}.`,
           // left: '0%',
           textStyle: {
             fontSize: 25,
@@ -403,11 +406,13 @@ export default {
           {
             name: '增长',
             type: 'line',
-            data: that.caseDataByTime['creation_time']
+            itemStyle: {"color": '#f7efa6'},  // 线的颜色不对, 不会调参数, 直接动顶部的item
+            data: that.caseDataByTime['creationTime']
           },
           {
             name: '下线',
             type: 'line',
+            // itemStyle: "data",
             data: that.caseDataByTime['disabled']
           }
         ]

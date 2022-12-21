@@ -88,6 +88,16 @@ export default {
       path: 'definition/edit/:definitionId',
       name: 'editCompleteContainer',
       component: () => import('@/business/components/api/definition/ApiDefinition'),
+    },
+    {
+      path: 'autoTestAccount',
+      name: 'autoTestAccount',
+      component: () => import('@/business/components/api/autoTestAccount/autoTestAccount'),
+    },
+    {
+      path: 'globalVariablesForAutoTest',
+      name: 'globalVariablesForAutoTest',
+      component: () => import('@/business/components/api/globalVariablesForAutoTest/globalVariablesForAutoTest'),
     }
   ]
 };

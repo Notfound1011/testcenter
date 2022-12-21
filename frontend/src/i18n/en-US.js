@@ -1947,13 +1947,19 @@ export default {
     data_factory: {
       title: "Data Factory",
       account_related: "Account Related",
-      account_deposit: "Account Deposit",
-      deposit: "Deposit"
+      account_deposit: "Account Fake Recharge",
+      deposit: "Deposit",
     },
     job_scheduler: {
       analysis: "Analysis",
       run_jobs: "Run Jobs",
       reports: "Reports"
+    },
+    autoTestAccount: {
+      text: 'Auto Test Account'
+    },
+    globalVariablesForAutoTest: {
+      text: 'Global Variables For Auto Test'
     }
   },
   api_report: {
@@ -2538,7 +2544,9 @@ export default {
     jobScheduler: 'Automated Testing Scheduler',
     definition: 'Api Definition',
     automation: 'Api Automation',
-    report: 'Test Report'
+    report: 'Test Report',
+    autoTestAccount: 'Auto Test Account',
+    globalVariablesForAutoTest: 'Global Variables For Auto Test'
   },
   ldap: {
     url: 'LDAP URL',

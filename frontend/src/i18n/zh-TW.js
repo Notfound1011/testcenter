@@ -1952,13 +1952,19 @@ export default {
     data_factory: {
       title: "數據工廠",
       account_related: "帳號相關",
-      account_deposit: "帳號充值",
+      account_deposit: "帳號假充值",
       deposit: "充值"
     },
     job_scheduler: {
       analysis: "報表統計",
       run_jobs: "任務運行",
       reports: "測試報告"
+    },
+    autoTestAccount: {
+      text: '自動化測試賬號'
+    },
+    globalVariablesForAutoTest: {
+      text: '自動化測試公共變量'
     }
   },
   api_report: {
@@ -2541,7 +2547,9 @@ export default {
     jobScheduler: '任務調度',
     definition: '接口定義',
     automation: '接口自動化',
-    report: '測試報告'
+    report: '測試報告',
+    autoTestAccount: '自動化測試賬號',
+    globalVariablesForAutoTest: '自動化測試公共變量'
   },
   ldap: {
     url: 'LDAP地址',

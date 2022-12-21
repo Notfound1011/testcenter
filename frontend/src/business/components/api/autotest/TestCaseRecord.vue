@@ -65,14 +65,13 @@
         </div>
 
         <!-- table主体内容 -->
-        <!-- highlight-current-row高亮显示当前行(没加其他触发事件); -->
+        <!-- highlight-current-row高亮显示当前行(没加其他触发事件); height不需要设置, 自适应高度即可-->
         <el-table
           v-loading="getCaseListStatus"
           :data="tableData"
           :border="true"
           :highlight-current-row="true"
           :row-class-name="tableRowClassName"
-          height="62vh"
           @filter-change="filter"
           @cell-dblclick="cell_dblclick"
           style="width: 100%">
@@ -418,7 +417,6 @@ export default {
 </script>
 
 <style>
-
 .el-table .warning-row {
   background: radial-gradient(oldlace, white);
 }

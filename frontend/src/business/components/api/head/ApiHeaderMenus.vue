@@ -32,6 +32,14 @@
           <el-menu-item :index="'/api/automation/report'" v-permission="['PROJECT_API_REPORT:READ']">
             {{ $t("i18n.report") }}
           </el-menu-item>
+
+          <el-menu-item :index="'/api/autoTestAccount'" v-permission="['PROJECT_API_REPORT:READ']">
+            {{ $t("i18n.autoTestAccount") }}
+          </el-menu-item>
+
+          <el-menu-item :index="'/api/globalVariablesForAutoTest'" v-permission="['PROJECT_API_REPORT:READ']">
+            {{ $t("i18n.globalVariablesForAutoTest") }}
+          </el-menu-item>
         </el-menu>
       </el-col>
     </el-row>
