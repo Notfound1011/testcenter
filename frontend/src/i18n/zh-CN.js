@@ -1952,13 +1952,19 @@ export default {
     data_factory: {
       title: "数据工厂",
       account_related: "账号相关",
-      account_deposit: "账号充值",
+      account_deposit: "账号假充值",
       deposit: "充值"
     },
     job_scheduler: {
       analysis: "报表统计",
       run_jobs: "任务运行",
       reports: "测试报告"
+    },
+    autoTestAccount: {
+      text: '自动化测试账号'
+    },
+    globalVariablesForAutoTest: {
+      text: '自动化测试公共变量'
     }
   },
   api_report: {
@@ -2542,7 +2548,9 @@ export default {
     jobScheduler: '任务调度',
     definition: '接口定义',
     automation: '接口自动化',
-    report: '测试报告'
+    report: '测试报告',
+    autoTestAccount: '自动化测试账号',
+    globalVariablesForAutoTest: '自动化测试公共变量'
   },
   ldap: {
     url: 'LDAP地址',
