@@ -1,13 +1,12 @@
 <template>
   <ms-container>
     <ms-main-container class="container_main">
-      <!-- <div class="chart_are">
-        <span>图表区域</span>
-      </div> -->
+      <!-- 操作按钮区域 -->
       <div class="table_action">
         <el-button style="margin: 0 auto 0 20px;" icon="el-icon-circle-plus-outline" type="primary" @click="dialogVisible = true">提交紧急发布</el-button>
-        <!-- <el-button style="margin: 0 20px" icon="el-icon-odometer" @click="chartVisible = true">统计图</el-button> -->
+        <el-button style="margin: 0 20px" icon="el-icon-odometer" @click="chartVisible = true">统计图</el-button>
       </div>
+      <!-- 表格数据区域 -->
       <div class="table_are">
         <el-table
           :data="emPublishDataResponse.results"
@@ -97,17 +96,10 @@
             </template>
           </el-table-column>
           <el-table-column label="提交时间" prop="c_time" width="160" align="center"></el-table-column>
-          <!-- <el-table-column label="操作">
-            <template slot-scope="scope">
-              <el-button :v-show="currentUser(scope.$index, scope.row)"
-                size="mini" icon="el-icon-edit"
-                @click="currentUser(scope.$index, scope.row)">编辑</el-button>
-            </template>
-          </el-table-column> -->
         </el-table>
       </div>
-
-      <el-drawer size="40%" title="提交紧急发布变更" :visible.sync="dialogVisible" direction="ltr" :before-close="handleClose" :with-header="false">
+      <!-- 表单抽屉区 -->
+      <el-drawer @open="emFormParamsInit" size="40%" title="提交紧急发布变更" :visible.sync="dialogVisible" direction="ltr" :before-close="handleClose" :with-header="false">
         <el-container class="main_submit">
           <el-card class="sub_card" shadow="never" style="height: 100%;padding: 0 0;border: 0" >
             <div slot="header" class="clearfix">
@@ -217,7 +209,7 @@
           <el-button size="medium" type="primary" @click="on_submit_form" :loading="submitLoading">提交发布审批</el-button>
         </div>
       </el-drawer>
-
+      <!-- 翻页区域 -->
       <el-pagination
         background
         :pager-count=21
@@ -225,11 +217,15 @@
         layout="prev, pager, next"
         :total="publishPage.emPublishCount"
         @current-change="handleCurrentChange"
-        :page-size=20>
-      </el-pagination>
-
-      <el-drawer :visible.sync="chartVisible" direction="rtl" :show-close="false" size="60%">
-        <div class="Echarts" id="emChart">123</div>
+        :page-size=20></el-pagination>
+      <!-- 图表区域 -->
+      <el-drawer class="chartAre" :with-header="false" :visible.sync="chartVisible" direction="rtl" :show-close="false" size="55%" @open="emEChartOpen">
+        <div class="chartAreSub">
+          <div ref="lastTwoWeekChart" style="height: 500px;width: 500px; margin: 20px 0 20px 0;"></div>
+          <div ref="typePercentageChart" style="height: 500px;width: 500px; margin: 20px 0 20px 0;"></div>
+          <div ref="topServiceChart" style="height: 500px;width: 500px; margin: 20px 0 20px 0;"></div>
+          <div ref="topDeveloperChart" style="height: 500px;width: 500px; margin: 20px 0 20px 0;"></div>
+        </div>
       </el-drawer>
     </ms-main-container>
   </ms-container>
@@ -287,14 +283,16 @@
     flex-direction: column;
     justify-content: center;
   }
-  .chart_are {
+  .chartAre {
+    height: 100%;
     display: flex;
-    width: 100%;
-    height: 300px;
-    background: #d2d2f1;
     justify-content: center;
-    align-items: center;
-    margin-bottom: 10px;
+  }
+  .chartAreSub {
+    margin: 0 0 0 50px;
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
   }
   .demo-table-expand {
     font-size: 0;
@@ -314,7 +312,7 @@
 import MsMainContainer from "@/business/components/common/components/MsMainContainer";
 import MsContainer from "@/business/components/common/components/MsContainer";
 import {messageTips, notificationTips} from "@/business/components/report/emergencypublish/common"
-// import * as echarts from 'echarts';
+import * as echarts from 'echarts';
 
 export default {
   inheritAttrs: false,
@@ -381,7 +379,8 @@ export default {
         "value": "id",
         "children": "children",
         "checkStrictly": false
-      }
+      },
+      statistics: {}
     }
   },
   watch: {
@@ -397,23 +396,70 @@ export default {
     }
   },
   created() {
-    this.techUserListResponse()
-    this.serviceResponse()
-    this.publishTypeResponse()
     this.publishListResponse()
-    this.getRollbackAction()
-    this.emUserInfoResponse()
+  },
+  mounted() {
+    this.statisticsResponse()
   },
   inject: ["reload"],
   methods: {
-    // currentUser (index, row) {
-    //   console.log(row)
-    //     if (row.publishUser.includes(this.currentUserId)) {
-    //       return true
-    //     }
-    // },
+    emFormParamsInit () {
+      this.emUserInfoResponse()
+      this.techUserListResponse()
+      this.serviceResponse()
+      this.publishTypeResponse()
+      this.getRollbackAction()
+    },
+    emEChartOpen() {
+      this.$nextTick(() => { //  执行echarts方法
+        this.lastTwoWeekChart()
+        this.typePercentageChart()
+        this.topServiceChart()
+        this.topDeveloperChart()
+      })
+    },
+    lastTwoWeekChart() {
+      const lastTwoWeekChart = echarts.init(this.$refs.lastTwoWeekChart);
+      lastTwoWeekChart.setOption({
+        title: {text: '最近14天紧急发布走势'},
+        tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+        xAxis: {type: 'category', data: this.statistics['ltw']['date'], axisLabel: {interval: 0, rotate:"45",}},
+        yAxis: {type: 'value'},
+        series: [{name: "发布次数", type: 'line', smooth: true, data: this.statistics['ltw']['count'], itemStyle: {normal: {color:function(){return "#"+Math.floor(Math.random()*(256*256*256-1)).toString(16);}},}}]
+      });
+    },
+    typePercentageChart() {
+      const typePercentageChart = echarts.init(this.$refs.typePercentageChart);
+      typePercentageChart.setOption({
+        title: {text: '紧急发布类型占比'},
+        tooltip: {trigger: 'item', formatter: '{a} <br/>{b} : {c} ({d}%)'},
+        legend: {top: 'bottom'},
+        series: [{name: '紧急发布类型', type: 'pie', radius: [15, 170], center: ['50%', '50%'], itemStyle: {borderRadius: 8}, data: this.statistics['tp']}]
+      });
+    },
+    topServiceChart() {
+      const topServiceChart = echarts.init(this.$refs.topServiceChart);
+      topServiceChart.setOption({
+        title: {text: '紧急发布服务排行'},
+        grid: {left: '3%', right: '4%', containLabel: true},
+        tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
+        xAxis: {type: 'category', data: this.statistics['ts']['service'], axisLabel: {interval: 0, rotate:"45",}},
+        yAxis: {type: 'value'},
+        series: [{name: "发布次数", type: 'bar', smooth: true, data: this.statistics['ts']['count']}]
+      });
+    },
+    topDeveloperChart() {
+      const topDeveloperChart = echarts.init(this.$refs.topDeveloperChart);
+      topDeveloperChart.setOption({
+        title: {text: 'Developer提交排行'},
+        grid: {left: '3%', right: '4%', containLabel: true},
+        tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
+        xAxis: {type: 'value', boundaryGap: [0, 0.01]},
+        yAxis: {type: 'category', data: this.statistics['td']['name']},
+        series: [{name: "发布次数", type: 'bar', data: this.statistics['td']['count'], itemStyle: {normal: {color:function(){return "#"+Math.floor(Math.random()*(256*256*256-1)).toString(16);}}}}]
+      });
+    },
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`);
       this.publishListResponse(val)
     },
     publishStatusTag (status) {
@@ -438,6 +484,10 @@ export default {
     },
     sleep (time) {
       return new Promise((resolve) => setTimeout(resolve, time));
+    },
+    async statisticsResponse () {
+      const { data: apiResponse } = await this.$axios.get('naguri/em_api/statistics')
+      this.statistics = apiResponse
     },
     async serviceResponse () {
       const { data: apiResponse } = await this.$axios.get('naguri/em_api/service_list')
