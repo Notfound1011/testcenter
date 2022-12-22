@@ -4,7 +4,7 @@
       <!-- 操作按钮区域 -->
       <div class="table_action">
         <el-button style="margin: 0 auto 0 20px;" icon="el-icon-circle-plus-outline" type="primary" @click="dialogVisible = true">提交紧急发布</el-button>
-        <el-button style="margin: 0 20px" icon="el-icon-odometer" @click="chartVisible = true">统计图</el-button>
+        <el-button plain style="margin: 0 20px" type="primary" icon="el-icon-odometer" @click="chartVisible = true">统计图</el-button>
       </div>
       <!-- 表格数据区域 -->
       <div class="table_are">
