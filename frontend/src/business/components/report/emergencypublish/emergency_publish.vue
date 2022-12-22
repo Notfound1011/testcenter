@@ -404,6 +404,7 @@ export default {
   inject: ["reload"],
   methods: {
     emFormParamsInit () {
+      this.formData.publish_time = new Date(new Date().getTime() + 30 * 60 * 1000)
       this.emUserInfoResponse()
       this.techUserListResponse()
       this.serviceResponse()
@@ -421,7 +422,7 @@ export default {
     lastTwoWeekChart() {
       const lastTwoWeekChart = echarts.init(this.$refs.lastTwoWeekChart);
       lastTwoWeekChart.setOption({
-        title: {text: '最近14天紧急发布走势'},
+        title: {text: '最近'+ this.statistics['ltw']['days'] +'紧急发布走势'},
         tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
         xAxis: {type: 'category', data: this.statistics['ltw']['date'], axisLabel: {interval: 0, rotate:"45",}},
         yAxis: {type: 'value'},
