@@ -456,7 +456,7 @@ export default {
         grid: {left: '3%', right: '4%', containLabel: true},
         tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
         xAxis: {type: 'value', boundaryGap: [0, 0.01]},
-        yAxis: {type: 'category', data: this.statistics['td']['name']},
+        yAxis: {type: 'category', data: this.statistics['td']['name'], axisLabel: {interval: 0, rotate:0,}},
         series: [{name: "发布次数", type: 'bar', data: this.statistics['td']['count'], itemStyle: {normal: {color:function(){return "#"+Math.floor(Math.random()*(256*256*256-1)).toString(16);}}}}]
       });
     },
