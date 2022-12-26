@@ -56,8 +56,8 @@
       <el-table-column prop="updatedPerson" label="最近更新人" :formatter="getPerson" min-width="150"/>
       <el-table-column label="操作" min-width="150" fixed="right">
         <template slot-scope="scope">
-          <el-button @click="readAccount(scope.row)" type="text" size="small">查 看</el-button>
-          <el-button type="text" size="small" @click="updateAccount(scope.row)">编 辑</el-button>
+          <el-button @click="readAccount(scope.row)" type="text" size="small" :disabled="scope.row.env === 'prod'">查 看</el-button>
+          <el-button type="text" size="small" @click="updateAccount(scope.row)" :disabled="scope.row.env === 'prod'">编 辑</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -265,10 +265,13 @@ export default {
       this.dialogTitle = "创建新账号"
     },
     /**
-     * 变更变量
+     * 变更账号信息
      * @param row
      */
     updateAccount(row) {
+      if (row.env === 'prod'){
+        return
+      }
       this.getOneAccount(row.id)
       this.readOnly = false;
       this.addEnvData = false;
@@ -280,6 +283,9 @@ export default {
      * @param row
      */
     readAccount(row) {
+      if (row.env === 'prod'){
+        return
+      }
       this.getOneAccount(row.id)
       this.readOnly = true;
       this.addEnvData = false;
