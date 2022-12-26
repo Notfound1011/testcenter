@@ -66,7 +66,7 @@
                    layout="total, sizes, prev, pager, next, jumper" :total="total"/>
 
     <el-dialog :title="dialogTitle" :visible.sync="dialogStatus" :before-close="cancelFrom">
-      <el-form :model="dialogFrom" :rules="validationRules" ref="dialogFrom" label-width="80px">
+      <el-form :model="dialogFrom" :rules="validationRules" ref="dialogFrom" label-width="100px">
         <el-form-item label="UID" prop="uid">
           <el-input v-model="dialogFrom.uid" placeholder="uid" :readonly="readOnly" style="width: 193px"></el-input>
         </el-form-item>
@@ -74,7 +74,10 @@
           <el-input v-model="dialogFrom.email" placeholder="邮箱" :readonly="readOnly" style="width: 193px"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="dialogFrom.password" placeholder="密码" :readonly="readOnly" style="width: 193px" show-password></el-input>
+          <el-input v-model="dialogFrom.password" placeholder="密码" :readonly="readOnly" style="width: 193px"></el-input>
+        </el-form-item>
+        <el-form-item label="Google2FA" prop="Google2FA">
+          <el-input v-model="dialogFrom['googleVerification']" placeholder="Google2FA" :readonly="readOnly" style="width: 193px"></el-input>
         </el-form-item>
         <el-form-item label="账号环境" prop="env">
           <el-select v-model="dialogFrom.env" placeholder="请选择" :disabled="readOnly">
@@ -95,7 +98,7 @@
             filterable
             allow-create
             default-first-option
-            placeholder="请选择适用场景标签"
+            :placeholder="readOnly?'无使用场景标签': '请选择适用场景标签'"
             :disabled="readOnly">
             <el-option
               v-for="item in applicableSceneOption"
