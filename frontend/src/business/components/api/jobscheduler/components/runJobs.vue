@@ -5,7 +5,7 @@
       <div style="margin: 20px">
         <!-- table主体内容 -->
         <el-table :data="tableData" style="width: 100%" border>
-          <el-table-column prop="name" label="job名称" show-overflow-tooltip width="170"></el-table-column>
+          <el-table-column prop="name" label="job名称" show-overflow-tooltip width="200"></el-table-column>
           <el-table-column prop="description" label="描述" show-overflow-tooltip width="180"></el-table-column>
           <!--          <el-table-column prop="numExecutors" label="执行机器数量"  width="120"></el-table-column>-->
           <el-table-column prop="url" label="jenkins地址" width="100" align="center">
@@ -509,7 +509,7 @@ export default {
             title: "job执行成功",
             message: res.statusText
           });
-          if (name === 'ApiAutoTestToPhemex') {
+          if (name === 'ApiAutoTestToPhemex' || name === 'ApiAutoTestBaseAndDebug') {
             this.dialogVisible = false;
           } else if (name === 'ApiAutoTestToTurkey') {
             this.turkeyDialogVisible = false;
@@ -562,7 +562,7 @@ export default {
         this.turkeyDialogVisible = true;
         this.runName = item.name;
         this.turkeyParametersOrigin = JSON.parse(JSON.stringify(this.turkeyParameters));
-      } else if (item.name === 'ApiAutoTestToPhemex') {
+      } else if (item.name === 'ApiAutoTestToPhemex' || item.name === 'ApiAutoTestBaseAndDebug') {
         this.resetForm();
         this.dialogVisible = true;
         this.runName = item.name;
