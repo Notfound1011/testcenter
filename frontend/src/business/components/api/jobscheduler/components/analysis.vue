@@ -83,6 +83,10 @@ export default {
         {
           "value": "ApiAutoTestToTurkey",
           "label": "ApiAutoTestToTurkey"
+        },
+        {
+          "value": "ApiAutoTestBaseAndDebug",
+          "label": "ApiAutoTestBaseAndDebug"
         }],
       value: 'ApiAutoTestToPhemex',
       defaultValue: 'ApiAutoTestToPhemex',

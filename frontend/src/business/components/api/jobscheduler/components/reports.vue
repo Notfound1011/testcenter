@@ -13,7 +13,9 @@
               :value="item.value">
             </el-option>
           </el-select>
-          <el-button type="primary" @click="getJobInfoList(value)" style="margin-left: 20px">{{ $t('commons.adv_search.search') }}</el-button>
+          <el-button type="primary" @click="getJobInfoList(value)" style="margin-left: 20px">
+            {{ $t('commons.adv_search.search') }}
+          </el-button>
           <!--          <span style=" margin-left:200px ;color:#F00; font-weight:bold">{{value}}</span>-->
         </template>
         <!-- table主体内容 -->
@@ -90,6 +92,10 @@ export default {
         {
           "value": "ApiAutoTestToTurkey",
           "label": "ApiAutoTestToTurkey"
+        },
+        {
+          "value": "ApiAutoTestBaseAndDebug",
+          "label": "ApiAutoTestBaseAndDebug"
         }],
       value: '',
       defaultValue: 'ApiAutoTestToPhemex',
