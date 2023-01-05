@@ -469,9 +469,6 @@ export default {
      */
     updateApiCaseData(editKey, itemKey, itemValue) {
       const _that = this;
-      console.log(editKey)
-      console.log(itemKey)
-      console.log(itemValue)
       if(itemValue){
         if (editKey === 'response' || editKey === 'socket') {
           if (_that.apiCaseData['expect'] && _that.apiCaseData['expect'] instanceof Object) {
