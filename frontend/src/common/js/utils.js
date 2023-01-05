@@ -593,8 +593,11 @@ export function removeEmptyField(data, defaultStr = null) {
 }
 
 export function isObjectValueEqual(a, b) {
-  // 判断两个对象是否指向同一内存，指向同一内存返回true
-  if (a === b) return true
+  // 不判断是否是同一内存地址, 兼容 undefined or null的场景
+  if (a === undefined || a === null || b === undefined || b === null) {
+    return a == b
+    }
+  }
   // 获取两个对象键值数组
   let aProps = Object.getOwnPropertyNames(a)
   let bProps = Object.getOwnPropertyNames(b)
@@ -916,7 +919,7 @@ export function getApiTestConfig(typeName) {
  * @param {String} msgType 消息等级 success/warning/info/error
  * @return {void}
  */
-export function popUpReminder(that, normalString, specialString= '', specialColor = 'teal', msgType = 'error') {
+export function popUpReminder(that, normalString, specialString = '', specialColor = 'teal', msgType = 'error') {
   const h = that.$createElement;
   that.$message({
     duration: 5000,
@@ -947,20 +950,20 @@ export function isNoneJson(jsonData) {
  * @return {String}
  */
 export function timestampToTimeFormat(timestamp, utcTime = true, dateOnly = false) {
-  if (timestamp instanceof String){
+  if (timestamp instanceof String) {
     timestamp = parseInt(timestamp)
   }
-  if (timestamp < 1000000000000){
+  if (timestamp < 1000000000000) {
     timestamp = timestamp * 1000
   }
   let date = new Date(timestamp)
   if (utcTime && dateOnly) {
     return `${date.getUTCFullYear()}-${('0' + (date.getUTCMonth() + 1)).slice(-2)}-${('0' + date.getUTCDate()).slice(-2)}`
-  }else if (utcTime && !dateOnly){
+  } else if (utcTime && !dateOnly) {
     return `${date.getUTCFullYear()}-${('0' + (date.getUTCMonth() + 1)).slice(-2)}-${('0' + date.getUTCDate()).slice(-2)} ${('0' + date.getUTCHours()).slice(-2)}:${('0' + date.getUTCMinutes()).slice(-2)}:${('0' + date.getUTCSeconds()).slice(-2)}`;
-  }else if (dateOnly) {
+  } else if (dateOnly) {
     return `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}-${('0' + date.getDate()).slice(-2)}`
-  }else{
-      return `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}-${('0' + date.getDate()).slice(-2)} ${('0' + date.getHours()).slice(-2)}:${('0' + date.getMinutes()).slice(-2)}:${('0' + date.getSeconds()).slice(-2)}`;
+  } else {
+    return `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}-${('0' + date.getDate()).slice(-2)} ${('0' + date.getHours()).slice(-2)}:${('0' + date.getMinutes()).slice(-2)}:${('0' + date.getSeconds()).slice(-2)}`;
   }
 }
