@@ -8,6 +8,10 @@
                    v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']">{{ $t('api_test.case_record.add_case') }}
         </el-button>
 
+        <el-link type="primary" @click="introductionStatus=true"
+                 v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']" style="float:right">介绍
+        </el-link>
+
         <div>
           <el-divider></el-divider>
           <el-form :inline="true" class="demo-form-inline">
@@ -23,29 +27,30 @@
             </template>
             <el-form-item>
               <el-input v-model="keywords" placeholder="请输入查询内容" clearable
-                        v-if="value ==='id' || value ==='case_name'"></el-input>
-              <el-input v-model="keywords" placeholder='多条标签用逗号隔开' clearable
-                        v-if="value ==='mark'"></el-input>
-              <el-select v-model="keywords" clearable placeholder="请选择" v-if="value==='method'">
+                        v-if="value ==='case_name'"></el-input>
+              <el-input v-model="keywords" placeholder='多条用逗号隔开' clearable
+                        v-else-if="value ==='mark' || value ==='case_id_list'"></el-input>
+              <el-input v-model="keywords" placeholder='输入查询路径' clearable v-else-if="value==='path'"></el-input>
+              <el-select v-model="keywords" clearable placeholder="请选择" v-else-if="value==='method'">
                 <el-option label="get" value="get"></el-option>
                 <el-option label="post" value="post"></el-option>
                 <el-option label="put" value="put"></el-option>
                 <el-option label="delete" value="delete"></el-option>
               </el-select>
-              <el-select v-model="keywords" clearable placeholder="请选择" v-if="value==='template_type'">
+              <el-select v-model="keywords" clearable placeholder="请选择" v-else-if="value==='template_type'">
                 <el-option label="非模板" value="not_template"></el-option>
                 <el-option label="合约" value="contract"></el-option>
                 <el-option label="现货" value="spot"></el-option>
               </el-select>
-              <el-select v-model="keywords" clearable placeholder="请选择" v-if="value==='case_type'">
+              <el-select v-model="keywords" clearable placeholder="请选择" v-else-if="value==='case_type'">
                 <el-option label="rest_api" value="rest_api"></el-option>
                 <el-option label="pub_api" value="pub_api"></el-option>
               </el-select>
-              <el-select v-model="keywords" clearable placeholder="请选择" v-if="value==='web_site'">
+              <el-select v-model="keywords" clearable placeholder="请选择" v-else-if="value==='web_site'">
                 <el-option label=国际站 value="phemex"></el-option>
                 <el-option label="土耳其站" value="turkey"></el-option>
               </el-select>
-              <el-select v-model="keywords" clearable placeholder="请选择" v-if="value==='status'">
+              <el-select v-model="keywords" clearable placeholder="请选择" v-else>
                 <el-option label="启用" value="true"></el-option>
                 <el-option label="停用" value="false"></el-option>
               </el-select>
@@ -87,7 +92,7 @@
           <!--          <el-table-column prop="expect" label="预期结果" :formatter="formatObject"-->
           <!--                           align="left" min-width="140" show-overflow-tooltip>-->
           <!--          </el-table-column>-->
-          <el-table-column prop="mark" label="mark" header-align="center" min-width="240">
+          <el-table-column prop="mark" label="用例标签" header-align="center" min-width="240">
             <template v-slot="scope">
               <el-tag v-for="item in scope.row.mark" :key="item" type="" effect="plain" class="tag-group">
                 {{ item }}
@@ -114,7 +119,8 @@
           </el-table-column>
           <el-table-column prop="created_person" label="创建人" :formatter="formatCreatedData" min-width="100"/>
           <el-table-column prop="updated_person" label="更新人" :formatter="formatUpdatedData" min-width="100"/>
-          <el-table-column prop="remark" label="备注" align="left" min-width="200" show-overflow-tooltip></el-table-column>
+          <el-table-column prop="remark" label="备注" align="left" min-width="200"
+                           show-overflow-tooltip></el-table-column>
           <el-table-column prop="status" label="状态" min-width="80">
             <template v-slot="scope">
               <el-tag :type="scope.row.status ? 'success' : 'danger'" effect="dark">
@@ -122,10 +128,15 @@
               </el-tag>
             </template>
           </el-table-column>
-          <!--          <el-table-column prop="operation" label="操作" min-width="80" fixed="right">-->
-          <el-table-column prop="operation" label="操作" min-width="80">
+          <el-table-column prop="operation" label="操作" width="120">
             <template v-slot="scope">
+<!--              <el-row>-->
+<!--                <el-col :span="12"><div class="grid-content bg-purple"></div></el-col>-->
+<!--                <el-col :span="12"><div class="grid-content bg-purple-light"></div></el-col>-->
+<!--              </el-row>-->
               <el-button type="primary" icon="el-icon-edit" @click="openTestCaseEditDialog(scope.row.id)"
+                         circle v-permission="['PROJECT_API_CASE_RECORD:READ+EDIT']"></el-button>
+              <el-button type="primary" icon="el-icon-document-copy" @click="openTestCaseEditDialog(scope.row.id, true)"
                          circle v-permission="['PROJECT_API_CASE_RECORD:READ+EDIT']"></el-button>
               <!--              <el-button type="danger" icon="el-icon-delete" @click="delCase(scope.$index)" circle disabled></el-button>-->
             </template>
@@ -149,6 +160,14 @@
           </el-input>
         </el-dialog>
 
+        <!-- 录制介绍 -->
+        <el-dialog title="录制介绍" :visible.sync="introductionStatus" width="800px" append-to-body>
+          <h1>标签</h1>
+          <span>spot, contract单指`现货`和`合约`交易相关的case;</span>
+          <br/>
+          <span>每个case必须包含: 用例级别, 用例类型, 涉及服务名(有-的请手动转为_), 如果有特殊账号需求需填写筛选账号类型用于和测试账号匹配...</span>
+          <el-divider></el-divider>
+        </el-dialog>
       </div>
 
     </ms-main-container>
@@ -173,14 +192,15 @@ export default {
         components: AUTO_TEST_SEARCH_CASE
       },
       options: [
-        {value: 'id', label: 'ID'},
+        {value: 'case_id_list', label: '用例ID'},
         {value: 'case_name', label: '用例名称'},
-        {value: 'mark', label: 'mark'},
+        {value: 'mark', label: '用例标签(mark)'},
         {value: 'method', label: '请求类型'},
         {value: 'case_type', label: '用例类型'},
         {value: 'template_type', label: '模板类型'},
         {value: 'web_site', label: '站点'},
         {value: 'status', label: '用例状态'},
+        {value: 'path', label: '接口路径'},
       ],
       mark_options: [],
       value: 'case_name',
@@ -200,7 +220,8 @@ export default {
         page: 1,
         limit: 30
       },
-      getCaseListStatus: false
+      getCaseListStatus: false,
+      introductionStatus: false
     }
   },
   activated() {
@@ -283,31 +304,11 @@ export default {
         this.getCaseList(filterData)
       } else {
         switch (this.value) {
-          case "id":
-            filterData.id = keywords.trim()
-            break;
-          case "case_name":
-            filterData.case_name = keywords.trim()
-            break;
-          case "method":
-            filterData.method = keywords.trim()
-            break;
-          case "template_type":
-            filterData.template_type = keywords.trim()
-            break;
-          case "case_type":
-            filterData.case_type = keywords.trim()
-            break;
-          case "mark":
-            filterData.mark = keywords.trim().split(/,|，|\s+/)
-            break;
-          case "web_site":
-            filterData.web_site = keywords.trim()
-            break;
-          case "status":
-            filterData.status = keywords.trim()
+          case "case_id_list" || "mark":
+            filterData[this.value] = keywords.trim().split(/,|，|\s+/);
             break;
           default:
+            filterData[this.value] = keywords.trim()
             break;
         }
         this.getCaseList(filterData)
@@ -407,9 +408,10 @@ export default {
     /**
      * @description 传id的话, 防止页面长时间没刷新, 导致异常输入传入
      * @param {Integer|undefined} caseId, apiCaseId, 变更传整数, 新增传undefined
+     * @param {Boolean} copy, 是否是复制case
      */
-    openTestCaseEditDialog(caseId) {
-      this.$refs.testCaseEditDialog.openTestCaseEditDialog(caseId);
+    openTestCaseEditDialog(caseId, copy=false) {
+      this.$refs.testCaseEditDialog.openTestCaseEditDialog(caseId, copy);
     }
   }
 }
