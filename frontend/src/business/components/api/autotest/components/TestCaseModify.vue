@@ -261,8 +261,9 @@ export default {
     /**
      * @description 打开dialog的回调函数,
      * @param {Integer|undefined} caseId, apiCaseId, 变更传整数, 新增传undefined
+     * @param {Boolean} copy, 是否是复制case
      */
-    openTestCaseEditDialog(caseId) {
+    openTestCaseEditDialog(caseId, copy) {
       console.log(`点击打开咯 ${caseId}`)
       const _that = this;
       // 获取缓存在本地的信息
@@ -271,7 +272,7 @@ export default {
       _that.personData = {'id': adminToken.id, 'name': adminToken.name, 'email': adminToken.email}
       // 判断为真就是修改, 反之就是添加, 如果获取失败, 出现异常, 修改状态为 `添加case`
       if (caseId) {
-        _that.addNewCaseFlag = false;
+        _that.addNewCaseFlag = copy;
         // 如果请求失败, 把apiCaseData置为空, 并把addNewCaseFlag改为添加(作为兜底).
         _that.$axios.post("/pyServer/TestCase/Search", {'id': caseId}, {timeout: 2000})
           .then(result => {
@@ -281,6 +282,8 @@ export default {
                 // _that.resetForm()
                 _that.apiCaseData = result.data.data[0];
                 _that.updateCaseId = _that.apiCaseData['id']
+                // 如果是copy, 在name中增加--copy
+                _that.apiCaseData['case_name'] = `${_that.apiCaseData['case_name']}${copy ? '--copy': ''}`
                 // 删除无用字段
                 delete _that.apiCaseData['id'];
                 delete _that.apiCaseData['updated_at'];
@@ -362,6 +365,7 @@ export default {
           _that.apiCaseData = JSON.parse(JSON.stringify(_that.apiCaseDataModel));
           // _that.$refs['apiCaseData'].clearValidate();
         }).catch(() => {
+
         })
       }
     },
@@ -465,18 +469,39 @@ export default {
      */
     updateApiCaseData(editKey, itemKey, itemValue) {
       const _that = this;
-      if (editKey === 'response' || editKey === 'socket') {
-        if (_that.apiCaseData['expect'] && _that.apiCaseData['expect'] instanceof Object) {
-          _that.apiCaseData['expect'] = {[editKey]: {[itemKey]: itemValue}}
+      console.log(editKey)
+      console.log(itemKey)
+      console.log(itemValue)
+      if(itemValue){
+        if (editKey === 'response' || editKey === 'socket') {
+          if (_that.apiCaseData['expect'] && _that.apiCaseData['expect'] instanceof Object) {
+            _that.apiCaseData['expect'] = {[editKey]: {[itemKey]: itemValue}}
+          } else {
+            _that.apiCaseData['expect'][editKey] = {[itemKey]: itemValue}
+          }
+        } else if (['', null, undefined].includes(itemKey)) {
+          _that.apiCaseData[editKey] = itemValue;
+        } else if (_that.apiCaseData[editKey]) {
+          _that.apiCaseData[editKey][itemKey] = itemValue
         } else {
-          _that.apiCaseData['expect'][editKey] = {[itemKey]: itemValue}
+          _that.apiCaseData[editKey] = {[itemKey]: itemValue}
         }
-      } else if (['', null, undefined].includes(itemKey)) {
-        _that.apiCaseData[editKey] = itemValue;
-      } else if (_that.apiCaseData[editKey]) {
-        _that.apiCaseData[editKey][itemKey] = itemValue
-      } else {
-        _that.apiCaseData[editKey] = {[itemKey]: itemValue}
+      }else{
+        if (editKey === 'response' || editKey === 'socket') {
+          if (_that.apiCaseData['expect'] && _that.apiCaseData['expect'] instanceof Object && _that.apiCaseData['expect'][editKey]) {
+            _that.$delete(_that.apiCaseData['expect'][editKey], itemKey)
+          }
+        } else if (['', null, undefined].includes(itemKey)) {
+          if (_that.apiCaseData[editKey] instanceof Object) {
+            _that.$delete(_that.apiCaseData, editKey)
+          }
+        } else if (_that.apiCaseData[editKey] instanceof Object) {
+          if (_that.apiCaseData[editKey][itemKey] instanceof Object) {
+            _that.$delete(_that.apiCaseData[editKey], itemKey)
+          }
+        } else {
+          // _that.apiCaseData[editKey] = {[itemKey]: itemValue}
+        }
       }
     },
     /**

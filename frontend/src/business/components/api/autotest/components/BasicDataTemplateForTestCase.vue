@@ -145,32 +145,29 @@ export default {
      */
     const checkInput = (rule, value, callback) => {
       const _that = this;
-      if (_that.checkInputStatus) {
-        return
-      }
       if (!_that.inputValue && _that.basicData instanceof Object && _that.basicData.hasOwnProperty('_SET_GLOBAL_SHARED_DATA')) {
         return callback(new Error('仅设置`依赖项`的情况下, 理论上不允许为空!'));
       }
-      _that.checkInputStatus = setTimeout(() => {
-        try {
-          if (_that.inputValue === '') {
-            _that.$emit('update_basic_data', _that.editKey, '_EXECUTE_DATA', '')
-            return
-          }
-          let tmpInputJson = JSON.parse(_that.inputValue);
-          if (tmpInputJson instanceof Object && !tmpInputJson.hasOwnProperty('length')) {
-            _that.inputValue = JSON.stringify(tmpInputJson, null, 4)
-            console.log('update_basic_data', tmpInputJson)
-            _that.$emit('update_basic_data', _that.editKey, '_EXECUTE_DATA', tmpInputJson)
-          } else {
-            return callback(new Error('最外层应当是 key: value; 不应该是array;'));
-          }
-        } catch (e) {
-          return callback(new Error('转json格式错误, 在最终提交时, 错误的数据不会生效!!'));
-        } finally {
-          _that.checkInputStatus = null;
+      try {
+        if (!_that.inputValue || _that.inputValue === '') {
+          _that.$emit('update_basic_data', _that.editKey, '_EXECUTE_DATA', null)
+          return
         }
-      }, 500);
+        let tmpInputJson = JSON.parse(_that.inputValue);
+        if (tmpInputJson instanceof Object && !tmpInputJson.hasOwnProperty('length')) {
+          _that.inputValue = JSON.stringify(tmpInputJson, null, 4)
+          console.log('update_basic_data', tmpInputJson)
+          _that.$emit('update_basic_data', _that.editKey, '_EXECUTE_DATA', tmpInputJson)
+        } else {
+          _that.$emit('update_basic_data', _that.editKey, '_EXECUTE_DATA', null)
+          return callback(new Error('最外层应当是 key: value; 不应该是array;'));
+        }
+      } catch (e) {
+        _that.$emit('update_basic_data', _that.editKey, '_EXECUTE_DATA', null)
+        return callback(new Error('转json格式错误, 在最终提交时, 错误的数据不会生效!!'));
+      }
+      // } finally {
+      // }
     };
     return {
       displayInputString: 'json格式, 如果该值为空 & 设置`共享参数`或`依赖项`, 此时强行保存会移除该项的内容! 样例: \n{"key":"value"}',
@@ -180,7 +177,6 @@ export default {
       configContent: [],  // `el-drawer`配置内容
 
       drawer: false,
-      checkInputStatus: null,
 
       // 输入框内容
       inputValue: '', // 输入框内的数据
