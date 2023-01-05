@@ -25,7 +25,7 @@
                 </el-option>
               </el-select>
             </template>
-            <el-form-item>
+            <el-form-item @keyup.enter.native="search(keywords)">
               <el-input v-model="keywords" placeholder="请输入查询内容" clearable
                         v-if="value ==='case_name'"></el-input>
               <el-input v-model="keywords" placeholder='多条用逗号隔开' clearable
@@ -130,10 +130,10 @@
           </el-table-column>
           <el-table-column prop="operation" label="操作" width="120">
             <template v-slot="scope">
-<!--              <el-row>-->
-<!--                <el-col :span="12"><div class="grid-content bg-purple"></div></el-col>-->
-<!--                <el-col :span="12"><div class="grid-content bg-purple-light"></div></el-col>-->
-<!--              </el-row>-->
+              <!--              <el-row>-->
+              <!--                <el-col :span="12"><div class="grid-content bg-purple"></div></el-col>-->
+              <!--                <el-col :span="12"><div class="grid-content bg-purple-light"></div></el-col>-->
+              <!--              </el-row>-->
               <el-button type="primary" icon="el-icon-edit" @click="openTestCaseEditDialog(scope.row.id)"
                          circle v-permission="['PROJECT_API_CASE_RECORD:READ+EDIT']"></el-button>
               <el-button type="primary" icon="el-icon-document-copy" @click="openTestCaseEditDialog(scope.row.id, true)"
@@ -194,13 +194,13 @@ export default {
       options: [
         {value: 'case_id_list', label: '用例ID'},
         {value: 'case_name', label: '用例名称'},
+        {value: 'path', label: '接口路径'},
         {value: 'mark', label: '用例标签(mark)'},
         {value: 'method', label: '请求类型'},
         {value: 'case_type', label: '用例类型'},
         {value: 'template_type', label: '模板类型'},
         {value: 'web_site', label: '站点'},
-        {value: 'status', label: '用例状态'},
-        {value: 'path', label: '接口路径'},
+        {value: 'status', label: '用例状态'}
       ],
       mark_options: [],
       value: 'case_name',
@@ -410,7 +410,7 @@ export default {
      * @param {Integer|undefined} caseId, apiCaseId, 变更传整数, 新增传undefined
      * @param {Boolean} copy, 是否是复制case
      */
-    openTestCaseEditDialog(caseId, copy=false) {
+    openTestCaseEditDialog(caseId, copy = false) {
       this.$refs.testCaseEditDialog.openTestCaseEditDialog(caseId, copy);
     }
   }

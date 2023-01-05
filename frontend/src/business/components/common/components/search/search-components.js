@@ -579,6 +579,15 @@ export const REQUEST_METHOD = {
     multiple: false
   }
 };
+export const PATH = {
+  key: "path", // 返回结果Map的key
+  name: 'MsTableSearchInput', // Vue控件名称
+  label: '接口路径', // 显示名称
+  operator: { // 运算符设置
+    value: OPERATORS.LIKE.value, // 如果未设置value初始值，则value初始值为options[0]
+    options: [OPERATORS.LIKE] // 运算符候选项
+  },
+};
 export const MARK = {
   key: "mark", // 返回结果Map的key
   name: 'MsTableSearchInput', // Vue控件名称
@@ -723,4 +732,4 @@ export const TEST_CASE_RELEVANCE_API_SCENARIO_CONFIGS = [NAME, API_CASE_PRIORITY
 export const TEST_CASE_RELEVANCE_LOAD_CASE= [NAME, STATUS, CREATE_TIME, UPDATE_TIME, CREATOR];
 
 // 自研自动化录入页面的组合查询
-export const AUTO_TEST_SEARCH_CASE= [CASE_NAME, REQUEST_METHOD, MARK, WEB_SITE ,TEMPLATE_TYPE, CASE_TYPE, NEED_HELP, CASE_STATUS];
+export const AUTO_TEST_SEARCH_CASE= [CASE_NAME, REQUEST_METHOD, PATH, MARK, WEB_SITE ,TEMPLATE_TYPE, CASE_TYPE, NEED_HELP, CASE_STATUS];
