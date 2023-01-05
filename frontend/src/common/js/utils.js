@@ -596,7 +596,6 @@ export function isObjectValueEqual(a, b) {
   // 不判断是否是同一内存地址, 兼容 undefined or null的场景
   if (a === undefined || a === null || b === undefined || b === null) {
     return a == b
-    }
   }
   // 获取两个对象键值数组
   let aProps = Object.getOwnPropertyNames(a)
