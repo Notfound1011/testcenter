@@ -22,7 +22,16 @@
       阿! 彩蛋!
     </div>
     <el-dialog :title="dialogTitle" :visible.sync="dialogStatus">
-      <el-table :data="dialogFormData" height="60vh" stripe>
+      <el-input placeholder="请输入内容" v-model="searchValue" class="coverage-input" @keydown.enter.native="filterData" @blur="filterData">
+        <el-select v-model="searchKey" slot="prepend" placeholder="请选择" class="coverage-select">
+          <el-option label="名称" value="title"></el-option>
+          <el-option label="所属项目" value="projectName"></el-option>
+        </el-select>
+        <el-button slot="append" icon="el-icon-search" @click="filterData"></el-button>
+      </el-input>
+      <el-table
+        :data="dialogFormData"
+        height="60vh" stripe>
         <el-table-column property="title" label="名称" min-width="200" fixed></el-table-column>
         <el-table-column property="projectName" label="所属项目" min-width="200"></el-table-column>
         <el-table-column property="tag" label="标签" min-width="200">
@@ -66,7 +75,11 @@ export default {
       getUTCTime: true,
       dialogStatus: false,
       dialogTitle: '',
-      dialogFormData: []
+      formData: [], // 真实的缓存数据
+      dialogFormData: [],  // 展示的是数据, 会通过search变更
+
+      searchKey: 'projectName',
+      searchValue: ''
     }
   },
   methods: {
@@ -136,6 +149,7 @@ export default {
       const that = this;
       that.dialogStatus = true;
       that.dialogTitle = dialogTitle;
+      that.formData = formData;
       that.dialogFormData = formData;
     },
     /**
@@ -421,6 +435,9 @@ export default {
       chartObj.on('click', (e) => {
         that.createApiData(e.data['idList'], e.seriesName)
       });
+    },
+    filterData(){
+      this.dialogFormData = this.formData.filter(data => !this.searchValue || data[this.searchKey].toLowerCase().includes(this.searchValue.toLowerCase()))
     }
   },
   mounted(){
@@ -457,5 +474,10 @@ export default {
   min-height: 36px;
   margin: 10px;
 }
-
+.coverage-select {
+  width: 130px;
+}
+.coverage-input {
+  width: 450px;
+}
 </style>
