@@ -351,6 +351,9 @@ export default {
         title: "Listing Script"
       }
     },
+    efficient_tools: {
+      title: "efficientTools"
+    },
     quality_market: {
       title: "Quality market",
       testcase_statistics: {
