@@ -157,7 +157,7 @@ export default {
       creationTime: null,
       enabledQuantity: 0,
       disabledQuantity: 0,
-      getUTCTime: true,
+      getUTCTime: false,
       dialogStatus: false,
       dialogTitle: '',
       formData: [], // 真实的缓存数据
@@ -183,7 +183,7 @@ export default {
      */
     batchConvertTimestamps(formData){
       for (let index in formData){
-        formData[index].addTime = `${timestampToTimeFormat(formData[index].addTime, this.getUTCTime)} UTC`
+        formData[index].addTime = `${timestampToTimeFormat(formData[index].addTime, this.getUTCTime)}${this.getUTCTime ? ' UTC' : ''}`
       }
       return formData
     },
@@ -196,8 +196,8 @@ export default {
     getLineXData(lineFormData){
       let xData = []
       for (let index in lineFormData){
-        if (lineFormData[index].time > 0) {
-          xData.push(`${timestampToTimeFormat(lineFormData[index].time, this.getUTCTime, true)} UTC`)
+        if (lineFormData[index].startTime > 0) {
+          xData.push(`${timestampToTimeFormat(lineFormData[index].startTime, this.getUTCTime, true)} ${this.getUTCTime ? ' UTC' : ''}`)
         }else{
           xData.push('更早以前')
         }
@@ -210,7 +210,7 @@ export default {
     dataGeneration() {
       const that = this;
       let loading = fullScreenLoading(that, '资源加载中...');
-      that.$axios.get("/pyServer/Jobs/ApiCaseCoverage/Report/Last")
+      that.$axios.get("/pyServer/public/scheduler-task/api-case-coverage/report/last")
         .then(res => {
           console.log(res.data)
           let tmpData = res.data.data
@@ -223,7 +223,7 @@ export default {
           that.excludedRule = tmpData.excludedRule
           that.caseDataByTime = tmpData.caseDataByTime
           that.caseDataByMark = tmpData.caseDataByMark
-          that.creationTime = `${timestampToTimeFormat(tmpData['createdAt'], that.getUTCTime)} UTC`
+          that.creationTime = `${timestampToTimeFormat(tmpData['createdAt'], that.getUTCTime)} ${this.getUTCTime ? ' UTC' : ''}`
           that.enabledQuantity = tmpData.enabledQuantity
           that.disabledQuantity = tmpData.disabledQuantity
           loading.close();
@@ -248,29 +248,28 @@ export default {
       that.dialogFormData = formData;
     },
     /**
-     * 根据id list 获取api数据, 并且转换成dialog可以读的内容
-     * @param {Array} idList line数据
+     * 获取apiCase
+     * @param {Object} params 请求数据
      * @param {String} dialogTitle 标题头
-     * @returns
      */
-    createApiData(idList, dialogTitle){
-      if (idList.length > 0){
-        const that = this;
-        that.$axios.post("/pyServer/TestCase/Search", {case_id_list: idList, limit: 200})
-          .then(res => {
-            let tmpList = []
-            let data = res.data.data
-            for(let index in data){
-              tmpList.push({'docsUrl': data[index].docs_url, 'path': data[index].path,
-                'status': data[index].status ? '启用': '停用', 'method': data[index].method, 'projectName': '',
-                'title': data[index].case_name, 'addTime': data[index]['created_at'], 'tag': data[index].mark})
-            }
-            this.dialogTableVisible(tmpList, dialogTitle)
-          }).catch(() => {
-          popUpReminder(this, '获取case数据失败!')
-        })
-        // this.dialogTitle()
-      }
+    getApiData(params, dialogTitle){
+      const that = this;
+      params.limit = 2000;  // 2000对应目前的上限
+      that.$axios.post("/pyServer/public/test-data/test-case/search", params)
+        .then(res => {
+          let tmpList = []
+          let data = res.data.data
+          for(let index in data){
+            tmpList.push({'docsUrl': data[index].docsUrl, 'path': data[index].path,
+              'status': data[index].status ? '启用': '停用', 'method': data[index].method, 'projectName': '',
+              'title': data[index].caseName, 'tag': data[index].mark,
+              'addTime': `${timestampToTimeFormat(data[index]['createdAt'], this.getUTCTime)} ${this.getUTCTime ? ' UTC' : ''}`
+            })
+          }
+          this.dialogTableVisible(tmpList, dialogTitle)
+        }).catch(() => {
+        popUpReminder(this, '获取case数据失败!')
+      })
     },
     /**
      * 饼图
@@ -448,9 +447,11 @@ export default {
           }
         ]
       });
+      // 先移除事件, 防止多次重复
+      chartObj.off('click');
       // 绑定点击事件
       chartObj.on('click', (e) => {
-        that.createApiData(that.caseDataByMark[e.name]['idList'], e.name)
+        that.getApiData({'mark': [e.name]}, e.name)
       });
     },
     /**
@@ -466,7 +467,7 @@ export default {
           type: 'continuous',
           seriesIndex: 0,
           min: 0,
-          max: 600
+          max: 10
         },
         title: {
           text: 'ApiCase增长和下线曲线',
@@ -536,9 +537,15 @@ export default {
           }
         ]
       });
+      // 先移除事件, 防止多次重复
+      chartObj.off('click');
       // 绑定点击事件
       chartObj.on('click', (e) => {
-        that.createApiData(e.data['idList'], e.seriesName)
+        if (e.seriesName === '下线'){
+          that.getApiData({'updateTimeRange': [e.data.startTime, e.data.endTime], 'status': false}, e.seriesName)
+        }else{
+          that.getApiData({'createTimeRange': [e.data.startTime, e.data.endTime]}, e.seriesName)
+        }
       });
     },
     /**
@@ -572,7 +579,7 @@ export default {
       if (that.coolDown > 0){
         return
       }
-      that.$axios.post("/pyServer/Jobs/ManagePeriodicTask/RunNow", {'jobId': jobId})
+      that.$axios.post("/pyServer/scheduler-task/manage-periodic-task/run-now", {'jobId': jobId})
         .then(res => {
           console.log(res.data)
           let tmpData = res.data

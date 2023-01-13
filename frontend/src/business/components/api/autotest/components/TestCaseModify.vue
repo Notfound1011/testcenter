@@ -1,37 +1,80 @@
 <template>
-  <div>
-    <!-- 新增和修改用例编辑框 -->
-    <el-dialog :title="addNewCaseFlag ? '新增API用例': '修改API用例'" width="70%"
-               :visible.sync="editCaseDialogVisible"
-               :before-close="handleCancelDialog"
-               @keydown.esc.stop="handleCancelDialog">
-      <!-- 加了表单重置功能, 为了清理form的默认规则, 需要每次关闭, 打开销毁form 用 v-if -->
-      <el-form v-if="editCaseDialogVisible" :model="apiCaseData" ref="apiCaseData" label-width="120px"
-               style="width: 95%">
-        <el-form-item label="用例名称" :rules="apiCaseRules.inputValueCheck" prop="caseName">
-          <el-input placeholder="必填项, 不允许重复, 提交时会自动去掉头尾的空格." v-model.trim="apiCaseData.caseName"/>
-        </el-form-item>
-        <el-form-item label="接口path" :rules="apiCaseRules.requiredCheck" prop="path">
-          <el-input placeholder="必填项, 仅输入接口路径即可, 例: /api/public/products-plus"
-                    v-model.trim="apiCaseData.path"/>
-        </el-form-item>
-        <!--        这个要看下-->
-        <el-form-item label="用例标签" :rules="apiCaseRules.requiredCheck" prop="mark">
-          <el-select v-model="apiCaseData.mark" multiple filterable allow-create clearable
-                     placeholder="用例的标签/标记, 支持多选，模糊筛选，自定义标签" style="width: 100%;">
-            <el-option-group
-              v-for="group in configData['markConfig']"
-              :key="group.label"
-              :label="group.label">
-              <el-option
-                v-for="item in group.options"
-                :key="item"
-                :label="item"
-                :value="item">
-              </el-option>
-            </el-option-group>
-          </el-select>
-        </el-form-item>
+  <!-- 使用v-if是为了不考虑, 或者少考虑缓存的场景...如果去掉需要考虑子组件缓存&重置功能的缓存 -->
+  <div v-if="editCaseDialogVisible">
+    <!-- 新增和修改用例编辑框, 宽度 1150px 刚好适配所有样式, 不想调了, 不许改! -->
+    <el-dialog :title="addNewCaseFlag ? '新增API用例': '修改API用例'" width="1150px" :destroy-on-close=true
+               :close-on-click-modal=false :visible="editCaseDialogVisible"
+               :before-close="handleCancelDialog">
+
+      <el-form :model="apiCaseData" ref="apiCaseDataRef" label-width="120px" style="width: 95%" size="small">
+      <el-row>
+        <el-col :span="12">
+            <el-form-item label="用例名称" :rules="apiCaseRules.inputValueCheck" prop="caseName">
+              <el-input placeholder="必填项, 不允许重复, 提交时会自动去掉头尾的空格."
+                        v-model.trim="apiCaseData.caseName"/>
+            </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="接口path" :rules="apiCaseRules.requiredCheck" prop="path">
+            <el-input placeholder="必填项, 仅输入接口路径即可, 例: /api/public/products-plus"
+                      v-model.trim="apiCaseData.path"/>
+          </el-form-item>
+        </el-col>
+      </el-row>
+
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="用例标签" :rules="apiCaseRules.requiredCheck" prop="mark">
+              <el-select v-model="apiCaseData.mark" multiple filterable allow-create clearable
+                         placeholder="用例的标签/标记, 支持多选，模糊筛选，自定义标签" style="width: 100%;">
+                <el-option-group
+                  v-for="group in configData['markConfig']"
+                  :key="group.label"
+                  :label="group.label">
+                  <el-option
+                    v-for="item in group.options"
+                    :key="item"
+                    :label="item"
+                    :value="item">
+                  </el-option>
+                </el-option-group>
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="适用环境" prop="applicableEnv">
+              <el-select v-model="apiCaseData.applicableEnv" filterable multiple placeholder="指定运行的特殊环境, 为空默认全部." style="width: 90%;">
+                <el-option
+                  v-for="item in configData['applicableEnvConfig']"
+                  :key="item"
+                  :label="item"
+                  :value="item">
+                </el-option>
+              </el-select>
+              <el-tooltip class="tooltip" effect="dark" placement="top"
+                          content="有些依赖第三方回调, fat只能指定一个环境, 需要指定, 为空默认全部可以执行.">
+                <i class="el-icon-question"/>
+              </el-tooltip>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="适用账号" prop="applicableAccount">
+              <el-select v-model="apiCaseData.applicableAccount" filterable multiple placeholder="指定账号类型, 为空默认全部." style="width: 90%;">
+                <el-option
+                  v-for="item in configData['applicableAccountConfig']"
+                  :key="item"
+                  :label="item"
+                  :value="item">
+                </el-option>
+              </el-select>
+              <el-tooltip class="tooltip" effect="dark" placement="top"
+                          content="适用账号类型, 匹配测试账号中的`适用场景`, 为空默认全部可以执行.">
+                <i class="el-icon-question"/>
+              </el-tooltip>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
         <el-row>
           <el-col :span="6">
             <el-form-item label="请求方式" :rules="apiCaseRules.requiredCheck" prop="method">
@@ -69,40 +112,7 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="适用环境" prop="applicableEnv">
-              <el-select v-model="apiCaseData.applicableEnv" filterable multiple placeholder="指定运行的特殊环境, 为空默认全部." style="width: 90%;">
-                <el-option
-                  v-for="item in configData['applicableEnvConfig']"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-              <el-tooltip class="tooltip" effect="dark" placement="top"
-                          content="有些依赖第三方回调, fat只能指定一个环境, 需要指定, 为空默认全部可以执行.">
-                <i class="el-icon-question"/>
-              </el-tooltip>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="适用账号" prop="applicableAccount">
-              <el-select v-model="apiCaseData.applicableAccount" filterable multiple placeholder="指定账号类型, 为空默认全部." style="width: 90%;">
-                <el-option
-                  v-for="item in configData['applicableAccountConfig']"
-                  :key="item"
-                  :label="item"
-                  :value="item">
-                </el-option>
-              </el-select>
-              <el-tooltip class="tooltip" effect="dark" placement="top"
-                          content="适用账号类型, 匹配测试账号中的`适用场景`, 为空默认全部可以执行.">
-                <i class="el-icon-question"/>
-              </el-tooltip>
-            </el-form-item>
-          </el-col>
-        </el-row>
+
         <el-row>
           <el-col :span="6">
             <el-form-item label="用例状态" prop="status" required>
@@ -116,7 +126,7 @@
           <el-col :span="6">
             <el-form-item label="触发条件单" prop="triggerOrder">
               <el-switch v-model="apiCaseData.triggerOrder"
-                         :disabled="!needOrderAndTriggerConditionalOrderStatus"/>
+                         :disabled="!needOrderAndTriggerOrderStatus"/>
               <el-tooltip class="tooltip" effect="dark" placement="top"
                           content="是否需要达成触发价格, 如果不是'交易'的模板类型, 会在提交时[强制]修改为false.">
                 <i class="el-icon-question"/>
@@ -126,7 +136,7 @@
           <el-col :span="6">
             <el-form-item label="挂对手单" prop="needOrder">
               <el-switch v-model="apiCaseData.needOrder"
-                         :disabled="!needOrderAndTriggerConditionalOrderStatus"/>
+                         :disabled="!needOrderAndTriggerOrderStatus"/>
               <el-tooltip class="tooltip" effect="dark" placement="top"
                           content="是否需要协助挂对手单, 如果不是'交易'的模板类型, 会在提交时[强制]修改为false.">
                 <i class="el-icon-question"/>
@@ -134,28 +144,27 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <!--        <el-row>-->
-        <!--          <el-col :span="6">-->
-        <!--            <el-form-item label="用例执行依赖" prop="depend">-->
-        <!--              <basic-data-template-for-test-case-->
-        <!--                :depend-button="true"-->
-        <!--                edit-key="depend"-->
-        <!--                @synchronize_basic_data="updateApiCaseData"-->
-        <!--                :processed-data="apiCaseData.depend instanceof Array ? apiCaseData.depend : []" />-->
-        <!--            </el-form-item>-->
-        <!--          </el-col>-->
-        <!--          <el-col :span="6">-->
-        <!--            <el-form-item label="用例后续清理" prop="clearUp">-->
-        <!--              <basic-data-template-for-test-case-->
-        <!--                :clearButton="true"-->
-        <!--                edit-key="clearUp"-->
-        <!--                @synchronize_basic_data="updateApiCaseData"-->
-        <!--                :processed-data="apiCaseData.clearUp instanceof Array ? apiCaseData.depend : []" />-->
-        <!--            </el-form-item>-->
-        <!--          </el-col>-->
-        <!--        </el-row>-->
+<!--        <el-row>-->
+<!--          <el-col :span="6">-->
+<!--            <el-form-item label="用例执行依赖" prop="depend">-->
+<!--              <depend-and-clean-up-for-modify-->
+<!--                edit-key="depend"-->
+<!--                @synchronize_basic_data="updateApiCaseData"-->
+<!--                :processed-data="apiCaseData.depend"/>-->
+<!--            </el-form-item>-->
+<!--          </el-col>-->
+<!--          <el-col :span="6">-->
+<!--            <el-form-item label="用例后续清理" prop="clearUp">-->
+<!--              <depend-and-clean-up-for-modify-->
+<!--                edit-key="clearUp"-->
+<!--                @synchronize_basic_data="updateApiCaseData"-->
+<!--                :processed-data="apiCaseData.clearUp"/>-->
+<!--            </el-form-item>-->
+<!--          </el-col>-->
+<!--        </el-row>-->
+
         <el-form-item label="请求-params" prop="params">
-          <basic-data-template-for-test-case
+          <basic-data-template-for-modify
             edit-key="params"
             @synchronize_basic_data="updateApiCaseData"
             :processed-data="apiCaseData.params"
@@ -163,7 +172,7 @@
         </el-form-item>
 
         <el-form-item label="请求-json" prop="bodyByJson">
-          <basic-data-template-for-test-case
+          <basic-data-template-for-modify
             edit-key="bodyByJson"
             @synchronize_basic_data="updateApiCaseData"
             :processed-data="apiCaseData.bodyByJson"
@@ -172,33 +181,25 @@
         <el-form-item label="预期结果" prop="expect">
           <el-tabs>
             <el-tab-pane label="Response">
-              <basic-data-template-for-test-case
+              <basic-data-template-for-modify
                 edit-key="response"
+                response-type
                 @synchronize_basic_data="updateApiCaseData"
-                :processed-data="apiCaseData.expect ? apiCaseData.expect.response : undefined"
-                ref="basicDataTemplateByExpectResponse"
-                style="width: 100%"/>
+                :processed-data="apiCaseData.expect"
+                ref="basicDataTemplateByExpectResponse" />
             </el-tab-pane>
             <el-tab-pane label="Socket">
-              <basic-data-template-for-test-case
+              <basic-data-template-for-modify
                 edit-key="socket"
+                socket-type
                 @synchronize_basic_data="updateApiCaseData"
-                :processed-data="apiCaseData.expect ? apiCaseData.expect.socket : undefined"
-                ref="basicDataTemplateByExpectSocket"
-                style="width: 100%"/>
-            </el-tab-pane>
-            <!-- assert_level 改名为 _ASSERT_DATA_HIERARCHY -->
-            <el-tab-pane v-if="apiCaseData.expect.socket" label="setSocketLevel">
-              <el-input type="textarea" :autosize="{ minRows: 2, maxRows: 10 }" style="margin-top: 10px;"
-                        placeholder='设置要验证的socket层级, 毕竟是流式推送, 而且返回的是列表, 存在处理速度不同, 列表顺序每次不一致, 需要特殊处理;
-例: orders.[-1]'
-                        v-model.trim="apiCaseData.expect.socket['_ASSERT_DATA_HIERARCHY']">
-              </el-input>
+                :processed-data="apiCaseData.expect"
+                ref="basicDataTemplateByExpectSocket" />
             </el-tab-pane>
           </el-tabs>
         </el-form-item>
         <el-form-item label="API文档" :rules="apiCaseRules.requiredCheck" prop="docsUrl">
-          <el-input placeholder='这里设置为yapi的链接即可' v-model.trim="apiCaseData.docsUrl"/>
+          <el-input placeholder='这里设置为YApi的链接即可' v-model.trim="apiCaseData.docsUrl"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input placeholder="非必填项, 可以输入一些该case相关介绍、适用范围等, 方便出问题时排查." type="textarea"
@@ -217,13 +218,21 @@
 </template>
 
 <script>
-import {isObjectValueEqual, popUpReminder, isNoneJson, isKeyValueObject, getApiTestConfig} from "@/common/js/utils";
-import BasicDataTemplateForTestCase from './BasicDataTemplateForTestCase';
-import log from "@/business/components/project/menu/Log";
+import {
+  isValueEqual,
+  popUpReminder,
+  isEmptyValue,
+  isKeyValueObject,
+  getApiTestConfig,
+  fullScreenLoading,
+  jsonCloneDeep
+} from "@/common/js/utils";
+import BasicDataTemplateForModify from './BasicDataTemplateForModify.vue';
+import _ from 'lodash'
 
 export default {
   name: "TestCaseModify",
-  components: {BasicDataTemplateForTestCase},
+  components: {BasicDataTemplateForModify},
   data() {
     /**
      * @description 仅验证必填输入框的内容是否为空
@@ -249,28 +258,30 @@ export default {
       // ↓ 新增的变更
       submitLoading: false,
       personData: {},
-      // 数据基础结构,  每次关闭容器时, 重置到这个状态
-      apiCaseDataModel: {
+      // 数据基础结构,
+      apiCaseData: {
+        // 必填的 + bool默认值的
         caseName: '',
         mark: [],
         path: '',
         method: '',
-        params: {},
-        bodyByForm: {},
-        bodyByJson: {},
-        depend: [],
-        expect: {'response': {}, 'socket': {}},
         caseType: '',
-        remark: '',
         templateType: '',
         webSite: '',
-        clearUp: [],
         triggerOrder: false,
         needOrder: false,
-        status: true,
+        status: false,
         docsUrl: '',
-        applicableEnv: [],
-        applicableAccount: []
+        // 非必填的, 默认值为null
+        params: null,  // {}
+        bodyByForm: null,  // {}
+        bodyByJson: null,  // {}
+        depend: null,  // []
+        expect: null, // {'response': {}, 'socket': {}}
+        remark: null,  // ''
+        clearUp: null,  // []
+        applicableEnv: null,  // []
+        applicableAccount: null  // []
       },
       // 表单验证内容
       apiCaseRules: {
@@ -280,15 +291,14 @@ export default {
         ],
         requiredCheck: {required: true, message: "缺少必填参数", trigger: ['change', 'blur']}
       },
-      apiCaseData: {},
-      rawApiCaseData: {},  // 如果是update case时, 用这个存储起来, 用于新老数据对比
+      rawApiCaseData: {},  // 打开的时候会操作这个值, 其余都是对比
       updateCaseId: null,  // 如果是update要更新这个值;
       // 提醒配置
       tipsConfig: {
         caseName: {'fieldName': '用例名称', 'placeholder': '必填项', 'coupledKey': 'caseName'},
       },
       // needOrder 和 triggerOrder 操作控制器, 除了交易类的 其余都默认为0, 并且不可操作,
-      needOrderAndTriggerConditionalOrderStatus: true,
+      needOrderAndTriggerOrderStatus: false,
       // 配置
       configData: {}
     }
@@ -309,35 +319,41 @@ export default {
       // 判断为真就是修改, 反之就是添加, 如果获取失败, 出现异常, 修改状态为 `添加case`
       if (caseId) {
         _that.addNewCaseFlag = copy;
+        let loading = fullScreenLoading(this, '资源加载中...');
         // 如果请求失败, 把apiCaseData置为空, 并把addNewCaseFlag改为添加(作为兜底).
-        _that.$axios.get(`/pyServer/TestCase/${caseId}`, {timeout: 2000})
+        _that.$axios.get(`/pyServer/public/test-data/test-case/${caseId}`, {timeout: 2000})
           .then(result => {
             if (result.status === 200 && result.data.code === 0) {
               // 判断接口返回是否为空
               if (isKeyValueObject(result.data.data)) {
                 // _that.resetForm()
+                // let tmpApiCaseData = result.data.data;
                 _that.apiCaseData = result.data.data;
                 _that.updateCaseId = _that.apiCaseData['id']
                 // 如果是copy, 在name中增加--copy
                 _that.apiCaseData['caseName'] = `${_that.apiCaseData['caseName']}${copy ? '--copy': ''}`
-                // 删除无用字段
+                // 删除无用字段(不需要主动传向后端的, 用于做匹配用的)
                 delete _that.apiCaseData['id'];
+                delete _that.apiCaseData['docsId'];
                 delete _that.apiCaseData['updatedAt'];
-                delete _that.apiCaseData['updatedPerson'];
                 delete _that.apiCaseData['createdAt'];
+                delete _that.apiCaseData['updatedPerson'];
                 delete _that.apiCaseData['createdPerson'];
                 // 通过转json对象转字符串, 在转json达到深拷贝的目的,  不管添加还是新建都要
-                _that.rawApiCaseData = JSON.parse(JSON.stringify(_that.apiCaseData));
+                _that.rawApiCaseData = jsonCloneDeep(_that.apiCaseData)
                 // 处理完数据, 打开 dialog
+                loading.close();
                 _that.editCaseDialogVisible = true;
                 // 这还有个打印
-                console.log(_that.rawApiCaseData);
+                console.log(_that.apiCaseData);
               } else {
+                loading.close();
                 _that.addNewCaseFlag = true;
                 _that.editCaseDialogVisible = true;
                 popUpReminder(_that, '获取数据结构异常, 请联系开发者!', `id: ${caseId} `)
               }
             } else {
+              loading.close();
               _that.addNewCaseFlag = true;
               _that.editCaseDialogVisible = true;
               popUpReminder(_that, '获取数据失败, 请检查网络状态!', `id: ${caseId} `)
@@ -345,13 +361,14 @@ export default {
           })
           .catch((err) => {
             console.log(err);
+            loading.close();
             _that.addNewCaseFlag = true;
             _that.editCaseDialogVisible = true;
             popUpReminder(_that, '请求失败, 请检查网络状态 or 联系开发者!', `id: ${caseId} `)
           })
       } else {
-        _that.apiCaseData = JSON.parse(JSON.stringify(_that.apiCaseDataModel))
-        _that.rawApiCaseData = JSON.parse(JSON.stringify(_that.apiCaseData))
+        console.log('你认为, 我是新增?')
+        _that.rawApiCaseData = jsonCloneDeep(_that.apiCaseData)
         _that.addNewCaseFlag = true;
         _that.editCaseDialogVisible = true;
       }
@@ -368,14 +385,15 @@ export default {
       }).then(_ => {
         _that.submitLoading = false;
         // 针对深层次的数据的话, 比如 expect 还是没办法用 resetFields 完全重置, copy 一下, 兜底
-        _that.apiCaseData = JSON.parse(JSON.stringify(_that.rawApiCaseData));
-        _that.$refs['apiCaseData'].resetFields();
+        _that.$refs.apiCaseDataRef.resetFields();  // 重置到初始状态
+        // this.$set(this, 'apiCaseData', JSON.parse(JSON.stringify(_that.rawApiCaseData)));
+        // _that.apiCaseData = JSON.parse(JSON.stringify(_that.rawApiCaseData));  // 深度copy下原值到 'apiCaseData' 上
         // 触发子组件的更新数据方法, 表单的 resetFields 是个异步函数,  重置的时候等200毫秒即可
         setTimeout(() => {
-          _that.$refs['basicDataTemplateByJson'].processExecutionDataByBasic()
-          _that.$refs['basicDataTemplateByParams'].processExecutionDataByBasic()
-          _that.$refs['basicDataTemplateByExpectSocket'].processExecutionDataByBasic()
-          _that.$refs['basicDataTemplateByExpectResponse'].processExecutionDataByBasic()
+          this.$refs['basicDataTemplateByJson'].processInputValue()
+          this.$refs['basicDataTemplateByParams'].processInputValue()
+          this.$refs['basicDataTemplateByExpectSocket'].processInputValue()
+          this.$refs['basicDataTemplateByExpectResponse'].processInputValue()
         }, 100)
       }).catch(_ => {
       })
@@ -385,11 +403,14 @@ export default {
      */
     handleCancelDialog() {
       const _that = this;
-      if (isObjectValueEqual(_that.apiCaseData, _that.rawApiCaseData)) {
+      // 有些字段是el-select插件, 该组件会默认一个空的list, 这个后端不允许空list, 需要排除
+      let tmpApiCaseData = _that.cleanEmptyValues(jsonCloneDeep(_that.apiCaseData));
+      if (isValueEqual(tmpApiCaseData, _that.rawApiCaseData)) {
         _that.editCaseDialogVisible = false;
         _that.addNewCaseFlag = false;
-        _that.apiCaseData = JSON.parse(JSON.stringify(_that.apiCaseDataModel));  // 每次重置为干净的数据
-        // _that.$refs['apiCaseData'].clearValidate();  // 移除表单所有校验信息
+        // this.$set(this, 'apiCaseData', JSON.parse(JSON.stringify(_that.apiCaseDataModel)));
+        // _that.apiCaseData = JSON.parse(JSON.stringify(_that.apiCaseDataModel));  // 每次重置为干净的数据
+        // _that.$refs.apiCaseDataRef.clearValidate();  // 移除表单所有校验信息
       } else {
         _that.$confirm('确认取消, 不保存? ', '提示', {
           confirmButtonText: '确定',
@@ -398,70 +419,73 @@ export default {
         }).then(() => {
           _that.editCaseDialogVisible = false;
           _that.addNewCaseFlag = false;
-          _that.apiCaseData = JSON.parse(JSON.stringify(_that.apiCaseDataModel));
-          // _that.$refs['apiCaseData'].clearValidate();
+          // this.$set(this, 'apiCaseData', JSON.parse(JSON.stringify(_that.apiCaseDataModel)));
+          // _that.apiCaseData = JSON.parse(JSON.stringify(_that.apiCaseDataModel));
+          // _that.$refs.apiCaseDataRef.clearValidate();
         }).catch(() => {
+          console.log(tmpApiCaseData)
+          console.log(_that.rawApiCaseData)
         })
       }
-      // ('synchronize_basic_data', _that.editKey, '_EXECUTE_DATA', null)
     },
     /**
      * @description 提交表单
      */
     onSubmit() {
       const _that = this;
+      // 有些字段是el-select插件, 该组件会默认一个空的list, 这个后端不允许空list, 需要排除
+      let tmpApiCaseData = _that.cleanEmptyValues(jsonCloneDeep(_that.apiCaseData))
       if (_that.submitLoading) {
         return;
       }
-      if (isObjectValueEqual(_that.apiCaseData, _that.rawApiCaseData)) {
+      if (isValueEqual(tmpApiCaseData, _that.rawApiCaseData)) {
         _that.editCaseDialogVisible = false;   //如果前后数据没有变化，则直接关闭弹窗
       } else {
-        // 每次点击 '确认' 按钮的话, 删除无效字段
-        _that.removeInvalidFields();
         // 校验字段是否合法, 合法后才能弹出二次确认
-        _that.$refs['apiCaseData'].validate((valid) => {
+        _that.$refs.apiCaseDataRef.validate((valid) => {
           if (!valid) {
             let errField = [];
-            if (['', undefined, null].includes(_that.apiCaseData.caseName)) {
+            if (['', undefined, null].includes(tmpApiCaseData.caseName)) {
               errField.push('用例名称')
             }
-            if (['', undefined, null].includes(_that.apiCaseData.path)) {
+            if (['', undefined, null].includes(tmpApiCaseData.path)) {
               errField.push('接口path')
             }
-            if (['', undefined, null].includes(_that.apiCaseData.method)) {
+            if (['', undefined, null].includes(tmpApiCaseData.method)) {
               errField.push('请求方式')
             }
-            if (['', undefined, null].includes(_that.apiCaseData.caseType)) {
+            if (['', undefined, null].includes(tmpApiCaseData.caseType)) {
               errField.push('接口类型')
             }
-            if (['', undefined, null].includes(_that.apiCaseData.templateType)) {
+            if (['', undefined, null].includes(tmpApiCaseData.templateType)) {
               errField.push('用例类型')
             }
-            if (['', undefined, null].includes(_that.apiCaseData.webSite)) {
+            if (['', undefined, null].includes(tmpApiCaseData.webSite)) {
               errField.push('执行站点')
             }
-            if (!(_that.apiCaseData.mark instanceof Array) || (_that.apiCaseData.mark instanceof Array && _that.apiCaseData.mark.length === 0)) {
+            if (!(tmpApiCaseData.mark instanceof Array) || (tmpApiCaseData.mark instanceof Array && tmpApiCaseData.mark.length === 0)) {
               errField.push('mark标签')
             }
             _that.$warning(`${errField.join(', ')} 尚未补充, 请补充后提交, 如果有特殊需求, 请联系开发者.`);
             return false;
           } else {
-            let _caseName = _that.apiCaseData.caseName ? _that.apiCaseData.caseName : _that.rawApiCaseData.caseName
+            let _caseName = tmpApiCaseData.caseName // 提示上用的
+            // 上面校验完成后, 删除无效 or 无变更的字段(修改场景), 此时会返回一个新的数据
+            tmpApiCaseData = _that.removeInvalidFields(tmpApiCaseData);
             // 弹出二次确认
             _that.$confirm('确定已完成编辑？', '提示', {
               confirmButtonText: '确定',
               cancelButtonText: '继续编辑',
               type: 'warning'
             }).then(_ => {
-              // removeEmptyField(_that.apiCaseData);
               _that.submitLoading = true;  // 变更按钮状态为loading
-              let caseRequest = null;
-              _that.apiCaseData['operator'] = _that.personData  // 设置变更人
+              let caseRequest ;
+              tmpApiCaseData['operator'] = _that.personData  // 设置变更人
               if (_that.addNewCaseFlag) {
-                caseRequest = _that.$axios.post("/pyServer/TestCase/Create", _that.apiCaseData, {timeout: 2000})
+                caseRequest = _that.$axios.post("/pyServer/test-data/test-case/create", tmpApiCaseData, {timeout: 2000})
               } else {
-                _that.apiCaseData.caseId = _that.updateCaseId
-                caseRequest = _that.$axios.post("/pyServer/TestCase/Update", _that.apiCaseData, {timeout: 2000})
+                tmpApiCaseData.caseId = _that.updateCaseId
+                caseRequest = _that.$axios.post("/pyServer/test-data/test-case/update", tmpApiCaseData, {timeout: 2000})
               }
               caseRequest.then(res => {
                 _that.submitLoading = false;
@@ -487,7 +511,7 @@ export default {
               })
             }).catch(_ => {
               // 取消弹窗, 打印下目前数据
-              console.log(_that.apiCaseData)
+              console.log(tmpApiCaseData)
             })
           }
         })
@@ -496,35 +520,29 @@ export default {
     /**
      * @description 处理自定义上报事件
      * @param {String} editKey 修改的key, response socket params 之类的
-     * @param {String||null} itemKey  如果为null 或者 '' 直接赋值, 如果有string值, 是变更
+     * @param {String||null} itemKey  如果有值代表是 basic 的, 如果为null 表示是 depend* 的
      * @param {Object} itemValue
      */
     updateApiCaseData(editKey, itemKey, itemValue) {
       const _that = this;
-      // 判断是取哪个级别作为处理函数
-      let _tmpData = (editKey === 'response' || editKey === 'socket') ? _that.apiCaseData['expect'] : _that.apiCaseData
-      // 如果 itemValue 有值就赋值, 为空就删除
-      if(itemValue){
-        // 执行赋值, 如果 itemKey 是无效值, 直接赋值就好,
-        if (['', null, undefined].includes(itemKey)){
-          // 下面的else逻辑应当只有expect才能命中, 其余场景命中算bug
-          if (isKeyValueObject(_tmpData)){
-            _tmpData[editKey] = itemValue
-          } else{
-            _tmpData = {[editKey]: itemValue}
-          }
-        }else if (isKeyValueObject(_tmpData) && isKeyValueObject(_tmpData[editKey])){
-          _tmpData[editKey][itemKey] = itemValue
-        }else{
-          _tmpData[editKey] = {[itemKey]: itemValue}
+      // js的对象赋值都是引用, 修改引用
+      let tmpData = (editKey === 'response' || editKey === 'socket') ? _that.apiCaseData['expect'] : _that.apiCaseData;
+      tmpData = (tmpData === null? {}: tmpData);
+      // 如果是空值, 直接执行删除了
+      if (isEmptyValue(itemValue)){
+        if (itemKey && tmpData.hasOwnProperty(editKey) && isKeyValueObject(tmpData[editKey]) && tmpData[editKey].hasOwnProperty(itemKey)){
+          _that.$delete(tmpData[editKey], itemKey);
+        } else if (!itemKey){
+          tmpData[editKey] = null;
         }
-      }else{
-        if (['', null, undefined].includes(itemKey) && isKeyValueObject(_tmpData)) {
-            _that.$delete(_tmpData, editKey)
-        } else if (isKeyValueObject(_tmpData[editKey]) && _tmpData[editKey][itemKey]) {
-            _that.$delete(_tmpData[editKey], itemKey)
-        } else {
-          // 如果都没命中就不需要删除了
+      } else {
+        // 如果有 itemKey 它一定是个keyValue
+        if (itemKey && tmpData.hasOwnProperty(editKey) && isKeyValueObject(tmpData[editKey])){
+          tmpData[editKey][itemKey] = itemValue
+        }else if (itemKey){
+          tmpData[editKey] = {[itemKey]: itemValue}
+        }else{
+          tmpData[editKey] = itemValue
         }
       }
     },
@@ -533,36 +551,70 @@ export default {
      */
     updateTemplateType() {
       const _that = this;
-      if (['spot', 'contract'].includes(_that.apiCaseData.templateType) && !_that.needOrderAndTriggerConditionalOrderStatus) {
-        _that.needOrderAndTriggerConditionalOrderStatus = true;
-      } else if (!['spot', 'contract'].includes(_that.apiCaseData.templateType) && _that.needOrderAndTriggerConditionalOrderStatus) {
-        _that.needOrderAndTriggerConditionalOrderStatus = false;
+      if (['spot', 'contract'].includes(_that.apiCaseData.templateType) && !_that.needOrderAndTriggerOrderStatus) {
+        _that.needOrderAndTriggerOrderStatus = true;
+      } else if (!['spot', 'contract'].includes(_that.apiCaseData.templateType) && _that.needOrderAndTriggerOrderStatus) {
+        _that.needOrderAndTriggerOrderStatus = false;
         _that.apiCaseData.needOrder = false;
         _that.apiCaseData.triggerOrder = false;
       }
     },
     /**
+     * 仅验证一维数据;
      * @description 提交时, 移除无效字段, 和 _that.rawApiCaseData 对比较, 如果不同, 将保留, 相同则移除;
-     * 不兼容 expect, 因为新版的它必定会传一个 socket 和 response 这个层级判断太麻烦了
+     * @param {Object} newApiCaseData
+     * @returns {object} 清理后的新对象。
      */
-    removeInvalidFields() {
+    removeInvalidFields(newApiCaseData) {
       const _that = this;
+      let tmpApiCaseData = JSON.parse(JSON.stringify(newApiCaseData))  // 怕有循环问题, 实际删除这个的key
       // 判断是新增还是修改, 新增时, 只要是异常值就移除; 调用的上层加了判断, 如果无变化, 也不会调用这个方法;
       if (_that.addNewCaseFlag) {
-        for (let key in _that.apiCaseData) {
-          if ((!_that.apiCaseData[key] && (typeof _that.apiCaseData[key] != 'boolean')) || (_that.apiCaseData[key] instanceof Object && !isNoneJson(_that.apiCaseData[key]))) {
-            delete _that.apiCaseData[key]
+        for (let key in newApiCaseData) {
+          // 先判断一个对象自身是否具有指定名称的属性, 防止误删其他元属性
+          if (tmpApiCaseData.hasOwnProperty(key)) {
+            if (isEmptyValue(tmpApiCaseData[key])) {
+              delete tmpApiCaseData[key]
+            }
           }
         }
       } else {
-        for (let key in _that.apiCaseData) {
-          if (_that.apiCaseData[key] instanceof Object && isObjectValueEqual(_that.apiCaseData[key], _that.rawApiCaseData[key])) {
-            delete _that.apiCaseData[key]
-          } else if (!(_that.apiCaseData[key] instanceof Object) && _that.apiCaseData[key] === _that.rawApiCaseData[key]) {
-            delete _that.apiCaseData[key]
+        for (let key in newApiCaseData) {
+          if (tmpApiCaseData.hasOwnProperty(key)) {
+            if ((tmpApiCaseData[key] instanceof Object) && isValueEqual(tmpApiCaseData[key], _that.rawApiCaseData[key])) {
+              delete tmpApiCaseData[key]
+            } else if (!(tmpApiCaseData[key] instanceof Object) && tmpApiCaseData[key] === _that.rawApiCaseData[key]) {
+              delete tmpApiCaseData[key]
+            } else if (isEmptyValue(tmpApiCaseData[key])) {
+              delete tmpApiCaseData[key]
+            }
           }
         }
       }
+      return tmpApiCaseData
+    },
+    /**
+     * 把无效值改为 null
+     * @param apiCaseData
+     * @returns {object} 清理后的新对象。
+     */
+    cleanEmptyValues(apiCaseData) {
+      for (const key in apiCaseData) {
+        if (apiCaseData.hasOwnProperty(key)) {
+          const value = apiCaseData[key];
+          if (value === '') {  // 如果值是空字符串，将其置为 null。
+            apiCaseData[key] = null;
+          } else if (Array.isArray(value) && value.length === 0) {  // 如果值是空数组，将其置为 null。
+            apiCaseData[key] = null;
+          } else if (typeof value === 'object' && value !== null) {  // 如果值是非空对象，递归清理其内部的空值。
+            this.cleanEmptyValues(value);
+            if (Object.keys(value).length === 0) {  // 如果内部对象全部为空值，将其置为 null。
+              apiCaseData[key] = null;
+            }
+          }
+        }
+      }
+      return apiCaseData;  // 返回清理后的对象。
     },
   },
   /**
@@ -570,9 +622,14 @@ export default {
    * @returns
    */
   mounted(){
-    this.$axios.get("/pyServer/TestConfig/Search", {params: {'configId': getApiTestConfig('getModifyConfigByApiCase')}})
+    let markConfigId = getApiTestConfig('getMarkConfigByApiCase');
+    let applicableEnvConfigId = getApiTestConfig('getEnvConfigByApiCase');
+    let applicableAccountConfigId = getApiTestConfig('getApplicableAccountConfigByApiCase');
+    this.$axios.get("/pyServer/public/test-data/test-config/search", {params: {'configId': `${markConfigId},${applicableEnvConfigId},${applicableAccountConfigId}`}})
       .then(res => {
-        this.configData = res.data.data['configData']
+        this.configData['markConfig'] = res.data.data[markConfigId]['configData']
+        this.configData['applicableEnvConfig'] = res.data.data[applicableEnvConfigId]['configData']
+        this.configData['applicableAccountConfig'] = res.data.data[applicableAccountConfigId]['configData']
       }).catch(() => {
     })
   }
@@ -588,4 +645,5 @@ export default {
 .el-icon-question {
   margin-left: 8px;
 }
+
 </style>

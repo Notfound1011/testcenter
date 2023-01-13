@@ -52,7 +52,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="remark" label="备注" align="left" min-width="200"></el-table-column>
-        <el-table-column prop="updatedTime" label="更新时间" :formatter="l_timestampToTimeFormat" min-width="180"/>
+        <el-table-column prop="updatedAt" label="更新时间" :formatter="l_timestampToTimeFormat" min-width="180"/>
         <el-table-column prop="createdPerson" label="创建人" :formatter="getPerson" min-width="150"/>
         <el-table-column prop="updatedPerson" label="最近更新人" :formatter="getPerson" min-width="150"/>
         <el-table-column label="操作" min-width="150" fixed="right">
@@ -111,9 +111,9 @@
             :disabled="readOnly">
             <el-option
               v-for="item in applicableSceneOption"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
+              :key="item"
+              :label="item"
+              :value="item">
             </el-option>
           </el-select>
         </el-form-item>
@@ -161,7 +161,8 @@
 </template>
 
 <script>
-import {popUpReminder, timestampToTimeFormat} from '@/common/js/utils';
+import {getApiTestConfig, popUpReminder, timestampToTimeFormat} from '@/common/js/utils';
+
 
 export default {
   name: "autoTestAccount",
@@ -192,10 +193,7 @@ export default {
         remark: ''
       },
       validationRules: {},
-      applicableSceneOption: [{value: 'kyc', label: 'kyc'}, {value: 'not_kyc', label: 'not_kyc'}, {
-        value: 'trade',
-        label: 'trade'
-      }, {value: 'have_sub_account', label: 'have_sub_account'}, {value: 'main_account', label: 'main_account'}]
+      applicableSceneOption: ['kyc', 'not_kyc', 'trade', 'have_sub_account', 'main_account']
     }
   },
   methods: {
@@ -253,7 +251,7 @@ export default {
      */
     getUserPool() {
       const that = this;
-      that.$axios.post("/pyServer/Public/UserPool/Search", that.filterData)
+      that.$axios.post("/pyServer/public/test-data/user-pool/search", that.filterData)
         .then(res => {
           console.log(res.data)
           that.total = res.data.total
@@ -267,6 +265,7 @@ export default {
      * dialog控制器
      */
     dialogController() {
+      this.getApplicableAccountConfig();
       this.readOnly = false;
       this.addEnvData = true;
       this.dialogStatus = true;
@@ -277,6 +276,7 @@ export default {
      * @param row
      */
     updateAccount(row) {
+      this.getApplicableAccountConfig();
       if (row.env === 'prod') {
         return
       }
@@ -285,6 +285,16 @@ export default {
       this.addEnvData = false;
       this.dialogStatus = true;
       this.dialogTitle = "修改账号"
+    },
+    getApplicableAccountConfig(){
+      const that = this;
+      that.$axios.get("/pyServer/public/test-data/test-config/search", {params: {'configId': getApiTestConfig('getApplicableAccountConfigByApiCase')}})
+        .then(res => {
+          that.applicableSceneOption = res.data.data.configData
+        }).catch(() => {
+        console.log('获取`适用场景`失败')
+        popUpReminder(this, '获取`适用场景`远端配置失败, 使用默认值')
+      })
     },
     /**
      * 查看表单
@@ -313,8 +323,8 @@ export default {
      */
     getOneAccount(id) {
       const that = this;
-      // that.$axios.post("/pyServer/Public/UserPool/Search", that.filterData)
-      that.$axios.post("/pyServer/UserPool/Search", {'id': id}, {headers: {'X-password-decryption': true}})
+      // that.$axios.post("/pyServer/public/test-data/user-pool/search", that.filterData)
+      that.$axios.post("/pyServer/test-data/user-pool/search", {'id': id}, {headers: {'X-password-decryption': true}})
         .then(res => {
           console.log(res.data)
           that.dialogFrom = res.data.data[0]
@@ -331,12 +341,12 @@ export default {
       const that = this;
       const adminToken = JSON.parse(localStorage.getItem("Admin-Token"));
       let data = JSON.parse(JSON.stringify(that.dialogFrom));
-      let deleteList = ['createdPerson', 'createdTime', 'lockedUser', 'updatedPerson', 'updatedTime']
+      let deleteList = ['createdPerson', 'createdAt', 'lockedUser', 'updatedPerson', 'updatedAt']
       for (let index in deleteList) {
         delete data[deleteList[index]]
       }
       // 判断是增加还是变更
-      let url = that.addEnvData ? "/pyServer/UserPool/Create" : "/pyServer/UserPool/Update"
+      let url = that.addEnvData ? "/pyServer/test-data/user-pool/create" : "/pyServer/test-data/user-pool/update"
       data['operator'] = {'id': adminToken.id, 'name': adminToken.name, 'email': adminToken.email}
       that.$axios.post(url, data)
         .then(res => {

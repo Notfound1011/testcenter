@@ -15,6 +15,7 @@ import {
 import {jsPDF} from "jspdf";
 import JSEncrypt from 'jsencrypt';
 import i18n from "@/i18n/i18n";
+import _ from 'lodash'
 
 export function hasRole(role) {
   let user = getCurrentUser();
@@ -939,15 +940,6 @@ export function popUpReminder(that, normalString, specialString = '', msgType = 
 }
 
 /**
- * @description 判断是否是无效Json(空的)
- * @param {Object, Array} jsonData
- * @return {Boolean}
- */
-export function isNoneJson(jsonData) {
-  return jsonData && jsonData instanceof Object && Object.keys(jsonData).length > 0;
-}
-
-/**
  * @description 判断是否是json列表, 不会判断是否为空(list是python的字段类型)
  * @param {Array} jsonData
  * @return {Boolean}
@@ -966,13 +958,16 @@ export function isKeyValueObject(jsonData) {
 }
 
 /**
- * @description 时间戳转字符串
+ * @description 时间戳转字符串, 如果 timestamp 非法, 设置为1
  * @param {String, Number} timestamp
  * @param {Boolean} utcTime 获取utc时间
  * @param {Boolean} dateOnly 仅日期
  * @return {String}
  */
 export function timestampToTimeFormat(timestamp, utcTime = true, dateOnly = false) {
+  if (!timestamp) {
+    timestamp = 1
+  }
   if (timestamp instanceof String) {
     timestamp = parseInt(timestamp)
   }
@@ -989,4 +984,65 @@ export function timestampToTimeFormat(timestamp, utcTime = true, dateOnly = fals
   } else {
     return `${date.getFullYear()}-${('0' + (date.getMonth() + 1)).slice(-2)}-${('0' + date.getDate()).slice(-2)} ${('0' + date.getHours()).slice(-2)}:${('0' + date.getMinutes()).slice(-2)}:${('0' + date.getSeconds()).slice(-2)}`;
   }
+}
+
+/**
+ * 判断数值类型是否是空值, 排除bool, 数字型; 仅验证Json, 空格字符串, null 和 undefined;
+ * @param value {String, Object}
+ * @returns {boolean} Json, 空格字符串, null 和 undefined 为空返回true; 如果不为空, 或者非这几个类型的, false
+ */
+export function isEmptyValue(value) {
+  if (typeof value === 'string' && value.trim() === '') {
+    return true;
+  } else if (value === null || value === undefined) {
+    return true;
+  } else if (Array.isArray(value) && value.length === 0) {
+    return true;
+  } else {
+    return isKeyValueObject(value) && Object.keys(value).length === 0  // 兜底, 如果为命中不到都为false
+  }
+}
+/**
+ * 判断两个数值是否相等,
+ * @param a
+ * @param b
+ * @returns {boolean}
+ */
+export function isValueEqual(a, b) {
+  // 先判断类型是否一致
+  if (Object.prototype.toString.call(a) !== Object.prototype.toString.call(b)) {
+    return false;
+  }
+  // 如果是数组类型
+  if (Object.prototype.toString.call(a) === "[object Array]") {
+    if (a.length !== b.length) {
+      return false;
+    }
+    for (let i = 0; i < a.length; i++) {
+      if (!isValueEqual(a[i], b[i])) {
+        return false;
+      }
+    }
+  } else if (Object.prototype.toString.call(a) === "[object Object]") {
+    if (Object.keys(a).length !== Object.keys(a).length) {
+      return false;
+    }
+    for (let key in a) {
+      if (!b.hasOwnProperty(key) || !isValueEqual(a[key], b[key])) {
+        return false;
+      }
+    }
+  } else {
+    return a === b;
+  }
+  return true;
+}
+
+/**
+ * 利用lodash库的cloneDeep进行深克隆
+ * @param {Array | Object} data
+ * @returns {Array | Object}
+ */
+export function jsonCloneDeep(data){
+  return _.cloneDeep(data)
 }
