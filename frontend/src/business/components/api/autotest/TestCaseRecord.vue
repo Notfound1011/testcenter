@@ -8,9 +8,10 @@
                    v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']">{{ $t('api_test.case_record.add_case') }}
         </el-button>
 
-        <el-link type="primary" @click="introductionStatus=true"
-                 v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']" style="float:right">介绍
-        </el-link>
+        <floating-box box-height="50px" box-width="50px" @click.native="introductionStatus=true"
+                      v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']" style="float:right">
+          <p>介绍</p>
+        </floating-box>
 
         <div>
           <el-divider></el-divider>
@@ -160,12 +161,32 @@
           </el-input>
         </el-dialog>
 
-        <!-- 录制介绍 -->
-        <el-dialog title="录制介绍" :visible.sync="introductionStatus" width="800px" append-to-body>
-          <h1>标签</h1>
-          <span>spot, contract单指`现货`和`合约`交易相关的case;</span>
-          <br/>
-          <span>每个case必须包含: 用例级别, 用例类型, 涉及服务名(有-的请手动转为_), 如果有特殊账号需求需填写筛选账号类型用于和测试账号匹配...</span>
+        <!-- 字段介绍 -->
+        <el-dialog title="字段介绍" :visible.sync="introductionStatus" width="800px" append-to-body>
+          <h1>用例标签</h1>
+          <ul>
+            <li>
+              spot, contract单指<span class="bold-and-underline">现货</span>和<span
+              class="bold-and-underline">合约</span>交易相关的case;
+            </li>
+            <li>
+              public, no_token_required, no_login_required, 如果用例标签包含这三个的其中一个, 将不使用token or
+              加密(pub-web-gateway);
+            </li>
+            <li>每个case必须包含:
+              <ul>
+                <li>用例级别: 筛选case要用到的;</li>
+                <li>用例类型: <span class="bold-and-underline">rest_api</span>是向<span class="bold-and-underline">web-gateway</span>请求,
+                  <span class="bold-and-underline">pub_api</span>是向<span
+                    class="bold-and-underline">pub-web-gateway</span>请求, host和token验证方式也不同;
+                </li>
+                <li>涉及服务名: 包含<span class="bold-and-underline">-</span>字符的尽量转为<span
+                  class="bold-and-underline">-</span>, 可以使用api文档中的服务名或者实际服务名;
+                </li>
+                <li>特殊账号需求: 需填写和账号<span class="bold-and-underline">适用场景</span>匹配的标签(mark)...;</li>
+              </ul>
+            </li>
+          </ul>
           <el-divider></el-divider>
         </el-dialog>
       </div>
@@ -183,9 +204,10 @@ import TestCaseEdit from "../../track/case/components/TestCaseEdit";
 import {humpToLine} from "@/common/js/utils";
 import MsTableAdvSearchBar from "@/business/components/common/components/search/MsTableAdvSearchBar";
 import {AUTO_TEST_SEARCH_CASE} from "../../common/components/search/search-components";
+import floatingBox from "@/common/components/floatingBox.vue";
 
 export default {
-  components: {TestCaseEdit, TestCaseModify, MsMainContainer, MsContainer, MsTableAdvSearchBar},
+  components: {TestCaseEdit, TestCaseModify, MsMainContainer, MsContainer, MsTableAdvSearchBar, floatingBox},
   data() {
     return {
       condition: {
@@ -255,7 +277,7 @@ export default {
       this.keywords = ''
     },
     combineSearch() {
-      let filterData = JSON.parse(JSON.stringify(this.filterData))
+      let filterData = {'page': 1, 'limit': this.filterData.limit};
       if (!this.condition.combine) {
         this.resetFilter()
       }
@@ -266,6 +288,8 @@ export default {
           filterData[i] = this.condition.combine[i].value
         }
       }
+      this.keywords = '';
+      this.filterData = filterData;
       this.getCaseList(filterData)
     },
     /**
@@ -297,10 +321,15 @@ export default {
         this.getCaseListStatus = false;
       })
     },
+    /**
+     * 外部的搜索, 与高级搜索隔离
+     * @param {String} keywords 搜索字段, 如果为空, 点击后是会重置搜索条件的
+     */
     search(keywords) {
       // 每次点击按钮搜索, 默认page = 1, limit用当前的限制;
       let filterData = {'page': 1, 'limit': this.filterData.limit};
       if (keywords.split(' ').join('').length === 0) {
+        this.filterData = filterData;
         this.getCaseList(filterData)
       } else {
         switch (this.value) {
@@ -311,7 +340,8 @@ export default {
             filterData[this.value] = keywords.trim()
             break;
         }
-        this.getCaseList(filterData)
+        this.filterData = filterData;
+        this.getCaseList(filterData);
       }
     },
     filter(filters) {
@@ -438,4 +468,8 @@ export default {
   margin: 2px;
 }
 
+.bold-and-underline {
+  font-weight: bold;
+  text-decoration: underline;
+}
 </style>

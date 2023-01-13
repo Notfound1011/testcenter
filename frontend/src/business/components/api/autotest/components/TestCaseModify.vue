@@ -523,7 +523,7 @@ export default {
       // 判断是新增还是修改, 新增时, 只要是异常值就移除; 调用的上层加了判断, 如果无变化, 也不会调用这个方法;
       if (_that.addNewCaseFlag) {
         for (let key in _that.apiCaseData) {
-          if (!_that.apiCaseData[key] || (_that.apiCaseData[key] instanceof Object && !isNoneJson(_that.apiCaseData[key]))) {
+          if ((!_that.apiCaseData[key] && (typeof _that.apiCaseData[key] != 'boolean')) || (_that.apiCaseData[key] instanceof Object && !isNoneJson(_that.apiCaseData[key]))) {
             delete _that.apiCaseData[key]
           }
         }

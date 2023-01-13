@@ -7,6 +7,14 @@
           <span class="pie-chart-data-text">主站Api总数(根据Api已有文档统计)<br></span>
           <span class="pie-chart-data-total">
           {{ unfinishedData.length + completedData.length + excludedData.length }}
+            <br />
+            <span class="pie-chart-data-text">排除规则</span>
+          <el-link type="primary" style="font-size: 16px; margin-left: 3px;" @click="dialogExcludedRuleVisible(true)"
+                   v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']" > 查看
+          </el-link>
+          <el-link type="primary" style="font-size: 16px; margin-left: 3px;" @click="dialogExcludedRuleVisible(false)"
+                   v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']" > 编辑
+          </el-link>
         </span>
         </el-card>
         <div class="Echarts" id="pie-chart" style="width:100%;height:600%;"/>
@@ -50,6 +58,10 @@
         <el-table-column property="addTime" label="创建时间" min-width="220"></el-table-column>
       </el-table>
     </el-dialog>
+
+    <!-- 排除规则 -->
+    <el-dialog :title="dialogExcludedRuleTitle" :visible.sync="dialogExcludedRuleStatus">
+    </el-dialog>
   </div>
 </template>
 
@@ -79,7 +91,12 @@ export default {
       dialogFormData: [],  // 展示的是数据, 会通过search变更
 
       searchKey: 'projectName',
-      searchValue: ''
+      searchValue: '',
+
+      // 排除规则的dialog
+      dialogExcludedRuleStatus: false,
+      excludedRuleForm: {},
+      dialogExcludedRuleTitle: ''
     }
   },
   methods: {
@@ -436,8 +453,23 @@ export default {
         that.createApiData(e.data['idList'], e.seriesName)
       });
     },
+    /**
+     * 接口数据展示的排除规则, 增加过滤
+     */
     filterData(){
       this.dialogFormData = this.formData.filter(data => !this.searchValue || data[this.searchKey].toLowerCase().includes(this.searchValue.toLowerCase()))
+    },
+    dialogExcludedRuleVisible(readOnly = true){
+      const _that = this;
+      // 如果是只读, 就把生成报告的规则暴露出来, 修改的时候才去远端获取
+      if (readOnly) {
+        _that.excludedRuleForm = _that.excludedRule;
+        _that.dialogExcludedRuleTitle = '只读的哦';
+        _that.dialogExcludedRuleStatus = true;
+      } else {
+        console.log('这个还没想好')
+      }
+      console.log(JSON.stringify(_that.excludedRuleForm))
     }
   },
   mounted(){
