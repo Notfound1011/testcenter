@@ -3,17 +3,20 @@
     <ms-main-container class="container_main">
       <!-- 操作按钮区域 -->
       <div class="table_action">
-        <el-button style="margin: 0 auto 0 20px;" icon="el-icon-circle-plus-outline" type="primary" @click="dialogVisible = true">提交紧急发布</el-button>
-        <el-button plain style="margin: 0 20px" type="primary" icon="el-icon-odometer" @click="chartVisible = true">统计图</el-button>
+        <el-button :disabled="onPublish['status']" style="margin: 0 auto 0 20px;" icon="el-icon-circle-plus-outline" type="primary" @click="dialogVisible = true">提交紧急发布</el-button>
+        <el-button :disabled="onPublish['status']" plain style="margin: 0 20px" type="primary" icon="el-icon-odometer" @click="chartVisible = true">统计图</el-button>
       </div>
       <!-- 表格数据区域 -->
+      <div v-if="onPublish['status'] > 0" style="display: flex;justify-content: center;align-items: center;">
+        <el-empty style="display: flex;flex-direction: column;justify-content: center;align-items: center;" :image-size="300" description="系统更新中，请稍后..."></el-empty>
+      </div>
       <div class="table_are">
-        <el-table
-          :data="emPublishDataResponse.results"
-          :header-cell-style="{background:'#eef1f6',color:'#606266'}"
-          style="width: 100%;background: transparent; overflow:auto;"
-          height="100%"
-          border highlight-current-row>
+        <el-table v-if="onPublish['status'] <= 0"
+                  :data="emPublishDataResponse.results"
+                  :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+                  style="width: 100%;background: transparent; overflow:auto;"
+                  height="100%"
+                  border highlight-current-row>
           <el-table-column label="ID" prop="publish_id" align="center" width="55"></el-table-column>
           <el-table-column label="发布类型" align="center" width="150">
             <template slot-scope="scope">
@@ -210,14 +213,14 @@
         </div>
       </el-drawer>
       <!-- 翻页区域 -->
-      <el-pagination
-        background
-        :pager-count=21
-        :current-page = "publishPage.currentPage"
-        layout="prev, pager, next"
-        :total="publishPage.emPublishCount"
-        @current-change="handleCurrentChange"
-        :page-size=20></el-pagination>
+      <el-pagination :disabled="onPublish['status']"
+                     background
+                     :pager-count=21
+                     :current-page = "publishPage.currentPage"
+                     layout="prev, pager, next"
+                     :total="publishPage.emPublishCount"
+                     @current-change="handleCurrentChange"
+                     :page-size=20></el-pagination>
       <!-- 图表区域 -->
       <el-drawer class="chartAre" :with-header="false" :visible.sync="chartVisible" direction="rtl" :show-close="false" size="55%" @open="emEChartOpen">
         <div class="chartAreSub">
@@ -232,80 +235,80 @@
 </template>
 
 <style>
-  .container_main {
-    display: flex;
-    flex-direction: column;
-  }
-  .table_action {
-    margin-bottom: 6px;
-    display: flex;
-    justify-content: flex-end;
-  }
-  .table_are {
-    display: flex;
-    margin-bottom: 10px;
-    height: 80vh;
-  }
-  .el-drawer__body {
-    overflow: auto;
-    display: flex;
-    flex-direction: column;
-  }
-  .el-drawer__container ::-webkit-scrollbar{
-    display: none;
-  }
-  .el-form-item {
-    font-weight: bold;
-  }
-  .main_submit {
-    display: flex;
-    flex-direction: column;
-  }
-  .sub_card {
-    padding: 15px;
-  }
-  .sub_btn {
-    display: flex;
-  }
-  .el-pagination {
-    display: flex;
-    justify-content: center;
-  }
-  .sub_btn button {
-    flex: 1;
-    padding: 12px 10px;
-    font-size: 14px;
-    border-radius: 7px;
-    margin: 10px 20px;
-  }
-  .form_body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  .chartAre {
-    height: 100%;
-    display: flex;
-    justify-content: center;
-  }
-  .chartAreSub {
-    margin: 0 0 0 50px;
-    display: flex;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-  }
-  .demo-table-expand {
-    font-size: 0;
-  }
-  .demo-table-expand label {
-    width: 90px;
-    color: #99a9bf;
-  }
-  .demo-table-expand .el-form-item {
-    margin-right: 0;
-    margin-bottom: 0;
-    width: 50%;
-  }
+.container_main {
+  display: flex;
+  flex-direction: column;
+}
+.table_action {
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: flex-end;
+}
+.table_are {
+  display: flex;
+  margin-bottom: 10px;
+  height: 80vh;
+}
+.el-drawer__body {
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+.el-drawer__container ::-webkit-scrollbar{
+  display: none;
+}
+.el-form-item {
+  font-weight: bold;
+}
+.main_submit {
+  display: flex;
+  flex-direction: column;
+}
+.sub_card {
+  padding: 15px;
+}
+.sub_btn {
+  display: flex;
+}
+.el-pagination {
+  display: flex;
+  justify-content: center;
+}
+.sub_btn button {
+  flex: 1;
+  padding: 12px 10px;
+  font-size: 14px;
+  border-radius: 7px;
+  margin: 10px 20px;
+}
+.form_body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.chartAre {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+}
+.chartAreSub {
+  margin: 0 0 0 50px;
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+.demo-table-expand {
+  font-size: 0;
+}
+.demo-table-expand label {
+  width: 90px;
+  color: #99a9bf;
+}
+.demo-table-expand .el-form-item {
+  margin-right: 0;
+  margin-bottom: 0;
+  width: 50%;
+}
 </style>
 
 <script>
@@ -380,7 +383,8 @@ export default {
         "children": "children",
         "checkStrictly": false
       },
-      statistics: {}
+      statistics: {},
+      onPublish: {status: 0}
     }
   },
   watch: {
@@ -397,6 +401,7 @@ export default {
   },
   created() {
     this.publishListResponse()
+    this.onPublishStatusResponse()
   },
   mounted() {
     this.statisticsResponse()
@@ -514,6 +519,10 @@ export default {
     async getRollbackAction () {
       const { data: apiResponse } = await this.$axios.get('naguri/em_api/get_collect_type?type=2')
       this.rollbackOptions = apiResponse
+    },
+    async onPublishStatusResponse () {
+      const { data: apiResponse } = await this.$axios.get('naguri/em_api/on_publish')
+      this.onPublish = apiResponse
     },
     on_submit_form () {
       console.log(this.formData)
