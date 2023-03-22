@@ -230,7 +230,7 @@ export default {
       that.$axios.post(url, data)
         .then(res => {
           console.log(res.data)
-          popUpReminder(this, res.data.msg, data.uniqueId,  'teal', 'info')
+          popUpReminder(this, res.data.msg, data.uniqueId, 'info')
           that.dialogStatus = false;
           that.getGlobalVariables()
         }).catch(() => {

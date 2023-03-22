@@ -341,7 +341,7 @@ export default {
       that.$axios.post(url, data)
         .then(res => {
           console.log(res.data)
-          popUpReminder(this, res.data.msg, data.email, 'teal', 'info')
+          popUpReminder(this, res.data.msg, data.email, 'info')
           that.dialogStatus = false;
           that.getUserPool()
         }).catch(() => {

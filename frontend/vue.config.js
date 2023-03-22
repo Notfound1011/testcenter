@@ -29,6 +29,7 @@ module.exports = {
       },
       '/api/tc/pyServer': {
         target: "http://3.1.250.199:6200",
+        // target: "http://127.0.0.1:6200",
         changeOrigin: true,
         pathRewrite: {
           '^/api/tc/pyServer': '/'

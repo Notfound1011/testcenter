@@ -1960,6 +1960,9 @@ export default {
     },
     globalVariablesForAutoTest: {
       text: 'Global Variables For Auto Test'
+    },
+    writeCode: {
+      text: 'Write code'
     }
   },
   api_report: {
@@ -2546,7 +2549,8 @@ export default {
     automation: 'Api Automation',
     report: 'Test Report',
     autoTestAccount: 'Auto Test Account',
-    globalVariablesForAutoTest: 'Global Variables For Auto Test'
+    globalVariablesForAutoTest: 'Global Variables For Auto Test',
+    writeCode: 'Write code'
   },
   ldap: {
     url: 'LDAP URL',

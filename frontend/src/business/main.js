@@ -30,6 +30,7 @@ import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 import 'element-ui/lib/theme-chalk/display.css';
 import * as echarts from 'echarts';
+
 Vue.prototype.$echarts = echarts
 Vue.use(mavonEditor)
 
@@ -56,7 +57,7 @@ Vue.use(CKEditor);
 Vue.use(YanProgress);
 Vue.use(VueFab);
 Vue.use(JSONPathPicker);
-Vue.use(VueClipboard)
+Vue.use(VueClipboard);
 
 // v-permission
 Vue.directive('permission', permission);

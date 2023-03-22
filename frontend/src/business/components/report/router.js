@@ -37,9 +37,9 @@ export default {
       component: () => import('@/business/components/report/emergencypublish/emergency_publish'),
     },
     {
-      path: 'coverage',
-      name: 'Coverage',
-      component: () => import('@/business/components/report/coverage/Coverage'),
+      path: 'ApiAutoTestCoverage',
+      name: 'ApiAutoTestCoverage',
+      component: () => import('@/business/components/report/coverage/ApiAutoTestCoverage.vue'),
     }
   ]
 }
