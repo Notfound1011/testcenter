@@ -3,8 +3,9 @@
     <ms-main-container class="container_main">
       <!-- 操作按钮区域 -->
       <div class="table_action">
-        <el-button :disabled="onPublish['status']" style="margin: 0 auto 0 20px;" icon="el-icon-circle-plus-outline" type="primary" @click="dialogVisible = true">提交紧急发布</el-button>
-        <el-button :disabled="onPublish['status']" plain style="margin: 0 20px" type="primary" icon="el-icon-odometer" @click="chartVisible = true">统计图</el-button>
+        <el-button :disabled="onPublish['status']" style="margin: 0 auto 0 20px;" icon="el-icon-circle-plus-outline" type="primary" @click="preData.dialogVisible = true">提交紧急发布</el-button>
+        <el-button :disabled="onPublish['status']" plain type="primary" icon="el-icon-odometer" @click="preData.chartVisible = true">统计图</el-button>
+        <el-button :disabled="onPublish['status']" plain style="margin: 0 20px" type="success" icon="el-icon-odometer" @click="monthlyChartVisible = true">月度概览</el-button>
       </div>
       <!-- 表格数据区域 -->
       <div v-if="onPublish['status'] > 0" style="display: flex;justify-content: center;align-items: center;">
@@ -102,7 +103,7 @@
         </el-table>
       </div>
       <!-- 表单抽屉区 -->
-      <el-drawer @open="emFormParamsInit" size="40%" title="提交紧急发布变更" :visible.sync="dialogVisible" direction="ltr" :before-close="handleClose" :with-header="false">
+      <el-drawer @open="emFormParamsInit" size="40%" title="提交紧急发布变更" :visible.sync="preData.dialogVisible" direction="ltr" :before-close="handleClose" :with-header="false">
         <el-container class="main_submit">
           <el-card class="sub_card" shadow="never" style="height: 100%;padding: 0 0;border: 0" >
             <div slot="header" class="clearfix">
@@ -125,7 +126,7 @@
                                    separator=" # " clearable></el-cascader>
                     </el-form-item>
                   </el-col>
-                  <el-col v-if="serviceInputShow" :span="24">
+                  <el-col v-if="preData.serviceInputShow" :span="24">
                     <el-form-item label-width="80px" label="相关变更服务" prop="publish_service">
                       <el-select v-model="formData.publish_service" placeholder="请选择服务相关变更服务" multiple filterable
                                  clearable :style="{width: '100%'}">
@@ -134,20 +135,20 @@
                       </el-select>
                     </el-form-item>
                   </el-col>
-                  <el-col v-if="configInputShow" :span="24">
+                  <el-col v-if="preData.configInputShow" :span="24">
                     <el-form-item label-width="110px" label="配置文件PR链接 (NewConfig/Nacos 多个请保持每行一条)" prop="links.configPrLink.link">
                       <el-input v-model="formData.links.configPrLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入JIRA链接newconfig PR 链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
-                  <el-col v-if="changeAuditShow" :span="24">
+                  <el-col v-if="preData.changeAuditShow" :span="24">
                     <el-form-item label-width="110px" label="数据库变更(changeAudit)PR链接 (多个请保持每行一条)" prop="links.changeAuditLink.link">
                       <el-input v-model="formData.links.changeAuditLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入JIRA链接change_audit 链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
                   </el-col>
                   <el-col :span="24">
-                    <el-form-item label-width="110px" label="相关JIRA链接 (多个请保持每行一条)" prop="links.jiraLink.link" :required="jiraRequire">
+                    <el-form-item label-width="110px" label="相关JIRA链接 (多个请保持每行一条)" prop="links.jiraLink.link" :required="preData.jiraRequire">
                       <el-input v-model="formData.links.jiraLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入JIRA链接相关JIRA链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
@@ -213,7 +214,7 @@
         </div>
       </el-drawer>
       <!-- 翻页区域 -->
-      <el-pagination :disabled="onPublish['status']"
+      <el-pagination style="height: 70px;" :disabled="onPublish['status']"
                      background
                      :pager-count=21
                      :current-page = "publishPage.currentPage"
@@ -222,7 +223,7 @@
                      @current-change="handleCurrentChange"
                      :page-size=20></el-pagination>
       <!-- 图表区域 -->
-      <el-drawer class="chartAre" :with-header="false" :visible.sync="chartVisible" direction="rtl" :show-close="false" size="55%" @open="emEChartOpen">
+      <el-drawer class="chartAre" :with-header="false" :visible.sync="preData.chartVisible" direction="rtl" :show-close="false" size="55%" @open="emEChartOpen">
         <div class="chartAreSub">
           <div ref="lastTwoWeekChart" style="height: 500px;width: 500px; margin: 20px 0 20px 0;"></div>
           <div ref="typePercentageChart" style="height: 500px;width: 500px; margin: 20px 0 20px 0;"></div>
@@ -230,6 +231,89 @@
           <div ref="topDeveloperChart" style="height: 500px;width: 500px; margin: 20px 0 20px 0;"></div>
         </div>
       </el-drawer>
+      <!-- 月度概览 -->
+      <el-dialog title="月度紧急发布数据概览" :visible.sync="monthlyChartVisible" @open="monthlyStatisticalResponse"
+                 @close="monthlyChartVisibleStatus" width="80%" top="10vh" ref="monthlyDialog">
+        <el-table :data="monthlyStatistical.results" :span-method="yearSpanMethod" border
+                  :header-cell-style="{background:'#eef1f6',color:'#606266',}"
+                  style="width: 100%;background: transparent; overflow:auto;">
+          <el-table-column prop="year" align="center" label="年份" width="120" :label-class-name="'monthly-label'">
+            <template slot-scope="scope">
+              <i class="el-icon-date"></i>
+              <span style="margin-left: 5px;font-size: 18px;font-weight: bold;color: grey;">{{ scope.row['year'] }}年</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="季度" prop="quarter" align="center" width="120" :label-class-name="'monthly-label'">
+            <template slot-scope="scope">
+              <i class="el-icon-c-scale-to-original"></i>
+              <span style="margin-left: 5px;font-size: 17px;font-weight: bold;color: grey;">{{ scope.row['year'] }} Q{{ scope.row['quarter'] }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="月度" prop="year_monthly" align="center" width="100" :label-class-name="'monthly-label'">
+            <template slot-scope="scope">
+              <span style="margin-left: 5px;font-size: 16px;font-weight: bold;color: grey;">{{ scope.row['month'] }}月</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="发布总次数" prop="em_release_count" align="center" width="100" :label-class-name="'monthly-label'">
+            <template slot-scope="scope">
+              <span style="margin-left: 5px;font-size: 16px;font-weight: bold;color: grey;}">{{ scope.row['em_release_count'] }} 次</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="环比上月" align="center" width="165" :label-class-name="'monthly-label'">
+            <template slot-scope="scope">
+              <el-tag size="small" :type="publishStatusTag(scope.row['em_growth_type'])">
+                <span style="font-size: 16px;font-weight: bold;">
+                  {{ scope.row['em_growth_type'] === 1 ? '下降' : scope.row['em_growth_type'] === 2 ? '上升' : scope.row['em_growth_type'] === 3 ? '-' : '' }} {{ scope.row['em_growth_type'] === 3 ? '' : scope.row['em_growth'] }}
+                </span>
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column :label="topInfo.monthlyLabel.types" align="center" :label-class-name="'monthly-label'">
+            <template slot-scope="scope">
+              <el-table :data="scope.row['most_publish_type_top']" :show-header="false" stripe>
+                <el-table-column align="left" prop="publish_type"></el-table-column>
+                <el-table-column align="center" prop="count" width="60"></el-table-column>
+              </el-table>
+            </template>
+          </el-table-column>
+          <el-table-column :label="topInfo.monthlyLabel.service" align="center" :label-class-name="'monthly-label'">
+            <template slot-scope="scope">
+              <el-table :data="scope.row['most_publish_server_top']" :show-header="false" stripe>
+                <el-table-column align="left" prop="publish_server"></el-table-column>
+                <el-table-column align="center" prop="count" width="60"></el-table-column>
+              </el-table>
+            </template>
+          </el-table-column>
+          <el-table-column :label="topInfo.monthlyLabel.developer" align="center" :label-class-name="'monthly-label'">
+            <template slot-scope="scope">
+              <el-table :data="scope.row['most_publish_developer_top']" :show-header="false" stripe>
+                <el-table-column align="left" prop="publish_developer">
+                  <template slot-scope="scope_sub">
+                    <el-tag size="mini" effect="plain" :key="scope_sub.index">
+                      {{ scope_sub.row['publish_developer'] }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column align="center" prop="count" width="80"></el-table-column>
+              </el-table>
+            </template>
+          </el-table-column>
+          <el-table-column :label="topInfo.monthlyLabel.tester" align="center" :label-class-name="'monthly-label'">
+            <template slot-scope="scope">
+              <el-table :data="scope.row['most_publish_tester_top']" :show-header="false" stripe>
+                <el-table-column align="left" prop="publish_tester">
+                  <template slot-scope="scope_sub">
+                    <el-tag size="mini" effect="plain" :key="scope_sub.index">
+                      {{ scope_sub.row['publish_tester'] }}
+                    </el-tag>
+                  </template>
+                </el-table-column>
+                <el-table-column align="center" prop="count" width="80"></el-table-column>
+              </el-table>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-dialog>
     </ms-main-container>
   </ms-container>
 </template>
@@ -247,7 +331,7 @@
 .table_are {
   display: flex;
   margin-bottom: 10px;
-  height: 80vh;
+  height: 160vh;
 }
 .el-drawer__body {
   overflow: auto;
@@ -273,6 +357,7 @@
 .el-pagination {
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 .sub_btn button {
   flex: 1;
@@ -297,6 +382,12 @@
   justify-content: flex-start;
   flex-wrap: wrap;
 }
+.monthlyChartAre {
+  display: flex;
+  justify-content: center;
+  margin: auto;
+  height: 100%;
+}
 .demo-table-expand {
   font-size: 0;
 }
@@ -308,6 +399,9 @@
   margin-right: 0;
   margin-bottom: 0;
   width: 50%;
+}
+.monthly-label {
+  font-size: 15px;
 }
 </style>
 
@@ -341,18 +435,22 @@ export default {
         rollback_action: [{required: true, type: 'array', message: '请至少选择一个回滚策略', trigger: 'change'}],
         publish_time: [{required: true, message: '请选择预计变更时间', trigger: 'change'}],
       },
-      jiraRequire: false,
-      serviceInputShow: false,
-      configInputShow: false,
-      changeAuditShow: false,
-      submitLoading: false,
-      dialogVisible: false,
-      chartVisible: false,
+      preData: {
+        jiraRequire: false,
+        serviceInputShow: false,
+        configInputShow: false,
+        changeAuditShow: false,
+        submitLoading: false,
+        dialogVisible: false,
+        chartVisible: false,
+      },
+      monthlyChartVisible: false,
       publishPage: {
         emPublishCount: 0,
         currentPage: 1,
       },
       emPublishDataResponse: {results: []},
+      monthlyStatistical: {results: []},
       techUserListDataResponse: [],
       serviceNameOptions: [],
       rollbackOptions: [],
@@ -384,17 +482,31 @@ export default {
         "checkStrictly": false
       },
       statistics: {},
-      onPublish: {status: 0}
+      onPublish: {status: false},
+      yearRanges: {},
+      quarterRanges: {},
+      topInfo: {
+        monthlyLabel: {
+          types: 'Top Publish Types',
+          service: 'Top Publish Server',
+          developer: 'Top Developers',
+          tester: 'Top Testers'
+        },
+        topNStatistical: {
+          topServer: '',
+          topDeveloper: ''
+        }
+      },
     }
   },
   watch: {
     formData: {
       handler:function(changeValue){
         const newPublishType = Array.from(new Set(changeValue.publish_type.reduce((prev, curr) => (prev.concat(curr)), [])))
-        this.serviceInputShow = newPublishType.includes(18) || newPublishType.includes(19) || newPublishType.includes(20); // 服务变更
-        this.configInputShow = newPublishType.includes(19) || newPublishType.includes(30); // 配置变更
-        this.changeAuditShow = newPublishType.includes(17); // DB变更
-        this.jiraRequire = newPublishType.includes(31) || newPublishType.includes(32); //数据订正jira修改为必填
+        this.preData.serviceInputShow = newPublishType.includes(18) || newPublishType.includes(19) || newPublishType.includes(20); // 服务变更
+        this.preData.configInputShow = newPublishType.includes(19) || newPublishType.includes(30); // 配置变更
+        this.preData.changeAuditShow = newPublishType.includes(17); // DB变更
+        this.preData.jiraRequire = newPublishType.includes(31) || newPublishType.includes(32); //数据订正jira修改为必填
       },
       deep:true
     }
@@ -402,12 +514,78 @@ export default {
   created() {
     this.publishListResponse()
     this.onPublishStatusResponse()
+    this.topInfoResponse()
   },
   mounted() {
     this.statisticsResponse()
+    this.monthlyChartVisibleStatus('open')
   },
   inject: ["reload"],
   methods: {
+    monthlyChartVisibleStatus(action = 'close') {
+      const query = { ...this.$route.query };
+      const isOpen = query.monthlyChartVisible === 'open';
+
+      if (action === 'open' && isOpen) {
+        this.$nextTick(() => {
+          this.monthlyChartVisible = true;
+        });
+      } else if (action === 'close' && isOpen) {
+        delete query.monthlyChartVisible;
+        this.$router.replace({ query });
+      }
+    },
+    yearSpanMethod({ row, column, rowIndex, columnIndex }) {
+      if (columnIndex === 0) {
+        const year = row.year;
+        const yearRange = this.yearRanges[year] || this.getYearRange(year);
+        if (rowIndex === yearRange.startIndex) {
+          const rowspan = yearRange.endIndex - yearRange.startIndex + 1;
+          return { rowspan, colspan: 1 };
+        } else {
+          return { rowspan: 0, colspan: 0 };
+        }
+      } else if (columnIndex === 1) {
+        const quarter = row.quarter;
+        const quarterRange = this.quarterRanges[quarter] || this.getQuarterRange(row.year, quarter);
+        if (rowIndex === quarterRange.startIndex) {
+          const rowspan = quarterRange.endIndex - quarterRange.startIndex + 1;
+          return { rowspan, colspan: 1 };
+        } else {
+          return { rowspan: 0, colspan: 0 };
+        }
+      }
+    },
+    getQuarterRange(year, quarter) {
+      let startIndex = -1;
+      let endIndex = -1;
+      for (let i = 0; i < this.monthlyStatistical.results.length; i++) {
+        if (this.monthlyStatistical.results[i].year === year && this.monthlyStatistical.results[i].quarter === quarter) {
+          if (startIndex === -1) {
+            startIndex = i;
+          }
+          endIndex = i;
+        }
+      }
+      const quarterRange = { startIndex, endIndex };
+      this.quarterRanges[`${year}-${quarter}`] = quarterRange;
+      return quarterRange;
+    },
+    getYearRange(year) {
+      let startIndex = -1;
+      let endIndex = -1;
+      for (let i = 0; i < this.monthlyStatistical.results.length; i++) {
+        if (this.monthlyStatistical.results[i].year === year) {
+          if (startIndex === -1) {
+            startIndex = i;
+          }
+          endIndex = i;
+        }
+      }
+      const yearRange = { startIndex, endIndex };
+      this.yearRanges[year] = yearRange;
+      return yearRange;
+    },
     emFormParamsInit () {
       this.formData.publish_time = new Date(new Date().getTime() + 30 * 60 * 1000)
       this.emUserInfoResponse()
@@ -446,7 +624,7 @@ export default {
     topServiceChart() {
       const topServiceChart = echarts.init(this.$refs.topServiceChart);
       topServiceChart.setOption({
-        title: {text: '紧急发布服务排行'},
+        title: {text: '紧急发布服务排行' + this.topInfo.topNStatistical.topServer},
         grid: {left: '3%', right: '4%', containLabel: true},
         tooltip: {trigger: "axis", axisPointer: {type: "shadow"}},
         xAxis: {type: 'category', data: this.statistics['ts']['service'], axisLabel: {interval: 0, rotate:"45",}},
@@ -457,7 +635,7 @@ export default {
     topDeveloperChart() {
       const topDeveloperChart = echarts.init(this.$refs.topDeveloperChart);
       topDeveloperChart.setOption({
-        title: {text: 'Developer提交排行'},
+        title: {text: 'Developer提交排行' + this.topInfo.topNStatistical.topDeveloper},
         grid: {left: '3%', right: '4%', containLabel: true},
         tooltip: {trigger: 'axis', axisPointer: {type: 'shadow'}},
         xAxis: {type: 'value', boundaryGap: [0, 0.01]},
@@ -482,7 +660,7 @@ export default {
     handleClose(done) {
       this.$confirm('是否确认取消提交紧急发布？')
         .then(_ => {
-          this.dialogVisible = false
+          this.preData.dialogVisible = false
           this.$refs['emergencyChangeForm'].resetFields()
           done();
         })
@@ -508,6 +686,14 @@ export default {
       this.emPublishDataResponse = apiResponse
       this.publishPage.emPublishCount = apiResponse['count']
     },
+    async monthlyStatisticalResponse () {
+      const { data: apiResponse } = await this.$axios.get('naguri/em_api/monthly_statistics')
+      this.monthlyStatistical = apiResponse
+    },
+    async topInfoResponse () {
+      const { data: apiResponse } = await this.$axios.get('naguri/em_api/top_info')
+      this.topInfo = apiResponse
+    },
     async techUserListResponse () {
       const { data: apiResponse } = await this.$axios.get('naguri/em_api/tech_user_list')
       this.techUserListDataResponse = apiResponse
@@ -528,23 +714,23 @@ export default {
       console.log(this.formData)
       this.$refs.emergencyChangeForm.validate(async valid => {
         if (!valid) return
-        this.submitLoading = true
+        this.preData.submitLoading = true
         const { data: apiResponse } = await this.$axios.post('naguri/em_api/publish', this.formData).catch((error) => {
           console.log(error)
           notificationTips('error', '提交失败，请检查表单内容！或联系 @Pauri')
-          this.submitLoading = false
+          this.preData.submitLoading = false
         })
         console.log(apiResponse)
         this.submitFormResponse = apiResponse
         if (apiResponse.publish < 1) {
           messageTips('error', '提交失败，请检查表单内容！')
-          this.submitLoading = false
+          this.preData.submitLoading = false
         } else {
           messageTips('success', '提交成功，请关注Slack审批！')
           this.$refs['emergencyChangeForm'].resetFields()
           this.sleep(500).then(() => {
-            this.submitLoading = false
-            this.dialogVisible = false
+            this.preData.submitLoading = false
+            this.preData.dialogVisible = false
             this.reload()
           })
         }
