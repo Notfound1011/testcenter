@@ -29,6 +29,7 @@ import formCreate from "@form-create/element-ui"
 import mavonEditor from 'mavon-editor'
 import 'mavon-editor/dist/css/index.css'
 import 'element-ui/lib/theme-chalk/display.css';
+import './../common/css/iconfont.css'
 import * as echarts from 'echarts';
 
 Vue.prototype.$echarts = echarts

@@ -346,10 +346,71 @@ export default {
     site_navigation: {
       title: "站点导航"
     },
+    listing: {
+      title: "快速上币",
+      listing_script: {
+        title: "上币脚本",
+        common: {
+          title: "通用",
+          gis_auth_token: {
+            title: "获取Google Identity Services Auth Token"
+          },
+          sync_prod_info: {
+            title: "同步产品信息文档"
+          },
+          verify_bitbucket: {
+            title: "验证bitbucket配置"
+          },
+          orderbook: {
+            title: "现货/合约 orderbook深度校验",
+            buttons: {
+              socketVerify: "socket方式校验orderbook",
+              apiVerify: "api方式校验orderbook"
+            }
+          }
+        },
+        spot: {
+          title: "现货",
+          gis_auth_token: {
+            title: "获取Google Auth Token",
+            get_token: "获取Google Identity Services Auth Token"
+          }
+        },
+        contract: {
+          title: "合约",
+          gis_auth_token: {
+            title: "获取Google Auth Token",
+            get_token: "获取Google Identity Services Auth Token"
+          }
+        },
+      },
+      public_variable: {
+        title: "公共变量"
+      },
+      account: {
+        title: "账号设置",
+        bitbucket: {
+          bitbucket_username: "bitbucket用户名",
+          bitbucket_password: "bitbucket密码",
+          input_bitbucket_username: "请输入bitbucket用户名",
+          input_bitbucket_password: "请输入bitbucket密码",
+          input_bitbucket_username_placeholder: "请输入bitbucket用户名",
+          input_bitbucket_password_placeholder: "请输入bitbucket密码"
+        },
+        admin: {
+          admin_username: "FAT管理后台用户名",
+          admin_password: "FAT环境管理后台密码",
+          input_admin_username: "请输入管理后台用户名",
+          input_admin_password: "请输入管理后台密码",
+          input_admin_username_placeholder: "请输入管理后台用户名",
+          input_admin_password_placeholder: "请输入管理后台密码"
+        },
+      }
+    },
     quality_market: {
       title: "质量大盘",
       testcase_statistics: {
-        title: "功能用例统计"
+        title: "功能用例"
       },
       testcase_pass_rate: {
         title: "用例通过率"
@@ -358,10 +419,10 @@ export default {
         title: "bug统计"
       },
       task_statistics: {
-        title: "需求任务统计"
+        title: "需求任务"
       },
       api_autotest: {
-        title: "接口自动化质量"
+        title: "接口自动化"
       },
       emergency_publish: {
         title: "紧急发版/变更"
