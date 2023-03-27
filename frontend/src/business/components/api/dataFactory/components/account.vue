@@ -61,7 +61,7 @@ export default {
         allCurrency: false,
         result: ''
       },
-      envList: ['testnet', 'fat1', 'fat2', 'fat3', 'fat4', 'fat5'],
+      envList: ['testnet', 'fat1', 'fat2', 'fat3'],
       site: 'phemex'
     }
   },

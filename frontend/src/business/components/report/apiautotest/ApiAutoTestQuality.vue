@@ -12,7 +12,9 @@
             :value="item.value">
           </el-option>
         </el-select>
-        <el-button type="primary" @click="getInfoAll(value)" style="margin-left: 20px">{{ $t('commons.adv_search.search') }}</el-button>
+        <el-button type="primary" @click="getInfoAll(value)" style="margin-left: 20px">
+          {{ $t('commons.adv_search.search') }}
+        </el-button>
         <el-row :gutter="20">
           <el-col :span="10">
             <div id="recentPie" style="width: 500px;height:400px;margin-left: 50px"></div>
@@ -103,62 +105,96 @@ export default {
 
   methods: {
     setJenkinsInfo() {
-      this.$axios.get("/jenkins/crumbIssuer/api/xml",
-        {
-          params: {'xpath': 'concat(//crumbRequestField,":",//crumb)'},
-          headers: {'Authorization': this.jenkins_auth}
-        }).then(res => {
+      const params = {xpath: 'concat(//crumbRequestField,":",//crumb)'};
+      const headers = {Authorization: this.jenkins_auth};
+      this.$axios.get("/jenkins/crumbIssuer/api/xml", {params, headers}).then(res => {
+        // 判断状态码是否为200
         if (res.status === 200) {
           this.json.Jenkins_Crumb = res.data.split(":")[1];
+          // 将信息存入本地
           localStorage.setItem("JenkinsInfo", JSON.stringify(this.json));
         }
       })
     },
+    // 获取所有信息
     getInfoAll(jobName) {
+      // 如果没有值，将作业名称设置为默认值
       if (this.value === '') {
-        jobName = this.defaultValue
+        jobName = this.defaultValue;
       }
+
+      // 获取最后一次构建信息
       this.getLastBuildInfo(jobName);
+
+      // 获取作业信息列表
       this.getJobInfoList(jobName);
+
+      // 获取作业图表信息
       this.myEcharts(jobName);
     },
+
+    // 获取最后一次构建信息
     getLastBuildInfo(jobName) {
-      let url = "/jenkins/job/" + jobName + "/lastBuild/api/json"
-      this.$axios.post(url, null,
-        {headers: {'Authorization': this.jenkins_auth, 'Jenkins-Crumb': this.Jenkins_Crumb}}).then(res => {
+      // 构建 URL
+      let url = "/jenkins/job/" + jobName + "/lastBuild/api/json";
+
+      // 发送 axios 请求
+      this.$axios.post(url, null, {
+        headers: {'Authorization': this.jenkins_auth, 'Jenkins-Crumb': this.Jenkins_Crumb}
+      }).then(res => {
         if (res.status === 200) {
-          this.lastBuildInfo = res.data
-          this.lastBuildInfo.datetime = formatTimeStamp(this.lastBuildInfo.timestamp)
+          // 将返回的数据保存到 lastBuildInfo
+          this.lastBuildInfo = res.data;
+          // 对 timestamp 进行格式化
+          this.lastBuildInfo.datetime = formatTimeStamp(this.lastBuildInfo.timestamp);
+
+          // 如果结果为空，则设置为 "RUNNING"
           if (this.lastBuildInfo.result === null) {
-            this.lastBuildInfo.result = "RUNNING"
+            this.lastBuildInfo.result = "RUNNING";
           }
         } else {
+          // 如果请求不成功，弹出警告框
           this.$notify.warning({
             title: "获取Jenkins最近一次构建信息失败",
             message: res.statusText
           });
         }
       }).catch((error) => {
+        // 如果出现错误，输出到控制台
         console.log(error);
       })
     },
+    // 获取任务信息列表
     getJobInfoList(jobName) {
-      let url = "/jenkins/job/" + jobName + "/api/json"
-      this.$axios.post(url, null,
-        {headers: {'Authorization': this.jenkins_auth, 'Jenkins-Crumb': this.Jenkins_Crumb}}).then(res => {
+      // 拼接Jenkins API URL
+      let url = "/jenkins/job/" + jobName + "/api/json";
+
+      // 发送post请求获取任务信息
+      this.$axios.post(url, null, {
+        headers: {
+          'Authorization': this.jenkins_auth,
+          'Jenkins-Crumb': this.Jenkins_Crumb
+        }
+      }).then(res => {
+        // 判断请求是否成功
         if (res.status === 200) {
-          this.JobInfoList = res.data
-          this.scheduling_times = this.JobInfoList.builds.length
-          this.allureOverallReport = this.JobInfoList.url + 'allure'
+          // 将请求的数据存储到JobInfoList变量
+          this.JobInfoList = res.data;
+          // 计算调度次数
+          this.scheduling_times = this.JobInfoList.builds.length;
+          // 计算Allure报告的地址
+          this.allureOverallReport = this.JobInfoList.url + 'allure';
         } else {
+          // 如果请求失败，显示错误提醒
           this.$notify.warning({
             title: "获取Jenkins的任务信息列表",
             message: res.statusText
           });
         }
-      }).catch((error) => {
+      }).catch(error => {
+        // 捕获请求的错误信息并打印到控制台
         console.log(error);
-      })
+      });
     },
 
     myEcharts(jobName) {

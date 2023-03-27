@@ -1,14 +1,14 @@
 <template>
   <ms-container>
     <ms-main-container v-loading="result.loading">
-      <div class="top">
-        <el-alert
-          title="公告：新功能上线啦😁"
-          type="info"
-          show-icon
-          description="质量大盘:用例数统计、用例/测试计划通过率统计，bug统计，接口自动化质量；接口自动化功能上线，入口为【接口测试】TAB">
-        </el-alert>
-      </div>
+<!--      <div class="top">-->
+<!--        <el-alert-->
+<!--          title="公告：新功能上线啦😁"-->
+<!--          type="info"-->
+<!--          show-icon-->
+<!--          description="质量大盘:用例数统计、用例/测试计划通过率统计，bug统计，接口自动化质量；接口自动化功能上线">-->
+<!--        </el-alert>-->
+<!--      </div>-->
       <el-row :gutter="5">
         <el-col :span="6">
           <div class="square">

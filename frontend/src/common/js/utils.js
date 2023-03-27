@@ -827,58 +827,58 @@ export function removeEscape(str) {  //去除转义
   });
 }
 
+/**
+ * Converts a decimal number to a percentage string representation.
+ * @param {number} data - The decimal number to convert.
+ * @returns {string} - The percentage string representation.
+ */
 export function ChangeDecimalToPercentage(data) {
-  let data1 = (data * 100).toFixed(2) + "%"
-  return data1
+  // Multiply the decimal number by 100 and round to 2 decimal places
+  const percentage = (data * 100).toFixed(2);
+  // Return the percentage as a string with a "%" sign appended
+  return `${percentage}%`;
 }
-
 
 export function groupArray(arr, name) {
-  //创建映射
-  let map = new Map()
-  for (let i = 0; i < arr.length; i++) {
-    if (name === "created") {
-      try {
-        const s = JSON.stringify(arr[i].fields[name]);
-        if (!map.has(s)) {
-          map.set(s, {
-            location: arr[i].fields[name],
-            count: 1,
-          });
-        } else {
-          map.get(s).count++;
-        }
-      } catch (e) {
-        console.log(e);
+  // 创建一个Map对象用于存储数据
+  const map = new Map();
+
+  // 遍历数组中的每一项
+  arr.forEach(item => {
+    let tmp, location;
+    try {
+      // 如果传入的名称是“created”，则读取对象的字段属性，否则读取对象字段属性的名称
+      tmp = name === "created" ? item.fields[name] : item.fields[name].name;
+      location = JSON.stringify(tmp);
+      // 如果map中不存在location，则将该位置添加到map中，并将count设为1
+      if (!map.has(location)) {
+        map.set(location, {location: tmp, count: 1});
+      } else {
+        // 否则将该位置的count增加1
+        map.get(location).count++;
       }
-    } else {
-      try {
-        const s = JSON.stringify(arr[i].fields[name].name);
-        if (!map.has(s)) {
-          map.set(s, {
-            location: arr[i].fields[name].name,
-            count: 1,
-          });
-        } else {
-          map.get(s).count++;
-        }
-      } catch (e) {
-        console.log(e);
-      }
+    } catch (e) {
+      // 如果捕获到异常，则输出异常
+      console.error(e);
     }
-  }
-  const new_array = Array.from(map.values()).sort((a, b) => b.count - a.count)
-  return new_array;
+  });
+  // 将map中的数据转化为数组，并按count值从大到小排序
+  return Array.from(map.values()).sort((a, b) => b.count - a.count);
 }
 
-
+// 导出 list2Map 函数，将数组转换为对象映射
 export function list2Map(list, key) {
+  // 初始化映射对象
   let map = {};
+  // 判断传入的 list 是否为数组且数组长度大于0
   if (list && Array.isArray(list) && list.length > 0) {
+    // 遍历 list 数组，将每个元素映射到 map 对象上
     list.forEach((item) => {
+      // 判断该元素是否存在 key 属性
       item[key] ? (map[item[key]] = item) : "";
     });
   }
+  // 返回映射对象
   return map;
 }
 

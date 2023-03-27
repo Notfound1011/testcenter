@@ -2,10 +2,10 @@
   <div id="menu-bar" v-if="isRouterAlive">
     <el-row type="flex">
       <project-change :project-name="currentProject"/>
-      <el-col :span="14">
+      <el-col :span="18">
         <el-menu class="header-menu" :unique-opened="true" mode="horizontal" router :default-active='currentPath'>
 
-          <el-menu-item :index="'/api/home'">
+          <el-menu-item :index="'/api/home'" v-if="isVisible()">
             {{ $t("i18n.home") }}
           </el-menu-item>
 
@@ -21,15 +21,15 @@
             {{ $t('api_test.data_factory.title') }}
           </el-menu-item>
 
-          <el-menu-item :index="'/api/definition'" v-permission="['PROJECT_API_DEFINITION:READ']">
+          <el-menu-item :index="'/api/definition'" v-permission="['PROJECT_API_DEFINITION:READ']" v-if="isVisible()">
             {{ $t("i18n.definition") }}
           </el-menu-item>
 
-          <el-menu-item :index="'/api/automation'" v-permission="['PROJECT_API_SCENARIO:READ']">
+          <el-menu-item :index="'/api/automation'" v-permission="['PROJECT_API_SCENARIO:READ']" v-if="isVisible()">
             {{ $t("i18n.automation") }}
           </el-menu-item>
 
-          <el-menu-item :index="'/api/automation/report'" v-permission="['PROJECT_API_REPORT:READ']">
+          <el-menu-item :index="'/api/automation/report'" v-permission="['PROJECT_API_REPORT:READ']" v-if="isVisible()">
             {{ $t("i18n.report") }}
           </el-menu-item>
 
@@ -54,6 +54,7 @@ import MsShowAll from "../../common/head/ShowAll";
 import MsCreateButton from "../../common/head/CreateButton";
 import ProjectChange from "@/business/components/common/head/ProjectSwitch";
 import {mapGetters} from "vuex";
+import {PROJECT_ID, PROJECT_NAME} from "@/common/js/constants";
 
 export default {
   name: "MsApiHeaderMenus",
@@ -85,6 +86,10 @@ export default {
         this.isRouterAlive = true;
       });
     },
+    // 判断sessionStorage中的PROJECT_NAME值是否为"接口测试"
+    isVisible() {
+      return sessionStorage.getItem(PROJECT_NAME) === '接口测试';
+    }
   },
   mounted() {
 

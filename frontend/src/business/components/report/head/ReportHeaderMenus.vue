@@ -1,7 +1,7 @@
 <template>
   <div id="menu-bar" v-if="isRouterAlive">
     <el-row type="flex">
-      <el-col :span="14">
+      <el-col :span="18">
         <el-menu class="header-menu" :unique-opened="true" mode="horizontal" router :default-active='$route.path'>
 
           <el-menu-item :index="'/reports/testCaseStat'" style="margin-left: 2%">
