@@ -116,7 +116,7 @@ export default {
     },
     active() {
       if (this.activeIndex === '/api') {
-        window.location.href = "/#/api/home";
+        window.location.href = "/#/api/testCaseRecord";
       }
     },
     check(key) {
