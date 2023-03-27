@@ -32,7 +32,11 @@
               <span v-else> -- </span>
             </template>
           </el-table-column>
-          <el-table-column label="变更原因/简述" header-align="center" align="left" prop="publish_reason" width="300"></el-table-column>
+          <el-table-column label="变更原因/简述" header-align="center" align="left" prop="publish_reason" width="300">
+            <template slot-scope="scope">
+              <span style="font-weight: bold">{{ scope.row['publish_reason'] }}</span>
+            </template>
+          </el-table-column>
           <el-table-column label="相关链接" align="center" width="81">
             <template slot-scope="scope">
               <el-popover placement="right" width="273" trigger="hover">
@@ -44,19 +48,21 @@
                     </template>
                   </el-table-column>
                 </el-table>
-                <el-button type="text" size="mini" icon="el-icon-view" slot="reference">查看</el-button>
+                <el-button :disabled="!scope.row['publish_link'].length" type="text" size="mini" icon="el-icon-view" slot="reference">查看</el-button>
               </el-popover>
             </template>
           </el-table-column>
           <el-table-column label="变更时间" width="155" align="center">
             <template slot-scope="scope">
               <i class="el-icon-time"></i>
-              <span style="margin-left: 5px">{{ scope.row.publish_time }}</span>
+              <span style="margin-left: 5px;">{{ scope.row.publish_time }}</span>
             </template>
           </el-table-column>
           <el-table-column label="审批状态" align="center" width="91">
             <template slot-scope="scope">
-              <el-tag :type="publishStatusTag(scope.row['publish_status'].code)">{{ scope.row['publish_status'].status }}</el-tag>
+              <el-tag style="font-weight: bold" :type="publishStatusTag(scope.row['publish_status'].code)">
+                {{ scope.row['publish_status'].status }}
+              </el-tag>
             </template>
           </el-table-column>
           <el-table-column label="Developer">
