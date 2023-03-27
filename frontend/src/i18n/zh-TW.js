@@ -346,10 +346,19 @@ export default {
     site_navigation: {
       title: "站點導航"
     },
+    listing: {
+      title: "快速上幣",
+      listing_script: {
+        title: "上幣腳本"
+      },
+      public_variable: {
+        title: "公共變量"
+      }
+    },
     quality_market: {
       title: "質量大盤",
       testcase_statistics: {
-        title: "功能用例統計"
+        title: "功能用例"
       },
       testcase_pass_rate: {
         title: "用例通過率"
@@ -358,10 +367,10 @@ export default {
         title: "bug统计"
       },
       task_statistics: {
-        title: "需求任務統計"
+        title: "需求任務"
       },
       api_autotest: {
-        title: "接口自動化質量"
+        title: "接口自動化"
       },
       emergency_publish: {
         title: "緊急發布/變更"

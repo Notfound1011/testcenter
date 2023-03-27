@@ -345,10 +345,19 @@ export default {
     site_navigation: {
       title: "Site Navigation"
     },
+    listing: {
+      title: "Quick Listing",
+      listing_script: {
+        title: "Listing Script"
+      },
+      public_variable: {
+        title: "Public Variable"
+      }
+    },
     quality_market: {
       title: "Quality market",
       testcase_statistics: {
-        title: "Function testcase statistics"
+        title: "Function testcase"
       },
       testcase_pass_rate: {
         title: "Testcase passing rate"
@@ -360,7 +369,7 @@ export default {
         title: "Task statistics"
       },
       api_autotest: {
-        title: "Api AutoTest Quality"
+        title: "Api AutoTest"
       },
       emergency_publish: {
         title: "Emergency Publish"

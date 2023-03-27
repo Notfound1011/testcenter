@@ -1,0 +1,44 @@
+@font-face {
+  font-family: "iconfont"; /* Project id 3941697 */
+  src: url('./iconfont/iconfont.woff2') format('woff2'),
+  url('./iconfont/iconfont.woff') format('woff'),
+  url('./iconfont/iconfont.ttf') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 18px;
+  font-style: normal;
+  margin-right: 5px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-qitatongyong:before {
+  content: "\e697";
+}
+
+.icon-ETH:before {
+  content: "\e639";
+}
+
+.icon-BTC:before {
+  content: "\e7ec";
+}
+
+.icon-icon-safe-bluefuben:before {
+  content: "\e610";
+}
+
+.icon-authority:before {
+  content: "\e626";
+}
+
+.icon-heyue:before {
+  content: "\e6c7";
+}
+
+.icon-zhinengheyue:before {
+  content: "\e99d";
+}
+
