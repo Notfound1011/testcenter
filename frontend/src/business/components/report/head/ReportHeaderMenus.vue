@@ -22,7 +22,7 @@
           <el-menu-item :index="'/reports/emergencyPublish'">
             {{ $t('commons.quality_market.emergency_publish.title') }}
           </el-menu-item>
-          <el-menu-item :index="'/reports/Coverage'" v-permission="['PROJECT_API_REPORT:READ']">
+          <el-menu-item :index="'/reports/ApiAutoTestCoverage'" v-permission="['PROJECT_API_REPORT:READ']">
             {{ $t("commons.quality_market.api_case_coverage.title") }}
           </el-menu-item>
         </el-menu>

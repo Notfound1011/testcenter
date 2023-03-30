@@ -7,6 +7,17 @@
           <span class="pie-chart-data-text">主站Api总数(根据Api已有文档统计)<br></span>
           <span class="pie-chart-data-total">
           {{ unfinishedData.length + completedData.length + excludedData.length }}
+            <br />
+            <span class="pie-chart-data-text">排除规则</span>
+          <el-link type="primary" style="font-size: 16px; margin-left: 3px;" @click="dialogExcludedRuleVisible(true)"
+                   v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']" > 查看
+          </el-link>
+<!--          <el-link type="primary" style="font-size: 16px; margin-left: 3px;" @click="dialogExcludedRuleVisible(false)"-->
+<!--                   v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']" > 编辑-->
+<!--          </el-link>-->
+            <el-link type="primary" style="font-size: 16px; margin-left: 3px;" @click="runJobNow"
+                     v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']" :disabled="coolDown > 0"> {{ coolDown > 0 ? '等待' + coolDown + '秒' : '立即触发' }}
+          </el-link>
         </span>
         </el-card>
         <div class="Echarts" id="pie-chart" style="width:100%;height:600%;"/>
@@ -18,11 +29,10 @@
         <div class="Echarts" id="line-charts" style="width:100%;height:600%;"/>
       </el-card>
     </div>
-    <div v-else class="chart-content-null">
-      阿! 彩蛋!
-    </div>
+    <div v-else></div>
+
     <el-dialog :title="dialogTitle" :visible.sync="dialogStatus">
-      <el-input placeholder="请输入内容" v-model="searchValue" class="coverage-input" @keydown.enter.native="filterData" @blur="filterData">
+      <el-input placeholder="请输入内容" v-model="searchValue" class="coverage-input" @keydown.enter.native="filterData" @blur="filterData" size="mini">
         <el-select v-model="searchKey" slot="prepend" placeholder="请选择" class="coverage-select">
           <el-option label="名称" value="title"></el-option>
           <el-option label="所属项目" value="projectName"></el-option>
@@ -36,9 +46,11 @@
         <el-table-column property="projectName" label="所属项目" min-width="200"></el-table-column>
         <el-table-column property="tag" label="标签" min-width="200">
           <template v-slot="scope">
+            <div v-if="scope.row.tag">
             <el-tag v-for="item in scope.row.tag" :key="item" type="" effect="plain" class="tag-group">
               {{ item }}
             </el-tag>
+            </div>
           </template>
         </el-table-column>
         <el-table-column property="docsUrl" label="docs链接" min-width="90">
@@ -50,15 +62,88 @@
         <el-table-column property="addTime" label="创建时间" min-width="220"></el-table-column>
       </el-table>
     </el-dialog>
+
+    <!-- 排除规则 -->
+    <el-dialog :title="dialogExcludedRuleTitle" :visible.sync="dialogExcludedRuleStatus" v-if="dialogExcludedRuleStatus">
+      <el-form :model="excludedRuleForm" ref="excludedRuleForm" label-width="120px">
+        <el-form-item label="根据项目:" prop="projectData">
+          <template v-slot="scope">
+            <div v-if="excludedRuleForm.projectData.length < 1">-</div>
+            <div v-else>
+              <el-tooltip :key="item['projectId']" v-for="item in excludedRuleForm.projectData"
+                          :content="item['reason']" placement="top">
+                <el-tag type="" effect="plain" class="tag-group jump" @click="jumpApiDocs(item['jumpUrl'])">
+                  {{item.projectName}}
+                </el-tag>
+              </el-tooltip>
+            </div>
+          </template>
+        </el-form-item>
+        <el-form-item label="根据路径起始:" prop="pathData.start">
+          <template v-slot="scope">
+            <div v-if="excludedRuleForm.pathData.start.length < 1">-</div>
+            <div v-else>
+              <el-tooltip :key="item['value']" v-for="item in excludedRuleForm.pathData.start"
+                          :content="item['reason']" placement="top">
+                <el-tag type="" effect="plain" class="tag-group">
+                  {{item.value}}
+                </el-tag>
+              </el-tooltip>
+            </div>
+          </template>
+        </el-form-item>
+        <el-form-item label="根据路径包含:" prop="pathData.in">
+          <template v-slot="scope">
+            <div v-if="excludedRuleForm.pathData.in.length < 1">-</div>
+            <div v-else>
+              <el-tooltip :key="item['value']" v-for="item in excludedRuleForm.pathData.in"
+                          :content="item['reason']" placement="top">
+                <el-tag type="" effect="plain" class="tag-group">
+                  {{item.value}}
+                </el-tag>
+              </el-tooltip>
+            </div>
+          </template>
+        </el-form-item>
+        <el-form-item label="根据路径后缀:" prop="pathData.end">
+          <template v-slot="scope">
+            <div v-if="excludedRuleForm.pathData.end.length < 1">-</div>
+            <div v-else>
+              <el-tooltip :key="item['value']" v-for="item in excludedRuleForm.pathData.end"
+                          :content="item['reason']" placement="top">
+                <el-tag type="" effect="plain" class="tag-group">
+                  {{item.value}}
+                </el-tag>
+              </el-tooltip>
+            </div>
+          </template>
+        </el-form-item>
+        <el-form-item label="根据文档Id:" prop="apiIdData">
+          <template v-slot="scope">
+            <div v-if="excludedRuleForm['apiIdData'].length < 1">-</div>
+            <div v-else>
+              <el-tooltip :key="item['id']" v-for="item in excludedRuleForm['apiIdData']"
+                          :content="`${item.name ? `「${item.name}」, ` : ''}${item['reason']}`" placement="top">
+                <el-tag type="" effect="plain" :class="item['jumpUrl'] ? 'tag-group jump docs-id': 'tag-group docs-id'" @click="jumpApiDocs(item['jumpUrl'])">
+                  {{item.name ? item.name : item.id}}
+                </el-tag>
+              </el-tooltip>
+            </div>
+          </template>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import * as echarts from 'echarts';
-import {popUpReminder, timestampToTimeFormat}  from '@/common/js/utils';
+import {popUpReminder, timestampToTimeFormat, fullScreenLoading}  from '@/common/js/utils';
+
+let jobId = '3ba04766-796d-11ed-898e-3a27e1d6caa3'
 
 export default {
-  name: "Coverage",
+  name: "ApiAutoTestCoverage",
   data() {
     return {
       echartsDataStatus: false,
@@ -79,7 +164,15 @@ export default {
       dialogFormData: [],  // 展示的是数据, 会通过search变更
 
       searchKey: 'projectName',
-      searchValue: ''
+      searchValue: '',
+
+      // 排除规则的dialog
+      dialogExcludedRuleStatus: false,
+      excludedRuleForm: {},  //
+      dialogExcludedRuleTitle: '',
+
+      // 触发倒计时
+      coolDown: 0
     }
   },
   methods: {
@@ -116,6 +209,7 @@ export default {
      */
     dataGeneration() {
       const that = this;
+      let loading = fullScreenLoading(that, '资源加载中...');
       that.$axios.get("/pyServer/Jobs/ApiCaseCoverage/Report/Last")
         .then(res => {
           console.log(res.data)
@@ -125,16 +219,17 @@ export default {
           that.projectData = tmpData.projectData
           that.unfinishedData = that.batchConvertTimestamps(tmpData.unfinishedData)
           that.completedData = that.batchConvertTimestamps(tmpData.completedData)
-          that.excludedData = that.batchConvertTimestamps(tmpData.excludedData)
+          that.excludedData = tmpData.excludedData ? tmpData.excludedData : []
           that.excludedRule = tmpData.excludedRule
           that.caseDataByTime = tmpData.caseDataByTime
           that.caseDataByMark = tmpData.caseDataByMark
-          that.creationTime = `${timestampToTimeFormat(tmpData.creationTime, that.getUTCTime)} UTC`
+          that.creationTime = `${timestampToTimeFormat(tmpData['createdAt'], that.getUTCTime)} UTC`
           that.enabledQuantity = tmpData.enabledQuantity
           that.disabledQuantity = tmpData.disabledQuantity
-
+          loading.close();
           return that.echartsDataStatus;
         }).catch(() => {
+        loading.close();
         console.log('获取覆盖率接口失败')
         popUpReminder(this, '获取覆盖率数据失败!')
         return that.echartsDataStatus;
@@ -184,6 +279,20 @@ export default {
       const that = this;
       //图表初始化
       let chartObj = this.$echarts.init(document.getElementById('pie-chart'));
+      // 根据是否有返回排除的数据, 如果没有不展示这个数据
+      let pieArr;
+      if (Array.isArray(that.excludedData) && that.excludedData.length > 0){
+        pieArr = [
+          {name: '未覆盖Api', value: that.unfinishedData.length, keyName: 'unfinishedData'},
+          {name: '已覆盖Api', value: that.completedData.length, keyName: 'completedData'},
+          {name: '已排除Api', value: that.excludedData.length, keyName: 'excludedData'}
+        ]
+      }else{
+        pieArr = [
+          {name: '未覆盖Api', value: that.unfinishedData.length, keyName: 'unfinishedData'},
+          {name: '已覆盖Api', value: that.completedData.length, keyName: 'completedData'},
+        ]
+      }
       chartObj.setOption(
         {
           tooltip: {
@@ -246,11 +355,7 @@ export default {
                   }
                 }
               },
-              data: [
-                {name: '未覆盖Api', value: that.unfinishedData.length, keyName: 'unfinishedData'},
-                {name: '已覆盖Api', value: that.completedData.length, keyName: 'completedData'},
-                {name: '已排除Api', value: that.excludedData.length, keyName: 'excludedData'}
-              ]
+              data: pieArr
             }
           ]
         }
@@ -436,8 +541,64 @@ export default {
         that.createApiData(e.data['idList'], e.seriesName)
       });
     },
+    /**
+     * 接口数据展示的排除规则, 增加过滤
+     */
     filterData(){
       this.dialogFormData = this.formData.filter(data => !this.searchValue || data[this.searchKey].toLowerCase().includes(this.searchValue.toLowerCase()))
+    },
+    /**
+     * 打开排除规则的dialog
+     * @param {Boolean} readOnly
+     */
+    dialogExcludedRuleVisible(readOnly = true){
+      const _that = this;
+      // 如果是只读, 就把生成报告的规则暴露出来, 修改的时候才去远端获取
+      if (readOnly) {
+        _that.excludedRuleForm = _that.excludedRule;
+        console.log(JSON.stringify(_that.excludedRuleForm))
+        _that.dialogExcludedRuleTitle = '当前报告中排除规则 -- 查看';
+        _that.dialogExcludedRuleStatus = true;
+      } else {
+        _that.dialogExcludedRuleTitle = '敬请期待';
+        _that.dialogExcludedRuleStatus = true;
+      }
+    },
+    /**
+     * like触发一次job
+     */
+    runJobNow(){
+      const that = this;
+      if (that.coolDown > 0){
+        return
+      }
+      that.$axios.post("/pyServer/Jobs/ManagePeriodicTask/RunNow", {'jobId': jobId})
+        .then(res => {
+          console.log(res.data)
+          let tmpData = res.data
+          if (tmpData.code === 0){
+            popUpReminder(that, '触发成功!', '', 'success')
+            that.coolDown = 60;
+            let timer = setInterval(() =>{
+              that.coolDown --;
+              if (that.coolDown <= 0){
+                clearInterval(timer);
+              }
+            }, 1000)
+          }
+        }).catch(() => {
+        popUpReminder(this, `触发失败!!!`, '接口自动化覆盖率任务')
+        that.coolDown = 0;
+      })
+    },
+    /**
+     * 支持跳转到api文档路径
+     * @param jumpUrl
+     */
+    jumpApiDocs(jumpUrl){
+      if (jumpUrl){
+        window.open(jumpUrl, '_blank');
+      }
     }
   },
   mounted(){
@@ -479,5 +640,18 @@ export default {
 }
 .coverage-input {
   width: 450px;
+}
+.tag-group {
+  margin: 2px;
+
+}
+.tag-group.jump{
+  cursor: pointer;
+}
+.tag-group.docs-id{
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

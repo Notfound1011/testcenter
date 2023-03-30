@@ -110,8 +110,8 @@
                 <el-option label="normal" value="normal"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item :label=label.case_id_List prop="case_id_List" class="form-item">
-              <el-input placeholder='填写case_id，多条用","隔开' v-model="parameters.case_id_List"
+            <el-form-item :label=label.case_id_list prop="case_id_list" class="form-item">
+              <el-input placeholder='填写case_id，多条用","隔开' v-model="parameters.case_id_list"
                         style="width: 130%;">
               </el-input>
             </el-form-item>
@@ -209,8 +209,8 @@
                 <el-option label="pub_api" value="pub_api"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item :label=label.case_id_List prop="case_id_List" class="form-item">
-              <el-input placeholder='填写case_id，多条用","隔开' v-model="turkeyParameters.case_id_List"
+            <el-form-item :label=label.case_id_list prop="case_id_list" class="form-item">
+              <el-input placeholder='填写case_id，多条用","隔开' v-model="turkeyParameters.case_id_list"
                         style="width: 120%;">
               </el-input>
             </el-form-item>
@@ -295,7 +295,7 @@ export default {
         case_type: ['rest_api', 'pub_api'],
         total_spot_price_multiple: '1.5',
         total_contract_number: '5',
-        case_id_List: '',
+        case_id_list: '',
         robot_pending_order: true,
         plan_type: ['spot', 'contract', 'normal'],
         mark_price_by_contract: false,
@@ -310,7 +310,7 @@ export default {
         env: 'fat',
         web_site: 'turkey',
         case_type: ['rest_api', 'pub_api'],
-        case_id_List: '',
+        case_id_list: '',
         // plan_type: 'normal',
         execution_case_mark: 'p0',
         not_execution_case_mark: 'error',
@@ -350,7 +350,7 @@ export default {
         contract_symbol_list: "合约币对列表",
         case_type: "case类型",
         plan_type: "计划执行类型",
-        case_id_List: "指定case id",
+        case_id_list: "指定case id",
         total_spot_price_multiple: "spot价值(倍数)",
         total_contract_number: "合约成交数量",
         mark_price_by_contract: "是否取markPrice",

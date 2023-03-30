@@ -1,8 +1,8 @@
 <template>
   <div id="menu-bar" v-if="isRouterAlive">
-    <el-row type="flex">
+    <el-row type="flex" :gutter="0">
       <project-change :project-name="currentProject"/>
-      <el-col :span="18">
+      <el-col :span="20">
         <el-menu class="header-menu" :unique-opened="true" mode="horizontal" router :default-active='currentPath'>
 
           <el-menu-item :index="'/api/home'" v-if="isVisible()">
@@ -40,6 +40,9 @@
           <el-menu-item :index="'/api/globalVariablesForAutoTest'" v-permission="['PROJECT_API_REPORT:READ']">
             {{ $t("i18n.globalVariablesForAutoTest") }}
           </el-menu-item>
+<!--          <el-menu-item :index="'/api/writeCode'" v-permission="['PROJECT_API_REPORT:READ']">-->
+<!--            {{ $t("i18n.writeCode") }}-->
+<!--          </el-menu-item>-->
         </el-menu>
       </el-col>
     </el-row>
