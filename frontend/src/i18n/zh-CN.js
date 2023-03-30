@@ -367,6 +367,10 @@ export default {
               socketVerify: "socket方式校验orderbook",
               apiVerify: "api方式校验orderbook"
             }
+          },
+          recent_trades: {
+            title: "现货/合约 最近成交校验",
+            verify: "校验"
           }
         },
         spot: {

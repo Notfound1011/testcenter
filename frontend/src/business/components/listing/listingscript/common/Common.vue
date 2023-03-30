@@ -7,6 +7,8 @@
     <verify-bitbucket></verify-bitbucket>
     <el-divider></el-divider>
     <order-book></order-book>
+    <el-divider></el-divider>
+    <recent-trades></recent-trades>
   </div>
 </template>
 
@@ -15,10 +17,11 @@ import GoogleLogin from "@/business/components/listing/listingscript/common/comp
 import SyncProdInfoDocs from "@/business/components/listing/listingscript/common/components/SyncProdDocs.vue";
 import VerifyBitbucket from "@/business/components/listing/listingscript/common/components/VerifyBitbucket.vue";
 import OrderBook from "@/business/components/listing/listingscript/common/components/OrderBook.vue";
+import RecentTrades from "@/business/components/listing/listingscript/common/components/RecentTrades.vue";
 
 export default {
   name: "Common",
-  components: {OrderBook, VerifyBitbucket, SyncProdInfoDocs, GoogleLogin}
+  components: {RecentTrades, OrderBook, VerifyBitbucket, SyncProdInfoDocs, GoogleLogin}
 }
 </script>
 
