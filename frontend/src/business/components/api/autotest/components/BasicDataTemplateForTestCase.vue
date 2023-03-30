@@ -80,7 +80,7 @@
                 </el-option-group>
               </el-select>
               <el-tooltip effect="dark"
-                          :content="itemValue.function_type ? (dataToBeConfig[itemIndex] && dataToBeConfig[itemIndex].description ? dataToBeConfig[itemIndex].description: '该字段暂未设置提醒') : '请设置类型'"
+                          :content="itemValue.functionType ? (dataToBeConfig[itemIndex] && dataToBeConfig[itemIndex].description ? dataToBeConfig[itemIndex].description: '该字段暂未设置提醒') : '请设置类型'"
                           placement="top">
                 <i class="el-icon-question drawer-el-icon"/>
               </el-tooltip>
@@ -307,7 +307,7 @@ export default {
                   for (let tmpIndex in _that.dataToBeProcessed) {
                     for (let groupIndex in _that.configContent) {
                       for (let optionIndex in _that.configContent[groupIndex]['options']) {
-                        if (_that.dataToBeProcessed[tmpIndex]['function_type'] === _that.configContent[groupIndex]['options'][optionIndex]['functionType']) {
+                        if (_that.dataToBeProcessed[tmpIndex]['functionType'] === _that.configContent[groupIndex]['options'][optionIndex]['functionType']) {
                           _that.dataToBeConfig.push(_that.configContent[groupIndex]['options'][optionIndex])
                         }
                       }
@@ -329,11 +329,11 @@ export default {
       }
     },
     /**
-     * @description: 添加一个基础元素, 仅在队列里添加一个 `function_type` 基础key
+     * @description: 添加一个基础元素, 仅在队列里添加一个 `functionType` 基础key
      * @return {*}
      */
     addItem() {
-      this.dataToBeProcessed.push({'function_type': null});
+      this.dataToBeProcessed.push({'functionType': null});
       this.dataToBeConfig.push({});
     },
     /**
@@ -361,7 +361,7 @@ export default {
      */
     updateItemFunctionType(event, itemIndex) {
       const _that = this;
-      _that.dataToBeProcessed[itemIndex]['function_type'] = _that.dataToBeConfig[itemIndex]['functionType']
+      _that.dataToBeProcessed[itemIndex]['functionType'] = _that.dataToBeConfig[itemIndex]['functionType']
     },
     /**
      * @description: 处理 basicData 中的字符串数据

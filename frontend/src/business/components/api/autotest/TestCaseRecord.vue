@@ -39,7 +39,7 @@
                 <el-option label="delete" value="delete"></el-option>
               </el-select>
               <el-select v-model="keywords" clearable placeholder="请选择" v-else-if="value==='templateType'">
-                <el-option label="非模板" value="not_template"></el-option>
+                <el-option label="非模板" value="normal"></el-option>
                 <el-option label="合约" value="contract"></el-option>
                 <el-option label="现货" value="spot"></el-option>
               </el-select>

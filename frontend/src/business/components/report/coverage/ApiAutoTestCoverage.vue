@@ -46,9 +46,11 @@
         <el-table-column property="projectName" label="所属项目" min-width="200"></el-table-column>
         <el-table-column property="tag" label="标签" min-width="200">
           <template v-slot="scope">
+            <div v-if="scope.row.tag">
             <el-tag v-for="item in scope.row.tag" :key="item" type="" effect="plain" class="tag-group">
               {{ item }}
             </el-tag>
+            </div>
           </template>
         </el-table-column>
         <el-table-column property="docsUrl" label="docs链接" min-width="90">
@@ -121,9 +123,9 @@
             <div v-if="excludedRuleForm['apiIdData'].length < 1">-</div>
             <div v-else>
               <el-tooltip :key="item['id']" v-for="item in excludedRuleForm['apiIdData']"
-                          :content="item['reason']" placement="top">
-                <el-tag type="" effect="plain" class="tag-group jump" @click="jumpApiDocs(item['jumpUrl'])">
-                  {{item.id}}
+                          :content="`${item.name ? `「${item.name}」, ` : ''}${item['reason']}`" placement="top">
+                <el-tag type="" effect="plain" :class="item['jumpUrl'] ? 'tag-group jump docs-id': 'tag-group docs-id'" @click="jumpApiDocs(item['jumpUrl'])">
+                  {{item.name ? item.name : item.id}}
                 </el-tag>
               </el-tooltip>
             </div>
@@ -217,7 +219,7 @@ export default {
           that.projectData = tmpData.projectData
           that.unfinishedData = that.batchConvertTimestamps(tmpData.unfinishedData)
           that.completedData = that.batchConvertTimestamps(tmpData.completedData)
-          that.excludedData = that.batchConvertTimestamps(tmpData.excludedData)
+          that.excludedData = tmpData.excludedData ? tmpData.excludedData : []
           that.excludedRule = tmpData.excludedRule
           that.caseDataByTime = tmpData.caseDataByTime
           that.caseDataByMark = tmpData.caseDataByMark
@@ -591,10 +593,12 @@ export default {
     },
     /**
      * 支持跳转到api文档路径
-     * @param projectId
+     * @param jumpUrl
      */
-    jumpApiDocs(projectId){
-      window.open(projectId, '_blank');
+    jumpApiDocs(jumpUrl){
+      if (jumpUrl){
+        window.open(jumpUrl, '_blank');
+      }
     }
   },
   mounted(){
@@ -643,5 +647,11 @@ export default {
 }
 .tag-group.jump{
   cursor: pointer;
+}
+.tag-group.docs-id{
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 </style>

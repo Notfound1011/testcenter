@@ -54,7 +54,7 @@
           <el-col :span="6">
             <el-form-item label="用例类型" :rules="apiCaseRules.requiredCheck" prop="templateType">
               <el-select v-model="apiCaseData.templateType" placeholder="必选项" @change="updateTemplateType">
-                <el-option label="非模板" value="not_template"></el-option>
+                <el-option label="非模板" value="normal"></el-option>
                 <el-option label="现货模板" value="spot"></el-option>
                 <el-option label="合约模板" value="contract"></el-option>
               </el-select>
@@ -114,9 +114,9 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="触发条件单" prop="triggerConditionalOrder">
-              <el-switch v-model="apiCaseData.triggerConditionalOrder"
-                         :disabled="!needHelpAndTriggerConditionalOrderStatus"/>
+            <el-form-item label="触发条件单" prop="triggerOrder">
+              <el-switch v-model="apiCaseData.triggerOrder"
+                         :disabled="!needOrderAndTriggerConditionalOrderStatus"/>
               <el-tooltip class="tooltip" effect="dark" placement="top"
                           content="是否需要达成触发价格, 如果不是'交易'的模板类型, 会在提交时[强制]修改为false.">
                 <i class="el-icon-question"/>
@@ -124,9 +124,9 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="挂对手单" prop="needHelp">
-              <el-switch v-model="apiCaseData.needHelp"
-                         :disabled="!needHelpAndTriggerConditionalOrderStatus"/>
+            <el-form-item label="挂对手单" prop="needOrder">
+              <el-switch v-model="apiCaseData.needOrder"
+                         :disabled="!needOrderAndTriggerConditionalOrderStatus"/>
               <el-tooltip class="tooltip" effect="dark" placement="top"
                           content="是否需要协助挂对手单, 如果不是'交易'的模板类型, 会在提交时[强制]修改为false.">
                 <i class="el-icon-question"/>
@@ -265,8 +265,8 @@ export default {
         templateType: '',
         webSite: '',
         clearUp: [],
-        triggerConditionalOrder: false,
-        needHelp: false,
+        triggerOrder: false,
+        needOrder: false,
         status: true,
         docsUrl: '',
         applicableEnv: [],
@@ -287,8 +287,8 @@ export default {
       tipsConfig: {
         caseName: {'fieldName': '用例名称', 'placeholder': '必填项', 'coupledKey': 'caseName'},
       },
-      // needHelp 和 triggerConditionalOrder 操作控制器, 除了交易类的 其余都默认为0, 并且不可操作,
-      needHelpAndTriggerConditionalOrderStatus: true,
+      // needOrder 和 triggerOrder 操作控制器, 除了交易类的 其余都默认为0, 并且不可操作,
+      needOrderAndTriggerConditionalOrderStatus: true,
       // 配置
       configData: {}
     }
@@ -529,16 +529,16 @@ export default {
       }
     },
     /**
-     * @description 变更 模板类型 后, 修改 needHelp 和 triggerConditionalOrder 和页面 switch 的操作状态
+     * @description 变更 模板类型 后, 修改 needOrder 和 triggerOrder 和页面 switch 的操作状态
      */
     updateTemplateType() {
       const _that = this;
-      if (['spot', 'contract'].includes(_that.apiCaseData.templateType) && !_that.needHelpAndTriggerConditionalOrderStatus) {
-        _that.needHelpAndTriggerConditionalOrderStatus = true;
-      } else if (!['spot', 'contract'].includes(_that.apiCaseData.templateType) && _that.needHelpAndTriggerConditionalOrderStatus) {
-        _that.needHelpAndTriggerConditionalOrderStatus = false;
-        _that.apiCaseData.needHelp = false;
-        _that.apiCaseData.triggerConditionalOrder = false;
+      if (['spot', 'contract'].includes(_that.apiCaseData.templateType) && !_that.needOrderAndTriggerConditionalOrderStatus) {
+        _that.needOrderAndTriggerConditionalOrderStatus = true;
+      } else if (!['spot', 'contract'].includes(_that.apiCaseData.templateType) && _that.needOrderAndTriggerConditionalOrderStatus) {
+        _that.needOrderAndTriggerConditionalOrderStatus = false;
+        _that.apiCaseData.needOrder = false;
+        _that.apiCaseData.triggerOrder = false;
       }
     },
     /**
