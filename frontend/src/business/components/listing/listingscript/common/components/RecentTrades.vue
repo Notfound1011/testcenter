@@ -27,7 +27,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="成交间隔">
-        <el-input v-model="form.expectInterval" placeholder="输入最近成交间隔预期值,不填默认300s" class="el-input">
+        <el-input v-model="form.expectInterval" placeholder="成交间隔预期值,不填默认300s" class="el-input">
         </el-input>
       </el-form-item>
       <br>
@@ -88,6 +88,7 @@ export default {
   methods: {
     subscribe() {
       if (!this.isButtonDisabled) {
+        this.form.result = ''
         this.isButtonDisabled = true;
         this.websocket = new WebSocket(this.form.env);
         this.websocket.onopen = this.onWebSocketOpen;
@@ -126,8 +127,11 @@ export default {
     },
     async verifyRecentTrades(expectInterval) {
       expectInterval = expectInterval || 300;
+      if (expectInterval <= 0) {
+        throw new Error('expectInterval must be a positive number');
+      }
       // 将symbols从字符串转换为数组
-      const symbols = this.form.symbols.split(',');
+      let symbols = this.form.symbols.split(',');
       // 创建一个Set用于去重
       const resultSet = new Set();
       const timeoutList = [];
@@ -135,9 +139,9 @@ export default {
       const passedList = [];
       this.websocket.onmessage = event => {
         // 解析WebSocket接收到的消息
-        const message = JSON.parse(event.data);
-        // 解构message对象
-        const {type, symbol, trades_p, trades} = message;
+        const message = JSON.parse(event.data)
+        // 解构message
+        const {type, symbol, trades_p: tradesP, trades} = message;
         // 初始化result和detail
         let result, detail;
         // 如果消息类型不是snapshot或者symbol不在symbols数组中，则直接返回
@@ -145,24 +149,25 @@ export default {
           return;
         }
         // 获取trades_p或者trades数据
-        const tradesData = trades_p || trades;
+        const tradesData = tradesP?.length > 0 ? tradesP : trades;
         // 如果没有获取到tradesData，则返回错误信息
         if (!tradesData) {
           result = '数据结构不符合要求';
           this.$message({message: result, type: 'error'});
           return;
         }
-        const time_now = Date.now()
-        const most_recent_first = (time_now / 1000 - tradesData[0][0] / 1000000000).toFixed(2)
-        const most_recent_second = (time_now / 1000 - tradesData[1][0] / 1000000000).toFixed(2)
-        const trades_interval = (most_recent_second - most_recent_first).toFixed(2)
-        const side = tradesData[0][1]
-        const size = tradesData[0][3]
-        const currency = symbol.replace('USDT', '')
+        // 定义当前时间，最近一笔成交时间，最近第二笔成交时间，算出最近两笔的交易间隔，买卖方向和数量，交易的单位
+        const timeNow = Date.now();
+        const mostRecentFirst = (timeNow / 1000 - tradesData[0][0] / 1000000000).toFixed(2);
+        const mostRecentSecond = (timeNow / 1000 - tradesData[1][0] / 1000000000).toFixed(2);
+        const tradesInterval = (mostRecentSecond - mostRecentFirst).toFixed(2);
+        const side = tradesData[0][1];
+        const size = tradesData[0][3];
+        const currency = symbol.replace('USDT', '');
         // 如果trades大于等于2，交易间隔小于等于expectInterval，则验证通过
         if (tradesData && tradesData.length >= 2) {
-          result = `${symbol}, 最近一笔距离当前时间 ${most_recent_first}s, 最近第二笔距离当前时间 ${most_recent_second}s, 最近两笔时间差为${most_recent_second - most_recent_first}s; ${side} 一笔单价为 ${size} ${currency}的订单`;
-          if (trades_interval > expectInterval) {
+          result = `${symbol}, 最近一笔距离当前时间 ${mostRecentFirst}s, 最近第二笔距离当前时间 ${mostRecentSecond}s, 最近两笔时间差为${tradesInterval}s; ${side} 一笔单价为 ${size} ${currency}的订单`;
+          if (tradesInterval > expectInterval) {
             timeoutList.push(symbol)
             this.$message({message: `${symbol},  交易时间间隔超时;`, type: 'error'});
           } else {
@@ -177,20 +182,27 @@ export default {
         // 记录result和detail到resultSet中，将symbol从symbols数组中删除
         detail = JSON.stringify(message);
         resultSet.add(`${result} | ${detail}`);
-        this.form.result = [...resultSet].join('\n');
-        symbols.splice(symbols.indexOf(symbol), 1);
-        console.log(symbols)
+        // 将resultSet中的元素拼接为一个字符串，并将JSON格式的message添加到每个元素中，用换行符分隔
+        this.form.result = [...resultSet].map(r => `${r} | ${JSON.stringify(message)}`).join('\n');
+        // this.form.result = [...resultSet].join('\n');
+        // 从symbols数组中移除当前symbol
+        symbols = symbols.filter(s => s !== symbol);
       };
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      let msgTimeout = '';
+      let msgFailed = '';
+      let msgSuccess = '';
       if (symbols.length > 0 || lackTradesList.length > 0) {
-        let msg = `以下币对无交易 or 交易不满足要求??: ${symbols}`
-        this.$message({message: msg, type: 'error'});
+        msgFailed = `以下币对无交易 or 交易不满足要求??: ${symbols}`
+        this.$message({message: msgFailed, type: 'error'});
       } else if (timeoutList.length > 0) {
-        let msg = `以下币对成交间隔超时(>${expectInterval}秒?? : ${timeoutList}`
-        this.$message({message: msg, type: 'error'});
+        msgTimeout = `以下币对成交间隔超时(>${expectInterval})秒?? : ${timeoutList}`
+        this.$message({message: msgTimeout, type: 'error'});
       } else {
-        this.$message({message: '全部币对均校验通过！', type: 'success'});
+        msgSuccess = '全部币对均校验通过！'
+        this.$message({message: msgSuccess, type: 'success'});
       }
+      this.form.result = `汇总结果：${msgFailed}${msgTimeout}${msgSuccess}\n详细结果：${this.form.result}`;
     },
 
     getType(env, symbol) {
