@@ -27,7 +27,7 @@
         </el-select>
       </el-form-item>
       <el-form-item label="深度">
-        <el-input v-model="form.verifyLength" placeholder="输入摆单的预期深度,不填默认100" class="el-input">
+        <el-input v-model="form.verifyLength" placeholder="摆单预期深度,不填默认100" class="el-input">
         </el-input>
       </el-form-item>
       <br>
