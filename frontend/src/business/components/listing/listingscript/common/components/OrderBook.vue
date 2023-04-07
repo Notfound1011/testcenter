@@ -42,9 +42,7 @@
         </el-button>
       </el-form-item>
     </el-form>
-    <!--    <el-form-item label="结果">-->
     <el-input type="textarea" v-model="form.result" :autosize="{ minRows: 4, maxRows: 20}" readonly></el-input>
-    <!--    </el-form-item>-->
   </div>
 </template>
 
@@ -129,15 +127,17 @@ export default {
       console.log('WebSocket connection is closed', event);
       this.isButtonDisabled = false;
     },
-    verifyOrderBook(verifyLength) {
-      if (verifyLength === undefined || verifyLength === '') {
-        verifyLength = 100;
+    async verifyOrderBook(verifyLength) {
+      verifyLength = verifyLength || 100;
+      if (verifyLength <= 0) {
+        throw new Error('verifyLength must be a positive number');
       }
       // 将symbols从字符串转换为数组
-      const symbols = this.form.symbols.split(',');
+      let symbols = this.form.symbols.split(',');
       // 创建一个Set用于去重
       const resultSet = new Set();
-
+      const failedList = [];
+      const passedList = [];
       this.websocket.onmessage = event => {
         // 解析WebSocket接收到的消息
         const message = JSON.parse(event.data);
@@ -152,7 +152,7 @@ export default {
         }
 
         // 获取orderbook_p或者book数据
-        const bookData = orderbook_p || book;
+        const bookData = orderbook_p?.length > 0 ? orderbook_p : book;
 
         // 如果没有获取到bookData，则返回错误信息
         if (!bookData) {
@@ -166,20 +166,33 @@ export default {
 
         // 如果asks或者bids长度小于等于verifyLength，则验证失败
         if (asks.length <= verifyLength || bids.length <= verifyLength) {
+          failedList.push(symbol)
           result = `${symbol}, 验证失败, asks_length = ${asks.length}, bids_length = ${bids.length}`;
           this.$message({message: result, type: 'warning'});
         } else {
+          passedList.push(symbol)
           result = `${symbol}, asks_length = ${asks.length}, bids_length = ${bids.length}, length > ${verifyLength}, 验证通过;`;
-          // 显示验证通过的消息
-          this.$message({message: result, type: 'success'});
         }
 
         // 记录result和detail到resultSet中，将symbol从symbols数组中删除
         detail = JSON.stringify(message);
         resultSet.add(`${result} | ${detail}`);
         this.form.result = [...resultSet].join('\n');
-        symbols.splice(symbols.indexOf(symbol), 1);
+        // 从symbols数组中移除当前symbol
+        symbols = symbols.filter(s => s !== symbol);
       };
+      // 等待3秒钟，模拟异步操作的等待时间
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      let msgFailed = '';
+      let msgSuccess = '';
+      if (symbols.length > 0 || failedList.length > 0) {
+        msgFailed = `以下币对摆单深度验证失败??: ${failedList}`
+        this.$message({message: msgFailed, type: 'error'});
+      } else {
+        msgSuccess = '全部币对均校验通过！'
+        this.$message({message: msgSuccess, type: 'success'});
+      }
+      this.form.result = `汇总结果：${msgFailed}${msgSuccess}\n详细结果：${this.form.result}`;
     },
 
     getType(env, symbol) {

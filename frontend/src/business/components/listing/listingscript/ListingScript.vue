@@ -63,8 +63,6 @@ export default {
   },
   methods: {
     async getProductsPlus() {
-      // 用于存储所有环境的产品信息
-      const jsonArray = [];
       // 从本地存储中获取所有已知的产品信息
       const data = JSON.parse(localStorage.getItem("products-info") || "[]");
 
@@ -74,21 +72,26 @@ export default {
           // 获取产品信息版本号
           const res1 = await this.$axios.get(this.getProductVersionUrl(env.host), this.setHeaders());
           const md5New = res1.data.data.md5Checksum;
-          // 查找本地存储中是否已存在该环境的产品信息
-          const targetObj = data.find(item => item.env === env.env);
-          const md5Old = targetObj?.md5Checksum;
 
+          // 查找本地存储中是否已存在该环境的产品信息
+          const index = data.findIndex(item => item.env === env.env);
+          const md5Old = index >= 0 ? data[index].md5Checksum : null;
           // 比较版本号，如果版本号不同或者不存在本地存储中，就重新获取该环境的产品信息
-          if (res1.status === 200 && (md5New !== md5Old || !targetObj)) {
+          if (res1.status === 200 && (md5New !== md5Old || index < 0)) {
             const res2 = await this.$axios.get(this.getProductsUrl(env.host), this.setHeaders());
             if (res2.status === 200) {
               // 从响应数据中提取所有产品的符号和类型，存储在结果数组中
               const results = res2.data.data.perpProductsV2.concat(res2.data.data.products)
                 .map(item => ({symbol: item.symbol, type: item.type}));
-              // 创建一个新的产品信息对象，包括环境、MD5 校验和以及所有产品的符号和类型
+              // 创建一个新的产品信息对象，包括环境、MD5校验和以及所有产品的symbol和type
               const newObject = {env: env.env, md5Checksum: res2.data.data.md5Checksum, symbols: results};
-              // 将新的产品信息对象添加到 jsonArray 中
-              jsonArray.push(newObject);
+              if (index >= 0) {
+                // 覆盖已有的产品信息
+                data[index] = newObject;
+              } else {
+                // 将新的产品信息对象添加到 data 数组中
+                data.push(newObject);
+              }
             }
           }
         } catch (error) {
@@ -97,8 +100,8 @@ export default {
       }
 
       // 如果有新的产品信息，就将它们添加到本地存储中
-      if (jsonArray.length !== 0) {
-        localStorage.setItem("products-info", JSON.stringify([...data, ...jsonArray]));
+      if (data.length !== 0) {
+        localStorage.setItem("products-info", JSON.stringify([...data]));
       }
     },
     // 获取产品信息版本号的 URL
