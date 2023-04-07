@@ -91,6 +91,11 @@ export default {
       path: 'globalVariablesForAutoTest',
       name: 'globalVariablesForAutoTest',
       component: () => import('@/business/components/api/globalVariablesForAutoTest/globalVariablesForAutoTest'),
+    },
+    {
+      path: 'writeCode',
+      name: 'writeCode',
+      component: () => import('@/business/components/api/writeCode/writeCode'),
     }
   ]
 };

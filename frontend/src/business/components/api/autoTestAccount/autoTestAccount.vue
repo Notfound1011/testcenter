@@ -1,69 +1,76 @@
 <template>
-  <div>
-    <h1 style="margin-left: 20px">{{ $t('api_test.autoTestAccount.text') }}</h1>
-    <el-button type="primary" @click="dialogController" class="add-btn" plain>添加自动化测试账号</el-button>
-    <el-table
-      :data="tableData"
-      :border="true"
-      :highlight-current-row="true"
-      :row-class-name="tableRowClassName"
-      style="width: 100%">
-      <el-table-column prop="id" label="ID" min-width="60" sortable fixed="left"></el-table-column>
-      <el-table-column prop="uid" label="UID" min-width="90" fixed="left"></el-table-column>
-      <el-table-column prop="email" label="邮箱" min-width="300" fixed="left"></el-table-column>
-      <el-table-column prop="env" label="所属环境" min-width="60"></el-table-column>
-      <el-table-column prop="webSite" label="所属站点" min-width="80"></el-table-column>
-      <el-table-column prop="applicableScene" label="适用场景" header-align="center" min-width="240">
-        <template v-slot="scope">
-          <el-tag v-for="item in scope.row['applicableScene']" :key="item" type="" effect="plain" class="tag-group">
-            {{ item }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="status" label="账号状态" header-align="center" min-width="80">
-        <template v-slot="scope">
-          <el-switch
-            v-model="scope.row.status"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            @change="statusHandling(scope.row, 'status', $event)">
-          </el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column prop="public" label="公共账号" header-align="center" min-width="80">
-        <template v-slot="scope">
-          <el-switch
-            v-model="scope.row.public"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            @change="statusHandling(scope.row, 'public', $event)">
-          </el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column prop="lockState" label="上锁状态" header-align="center" min-width="80">
-        <template v-slot="scope">
-          <el-switch
-            v-model="scope.row['lockState']"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            disabled>
-          </el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column prop="remark" label="备注" align="left" min-width="200"></el-table-column>
-      <el-table-column prop="updatedTime" label="更新时间" :formatter="l_timestampToTimeFormat" min-width="180"/>
-      <el-table-column prop="createdPerson" label="创建人" :formatter="getPerson" min-width="150"/>
-      <el-table-column prop="updatedPerson" label="最近更新人" :formatter="getPerson" min-width="150"/>
-      <el-table-column label="操作" min-width="150" fixed="right">
-        <template slot-scope="scope">
-          <el-button @click="readAccount(scope.row)" type="text" size="small" :disabled="scope.row.env === 'prod'">查 看</el-button>
-          <el-button type="text" size="small" @click="updateAccount(scope.row)" :disabled="scope.row.env === 'prod'">编 辑</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
-                   :current-page="filterData.page" :page-sizes="[15, 30, 50, 100]" :page-size="filterData.limit"
-                   layout="total, sizes, prev, pager, next, jumper" :total="total"/>
+  <div class="table-content">
+    <h3>{{ $t('api_test.autoTestAccount.text') }}</h3>
+      <el-button type="primary" @click="dialogController" class="add-btn" plain>添加账号</el-button>
+      <el-table
+        :data="tableData"
+        :border="true"
+        :highlight-current-row="true"
+        :row-class-name="tableRowClassName"
+        class="table-"
+        style="width: 100%">
+        <el-table-column prop="id" label="ID" min-width="60" sortable fixed="left"></el-table-column>
+        <el-table-column prop="uid" label="UID" min-width="90" fixed="left"></el-table-column>
+        <el-table-column prop="email" label="邮箱" min-width="300" fixed="left"></el-table-column>
+        <el-table-column prop="env" label="所属环境" min-width="60"></el-table-column>
+        <el-table-column prop="webSite" label="所属站点" min-width="80"></el-table-column>
+        <el-table-column prop="applicableScene" label="适用场景" header-align="center" min-width="240">
+          <template v-slot="scope">
+            <el-tag v-for="item in scope.row['applicableScene']" :key="item" type="" effect="plain" class="tag-group">
+              {{ item }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="status" label="账号状态" header-align="center" min-width="80">
+          <template v-slot="scope">
+            <el-switch
+              v-model="scope.row.status"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              disabled>
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column prop="public" label="公共账号" header-align="center" min-width="80">
+          <template v-slot="scope">
+            <el-switch
+              v-model="scope.row.public"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              disabled>
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column prop="lockState" label="上锁状态" header-align="center" min-width="80">
+          <template v-slot="scope">
+            <el-switch
+              v-model="scope.row['lockState']"
+              active-color="#13ce66"
+              inactive-color="#ff4949"
+              disabled>
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column prop="remark" label="备注" align="left" min-width="200"></el-table-column>
+        <el-table-column prop="updatedTime" label="更新时间" :formatter="l_timestampToTimeFormat" min-width="180"/>
+        <el-table-column prop="createdPerson" label="创建人" :formatter="getPerson" min-width="150"/>
+        <el-table-column prop="updatedPerson" label="最近更新人" :formatter="getPerson" min-width="150"/>
+        <el-table-column label="操作" min-width="150" fixed="right">
+          <template slot-scope="scope">
+            <el-button @click="readAccount(scope.row)" type="text" size="small" :disabled="scope.row.env === 'prod'">查
+              看
+            </el-button>
+            <el-button type="text" size="small" @click="updateAccount(scope.row)" :disabled="scope.row.env === 'prod'">编
+              辑
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+                     :current-page="filterData.page" :page-sizes="[15, 30, 50, 100]" :page-size="filterData.limit"
+                     layout="total, sizes, prev, pager, next, jumper" :total="total"/>
+
 
     <el-dialog :title="dialogTitle" :visible.sync="dialogStatus" :before-close="cancelFrom">
       <el-form :model="dialogFrom" :rules="validationRules" ref="dialogFrom" label-width="100px">
@@ -74,21 +81,23 @@
           <el-input v-model="dialogFrom.email" placeholder="邮箱" :readonly="readOnly" style="width: 193px"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
-          <el-input v-model="dialogFrom.password" placeholder="密码" :readonly="readOnly" style="width: 193px"></el-input>
+          <el-input v-model="dialogFrom.password" placeholder="密码" :readonly="readOnly"
+                    style="width: 193px"></el-input>
         </el-form-item>
         <el-form-item label="Google2FA" prop="Google2FA">
-          <el-input v-model="dialogFrom['googleVerification']" placeholder="Google2FA" :readonly="readOnly" style="width: 193px"></el-input>
+          <el-input v-model="dialogFrom['googleVerification']" placeholder="Google2FA" :readonly="readOnly"
+                    style="width: 193px"></el-input>
         </el-form-item>
         <el-form-item label="账号环境" prop="env">
           <el-select v-model="dialogFrom.env" placeholder="请选择" :disabled="readOnly">
-            <el-option label="fat" value="fat"> </el-option>
-            <el-option label="prod" value="prod"> </el-option>
+            <el-option label="fat" value="fat"></el-option>
+            <el-option label="prod" value="prod"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="所属站点" prop="webSite">
           <el-select v-model="dialogFrom['webSite']" placeholder="请选择" :disabled="readOnly">
-            <el-option label="phemex" value="phemex"> </el-option>
-            <el-option label="turkey" value="turkey"> </el-option>
+            <el-option label="phemex" value="phemex"></el-option>
+            <el-option label="turkey" value="turkey"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="适用场景" prop="applicableScene">
@@ -136,13 +145,14 @@
           <el-input v-model="dialogFrom['pubId']" placeholder="获取到api的key" :readonly="readOnly"></el-input>
         </el-form-item>
         <el-form-item label="Api密钥" prop="pubSecret">
-          <el-input v-model="dialogFrom['pubSecret']" placeholder="获取到api的secret"  :readonly="readOnly"></el-input>
+          <el-input v-model="dialogFrom['pubSecret']" placeholder="获取到api的secret" :readonly="readOnly"></el-input>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="dialogFrom.remark" :readonly="readOnly"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="submitForm" v-if="!readOnly">{{addAccount ? "创 建" : "修 改"}}</el-button>
+          <el-button type="primary" @click="submitForm" v-if="!readOnly">{{ addAccount ? "创 建" : "修 改" }}
+          </el-button>
           <el-button @click="cancelFrom">{{ readOnly ? "关 闭" : "取 消" }}</el-button>
         </el-form-item>
       </el-form>
@@ -167,9 +177,25 @@ export default {
       addAccount: false,
       dialogStatus: false,
       dialogTitle: "",
-      dialogFrom: {uid: '', email: '', password: '', env: '', webSite: '', applicableScene: [], status: true, public: false, lockState: false, pubId: '', pubSecret: '', remark: ''},
+      dialogFrom: {
+        uid: '',
+        email: '',
+        password: '',
+        env: '',
+        webSite: '',
+        applicableScene: [],
+        status: true,
+        public: false,
+        lockState: false,
+        pubId: '',
+        pubSecret: '',
+        remark: ''
+      },
       validationRules: {},
-      applicableSceneOption: [{value: 'kyc', label: 'kyc'}, {value: 'not_kyc', label: 'not_kyc'}, {value: 'trade', label: 'trade'}, {value: 'have_sub_account', label: 'have_sub_account'}, {value: 'main_account', label: 'main_account'}]
+      applicableSceneOption: [{value: 'kyc', label: 'kyc'}, {value: 'not_kyc', label: 'not_kyc'}, {
+        value: 'trade',
+        label: 'trade'
+      }, {value: 'have_sub_account', label: 'have_sub_account'}, {value: 'main_account', label: 'main_account'}]
     }
   },
   methods: {
@@ -223,27 +249,6 @@ export default {
       return timestampToTimeFormat(row[column.property], false)
     },
     /**
-     * 状态滑块的外部处理函数
-     * @param row
-     * @param key
-     * @param value
-     */
-    statusHandling(row, key, value) {
-      // 获取缓存在本地的信息
-      const adminToken = JSON.parse(localStorage.getItem("Admin-Token"));
-      // update personData
-      let personData = {'id': adminToken.id, 'name': adminToken.name, 'email': adminToken.email}
-      console.log({'id': row['id'], [key]: value})
-      const that = this;
-      that.$axios.post("/pyServer/UserPool/Update", {'id': row['id'], [key]: value, 'operator': personData})
-        .then(res => {
-
-        }).catch(() => {
-        console.log('更新账号信息失败!')
-        popUpReminder(this, '更新账号信息失败!')
-      })
-    },
-    /**
      * 获取账号池数据
      */
     getUserPool() {
@@ -261,7 +266,7 @@ export default {
     /**
      * dialog控制器
      */
-    dialogController(){
+    dialogController() {
       this.readOnly = false;
       this.addEnvData = true;
       this.dialogStatus = true;
@@ -272,7 +277,7 @@ export default {
      * @param row
      */
     updateAccount(row) {
-      if (row.env === 'prod'){
+      if (row.env === 'prod') {
         return
       }
       this.getOneAccount(row.id)
@@ -286,7 +291,7 @@ export default {
      * @param row
      */
     readAccount(row) {
-      if (row.env === 'prod'){
+      if (row.env === 'prod') {
         return
       }
       this.getOneAccount(row.id)
@@ -306,10 +311,10 @@ export default {
      * 获取一个账号数据, 用于查看和编辑
      * @param id
      */
-    getOneAccount(id){
+    getOneAccount(id) {
       const that = this;
       // that.$axios.post("/pyServer/Public/UserPool/Search", that.filterData)
-      that.$axios.post("/pyServer/UserPool/Search", {'id': id}, {headers:{'X-password-decryption': true}})
+      that.$axios.post("/pyServer/UserPool/Search", {'id': id}, {headers: {'X-password-decryption': true}})
         .then(res => {
           console.log(res.data)
           that.dialogFrom = res.data.data[0]
@@ -322,26 +327,26 @@ export default {
     /**
      * 提交表单
      */
-    submitForm(){
+    submitForm() {
       const that = this;
       const adminToken = JSON.parse(localStorage.getItem("Admin-Token"));
       let data = JSON.parse(JSON.stringify(that.dialogFrom));
       let deleteList = ['createdPerson', 'createdTime', 'lockedUser', 'updatedPerson', 'updatedTime']
-      for(let index in deleteList){
+      for (let index in deleteList) {
         delete data[deleteList[index]]
       }
       // 判断是增加还是变更
-      let url = that.addEnvData ? "/pyServer/UserPool/Create" :"/pyServer/UserPool/Update"
+      let url = that.addEnvData ? "/pyServer/UserPool/Create" : "/pyServer/UserPool/Update"
       data['operator'] = {'id': adminToken.id, 'name': adminToken.name, 'email': adminToken.email}
       that.$axios.post(url, data)
         .then(res => {
           console.log(res.data)
-          popUpReminder(this, res.data.msg, data.email, 'teal', 'info')
+          popUpReminder(this, res.data.msg, data.email, 'info')
           that.dialogStatus = false;
           that.getUserPool()
         }).catch(() => {
-        console.log(`${that.addEnvData ? '新增': '更新'} 账号信息失败!`)
-        popUpReminder(this, `${that.addEnvData ? '新增': '更新'} 账号信息失败!`)
+        console.log(`${that.addEnvData ? '新增' : '更新'} 账号信息失败!`)
+        popUpReminder(this, `${that.addEnvData ? '新增' : '更新'} 账号信息失败!`)
       })
     }
   },
@@ -358,6 +363,14 @@ export default {
 
 .el-table .stripe-row {
   background: #F7F7F7;
+}
+
+.add-btn {
+  text-align: center;
+}
+
+.table-content {
+  padding: 0 10px 10px 10px;
 }
 </style>
 

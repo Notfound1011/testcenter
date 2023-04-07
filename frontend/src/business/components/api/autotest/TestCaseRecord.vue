@@ -8,9 +8,10 @@
                    v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']">{{ $t('api_test.case_record.add_case') }}
         </el-button>
 
-        <el-link type="primary" @click="introductionStatus=true"
-                 v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']" style="float:right">介绍
-        </el-link>
+        <floating-box box-height="50px" box-width="50px" @click.native="introductionStatus=true"
+                      v-permission="['PROJECT_API_CASE_RECORD:READ+CREATE']" style="float:right">
+          <p>介绍</p>
+        </floating-box>
 
         <div>
           <el-divider></el-divider>
@@ -27,9 +28,9 @@
             </template>
             <el-form-item @keyup.enter.native="search(keywords)">
               <el-input v-model="keywords" placeholder="请输入查询内容" clearable
-                        v-if="value ==='case_name'"></el-input>
+                        v-if="value ==='caseName'"></el-input>
               <el-input v-model="keywords" placeholder='多条用逗号隔开' clearable
-                        v-else-if="value ==='mark' || value ==='case_id_list'"></el-input>
+                        v-else-if="value ==='mark' || value ==='caseIdList'"></el-input>
               <el-input v-model="keywords" placeholder='输入查询路径' clearable v-else-if="value==='path'"></el-input>
               <el-select v-model="keywords" clearable placeholder="请选择" v-else-if="value==='method'">
                 <el-option label="get" value="get"></el-option>
@@ -37,16 +38,16 @@
                 <el-option label="put" value="put"></el-option>
                 <el-option label="delete" value="delete"></el-option>
               </el-select>
-              <el-select v-model="keywords" clearable placeholder="请选择" v-else-if="value==='template_type'">
-                <el-option label="非模板" value="not_template"></el-option>
+              <el-select v-model="keywords" clearable placeholder="请选择" v-else-if="value==='templateType'">
+                <el-option label="非模板" value="normal"></el-option>
                 <el-option label="合约" value="contract"></el-option>
                 <el-option label="现货" value="spot"></el-option>
               </el-select>
-              <el-select v-model="keywords" clearable placeholder="请选择" v-else-if="value==='case_type'">
+              <el-select v-model="keywords" clearable placeholder="请选择" v-else-if="value==='caseType'">
                 <el-option label="rest_api" value="rest_api"></el-option>
                 <el-option label="pub_api" value="pub_api"></el-option>
               </el-select>
-              <el-select v-model="keywords" clearable placeholder="请选择" v-else-if="value==='web_site'">
+              <el-select v-model="keywords" clearable placeholder="请选择" v-else-if="value==='webSite'">
                 <el-option label=国际站 value="phemex"></el-option>
                 <el-option label="土耳其站" value="turkey"></el-option>
               </el-select>
@@ -81,12 +82,12 @@
           @cell-dblclick="cell_dblclick"
           style="width: 100%">
           <el-table-column prop="id" label="ID" min-width="60" sortable fixed="left"></el-table-column>
-          <el-table-column prop="case_name" label="用例名称" min-width="230" fixed="left"></el-table-column>
+          <el-table-column prop="caseName" label="用例名称" min-width="230" fixed="left"></el-table-column>
           <el-table-column prop="method" label="请求方法" min-width="100"
                            column-key="method">
           </el-table-column>
           <el-table-column prop="path" label="接口path" min-width="180"></el-table-column>
-          <!--          <el-table-column prop="body_by_json" label="json" :formatter="formatObject"-->
+          <!--          <el-table-column prop="bodyByJson" label="json" :formatter="formatObject"-->
           <!--                           align="left" min-width="140" show-overflow-tooltip>-->
           <!--          </el-table-column>-->
           <!--          <el-table-column prop="expect" label="预期结果" :formatter="formatObject"-->
@@ -101,24 +102,40 @@
           </el-table-column>
           <!--          <el-table-column prop="created_at" label="创建时间" sortable></el-table-column>-->
           <!--          <el-table-column prop="updated_at" label="更新时间" sortable></el-table-column>-->
-          <el-table-column prop="web_site" label="站点" min-width="80" column-key="web_site">
+          <el-table-column prop="webSite" label="站点" min-width="80" column-key="webSite">
           </el-table-column>
-          <el-table-column prop="template_type" min-width="120" label="模板类型"
-                           column-key="template_type">
+          <el-table-column prop="templateType" min-width="80" label="模板类型" column-key="templateType">
+            <template v-slot="scope">
+              <div>{{scope.row.templateType === 'spot' ? '现货模板': scope.row.templateType === 'contract' ? '合约模板': '非模板'}}</div>
+            </template>
           </el-table-column>
-          <el-table-column prop="case_type" label="用例类型" min-width="100" column-key="case_type">
+          <el-table-column prop="caseType" label="用例类型" min-width="100" column-key="caseType">
           </el-table-column>
-          <el-table-column prop="docs_url" label="API文档链接" min-width="80" align="center">
+          <el-table-column prop="docsUrl" label="API文档" min-width="80" align="center">
             <template slot-scope="scope">
-              <el-link :href="scope.row.docs_url" target="_blank">
-                <div v-if="scope.row.docs_url !== '' && scope.row.docs_url != null">
+              <el-link :href="scope.row.docsUrl" target="_blank">
+                <div v-if="scope.row.docsUrl !== '' && scope.row.docsUrl != null">
                   <i class="el-icon-link" style="font-size: 15px; color: blue"></i>
                 </div>
               </el-link>
             </template>
           </el-table-column>
-          <el-table-column prop="created_person" label="创建人" :formatter="formatCreatedData" min-width="100"/>
-          <el-table-column prop="updated_person" label="更新人" :formatter="formatUpdatedData" min-width="100"/>
+          <el-table-column prop="applicableEnv" label="适用环境" min-width="180">
+            <template v-slot="scope">
+              <el-tag :key="tag" v-for="tag in scope.row.applicableEnv" type="" effect="plain" class="tag-group">
+                {{tag}}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="applicableAccount" label="适用账号" min-width="240">
+            <template v-slot="scope">
+              <el-tag :key="tag" v-for="tag in scope.row.applicableAccount" type="" effect="plain" class="tag-group">
+                {{tag}}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="createdPerson" label="创建人" :formatter="formatCreatedData" min-width="100"/>
+          <el-table-column prop="updatedPerson" label="更新人" :formatter="formatUpdatedData" min-width="100"/>
           <el-table-column prop="remark" label="备注" align="left" min-width="200"
                            show-overflow-tooltip></el-table-column>
           <el-table-column prop="status" label="状态" min-width="80">
@@ -147,7 +164,7 @@
                        layout="total, sizes, prev, pager, next, jumper" :total="total">
         </el-pagination>
 
-        <test-case-modify :mark_options="mark_options" ref="testCaseEditDialog"
+        <test-case-modify ref="testCaseEditDialog"
                           @openTestCaseEditDialog="openTestCaseEditDialog" @refresh="getCaseList(filterData)"/>
 
         <!--table单元格弹窗-->
@@ -160,16 +177,34 @@
           </el-input>
         </el-dialog>
 
-        <!-- 录制介绍 -->
-        <el-dialog title="录制介绍" :visible.sync="introductionStatus" width="800px" append-to-body>
-          <h1>标签</h1>
-          <span>spot, contract单指`现货`和`合约`交易相关的case;</span>
-          <br/>
-          <span>每个case必须包含: 用例级别, 用例类型, 涉及服务名(有-的请手动转为_), 如果有特殊账号需求需填写筛选账号类型用于和测试账号匹配...</span>
+        <!-- 字段介绍 -->
+        <el-dialog title="字段介绍" :visible.sync="introductionStatus" width="800px" append-to-body>
+          <h1>用例标签</h1>
+          <ul>
+            <li>
+              spot, contract单指<span class="bold-and-underline">现货</span>和<span
+              class="bold-and-underline">合约</span>交易相关的case;
+            </li>
+            <li>
+              public, no_token_required, no_login_required, 如果用例标签包含这三个的其中一个, 将不使用token or
+              加密(pub-web-gateway);
+            </li>
+            <li>每个case必须包含:
+              <ul>
+                <li>用例级别: 筛选case要用到的;</li>
+                <li>用例类型: <span class="bold-and-underline">rest_api</span>是向<span class="bold-and-underline">web-gateway</span>请求,
+                  <span class="bold-and-underline">pub_api</span>是向<span
+                    class="bold-and-underline">pub-web-gateway</span>请求, host和token验证方式也不同;
+                </li>
+                <li>涉及服务名: 包含<span class="bold-and-underline">-</span>字符的尽量转为<span
+                  class="bold-and-underline">-</span>, 可以使用api文档中的服务名或者实际服务名;
+                </li>
+              </ul>
+            </li>
+          </ul>
           <el-divider></el-divider>
         </el-dialog>
       </div>
-
     </ms-main-container>
   </ms-container>
 </template>
@@ -183,27 +218,27 @@ import TestCaseEdit from "../../track/case/components/TestCaseEdit";
 import {humpToLine} from "@/common/js/utils";
 import MsTableAdvSearchBar from "@/business/components/common/components/search/MsTableAdvSearchBar";
 import {AUTO_TEST_SEARCH_CASE} from "../../common/components/search/search-components";
+import floatingBox from "@/common/components/FloatingBox.vue";
 
 export default {
-  components: {TestCaseEdit, TestCaseModify, MsMainContainer, MsContainer, MsTableAdvSearchBar},
+  components: {TestCaseEdit, TestCaseModify, MsMainContainer, MsContainer, MsTableAdvSearchBar, floatingBox},
   data() {
     return {
       condition: {
         components: AUTO_TEST_SEARCH_CASE
       },
       options: [
-        {value: 'case_id_list', label: '用例ID'},
-        {value: 'case_name', label: '用例名称'},
+        {value: 'caseIdList', label: '用例ID'},
+        {value: 'caseName', label: '用例名称'},
         {value: 'path', label: '接口路径'},
         {value: 'mark', label: '用例标签(mark)'},
         {value: 'method', label: '请求类型'},
-        {value: 'case_type', label: '用例类型'},
-        {value: 'template_type', label: '模板类型'},
-        {value: 'web_site', label: '站点'},
+        {value: 'caseType', label: '用例类型'},
+        {value: 'templateType', label: '模板类型'},
+        {value: 'webSite', label: '站点'},
         {value: 'status', label: '用例状态'}
       ],
-      mark_options: [],
-      value: 'case_name',
+      value: 'caseName',
       keywords: '',
       deleteInfo: {
         case_id: 0
@@ -213,7 +248,7 @@ export default {
       tableDataList: [],
       json_body_detail: [],
       expect: [],
-      body_by_json: '',
+      bodyByJson: '',
       tableDialogVisible: false,
 
       filterData: {
@@ -225,7 +260,6 @@ export default {
     }
   },
   activated() {
-    this.getConfig()
     this.getCaseList(this.filterData);
   },
   methods: {
@@ -236,7 +270,7 @@ export default {
      */
     tableRowClassName({row, rowIndex}) {
       if (!row.status) {
-        return 'warning-row'
+        return 'disabled-row'
       } else if (rowIndex % 2 === 0) {
         return 'stripe-row'
       } else {
@@ -255,7 +289,7 @@ export default {
       this.keywords = ''
     },
     combineSearch() {
-      let filterData = JSON.parse(JSON.stringify(this.filterData))
+      let filterData = {'page': 1, 'limit': this.filterData.limit};
       if (!this.condition.combine) {
         this.resetFilter()
       }
@@ -266,6 +300,8 @@ export default {
           filterData[i] = this.condition.combine[i].value
         }
       }
+      this.keywords = '';
+      this.filterData = filterData;
       this.getCaseList(filterData)
     },
     /**
@@ -297,21 +333,27 @@ export default {
         this.getCaseListStatus = false;
       })
     },
+    /**
+     * 外部的搜索, 与高级搜索隔离
+     * @param {String} keywords 搜索字段, 如果为空, 点击后是会重置搜索条件的
+     */
     search(keywords) {
       // 每次点击按钮搜索, 默认page = 1, limit用当前的限制;
       let filterData = {'page': 1, 'limit': this.filterData.limit};
       if (keywords.split(' ').join('').length === 0) {
+        this.filterData = filterData;
         this.getCaseList(filterData)
       } else {
         switch (this.value) {
-          case "case_id_list" || "mark":
+          case "caseIdList" || "mark":
             filterData[this.value] = keywords.trim().split(/,|，|\s+/);
             break;
           default:
             filterData[this.value] = keywords.trim()
             break;
         }
-        this.getCaseList(filterData)
+        this.filterData = filterData;
+        this.getCaseList(filterData);
       }
     },
     filter(filters) {
@@ -330,9 +372,9 @@ export default {
     },
     cell_dblclick(row, column, cell, event) {
       //双击单元格打开展示详细信息
-      if (column.property === "body_by_json") {
-        //根据body_by_json获取详细信息
-        this.json_body_detail = JSON.stringify(row.body_by_json, null, 4);
+      if (column.property === "bodyByJson") {
+        //根据bodyByJson获取详细信息
+        this.json_body_detail = JSON.stringify(row.bodyByJson, null, 4);
         if (this.json_body_detail != null) {
           this.tableDialogVisible = true;
         }
@@ -354,17 +396,17 @@ export default {
     },
 
     formatCreatedData(row, column) {
-      let created_person = row[column.property];
-      if (created_person !== null) {
-        return created_person.name
+      let createdPerson = row[column.property];
+      if (createdPerson !== null) {
+        return createdPerson.name
       } else {
         return '-'
       }
     },
     formatUpdatedData(row, column) {
-      let updated_person = row[column.property];
-      if (updated_person !== null) {
-        return updated_person.name
+      let updatedPerson = row[column.property];
+      if (updatedPerson !== null) {
+        return updatedPerson.name
       } else {
         return '-'
       }
@@ -398,13 +440,6 @@ export default {
           });
         });
     },
-    async getConfig() {
-      this.$axios.get("/pyServer/TestConfig/Search", {params: {'config_id': '6ea520fc-691d-11ec-940a-3a27e1d6caa4'}})
-        .then(res => {
-          this.mark_options = res.data.data[0]['config_data']
-        }).catch(() => {
-      })
-    },
     /**
      * @description 传id的话, 防止页面长时间没刷新, 导致异常输入传入
      * @param {Integer|undefined} caseId, apiCaseId, 变更传整数, 新增传undefined
@@ -412,6 +447,14 @@ export default {
      */
     openTestCaseEditDialog(caseId, copy = false) {
       this.$refs.testCaseEditDialog.openTestCaseEditDialog(caseId, copy);
+    }
+  },
+  created(){
+    // 如果路径上有查询参数,
+    if (this.$route.query.caseId){
+      this.value = 'caseIdList';
+      this.keywords = this.$route.query.caseId;
+      this.filterData['caseIdList'] = [this.$route.query.caseId];
     }
   }
 }
@@ -421,6 +464,10 @@ export default {
 <style>
 .el-table .warning-row {
   background: radial-gradient(oldlace, white);
+}
+
+.el-table .disabled-row {
+  background: radial-gradient(rgb(244, 121, 131), white);
 }
 
 .el-table .stripe-row {
@@ -438,4 +485,8 @@ export default {
   margin: 2px;
 }
 
+.bold-and-underline {
+  font-weight: bold;
+  text-decoration: underline;
+}
 </style>

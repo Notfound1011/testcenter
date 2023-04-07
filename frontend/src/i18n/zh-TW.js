@@ -1974,6 +1974,9 @@ export default {
     },
     globalVariablesForAutoTest: {
       text: '自動化測試公共變量'
+    },
+    writeCode:{
+      text: '編寫代碼'
     }
   },
   api_report: {
@@ -2558,7 +2561,8 @@ export default {
     automation: '接口自動化',
     report: '測試報告',
     autoTestAccount: '自動化測試賬號',
-    globalVariablesForAutoTest: '自動化測試公共變量'
+    globalVariablesForAutoTest: '自動化測試公共變量',
+    writeCode: 'writeCode'
   },
   ldap: {
     url: 'LDAP地址',

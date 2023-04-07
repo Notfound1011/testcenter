@@ -474,10 +474,16 @@ export function getDefaultTableHeight() {
   return document.documentElement.clientHeight - 200;
 }
 
-export function fullScreenLoading(component) {
+/**
+ * 全局的loading效果
+ * @param component this,
+ * @param text 自定义文本
+ * @returns {*}
+ */
+export function fullScreenLoading(component, text) {
   return component.$loading({
     lock: true,
-    text: '资源切换中...',
+    text: text ? text: '资源切换中...',
     spinner: 'el-icon-loading',
     background: 'rgba(218,218,218,0.6)',
     customClass: 'ms-full-loading'
@@ -918,7 +924,7 @@ export function getApiTestConfig(typeName) {
  * @param {String} msgType 消息等级 success/warning/info/error
  * @return {void}
  */
-export function popUpReminder(that, normalString, specialString = '', specialColor = 'teal', msgType = 'error') {
+export function popUpReminder(that, normalString, specialString = '', msgType = 'error', specialColor = 'teal') {
   const h = that.$createElement;
   that.$message({
     duration: 5000,
@@ -939,6 +945,24 @@ export function popUpReminder(that, normalString, specialString = '', specialCol
  */
 export function isNoneJson(jsonData) {
   return jsonData && jsonData instanceof Object && Object.keys(jsonData).length > 0;
+}
+
+/**
+ * @description 判断是否是json列表, 不会判断是否为空(list是python的字段类型)
+ * @param {Array} jsonData
+ * @return {Boolean}
+ */
+export function isJsonList(jsonData) {
+  return Array.isArray(jsonData);
+}
+
+/**
+ * @description 同上, 不过是判断是否是json键值对, 不会判断是否为空(dict是python的字段类型)
+ * @param {Object} jsonData
+ * @return {Boolean}
+ */
+export function isKeyValueObject(jsonData) {
+  return Object.prototype.toString.call(jsonData) === '[object Object]'
 }
 
 /**

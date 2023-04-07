@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <h1 style="margin-left: 20px">{{ $t('api_test.globalVariablesForAutoTest.text') }}</h1>
+  <div class="table-content ">
+    <h3 style="margin-left: 20px">{{ $t('api_test.globalVariablesForAutoTest.text') }}</h3>
     <el-button type="primary" @click="dialogController" class="add-btn" plain>添加公共变量</el-button>
     <el-table
       :data="tableData"
@@ -230,7 +230,7 @@ export default {
       that.$axios.post(url, data)
         .then(res => {
           console.log(res.data)
-          popUpReminder(this, res.data.msg, data.uniqueId,  'teal', 'info')
+          popUpReminder(this, res.data.msg, data.uniqueId, 'info')
           that.dialogStatus = false;
           that.getGlobalVariables()
         }).catch(() => {
@@ -294,5 +294,13 @@ export default {
 
 .el-table .stripe-row {
   background: #F7F7F7;
+}
+
+.add-btn {
+  text-align: center;
+}
+
+.table-content {
+  padding: 0 10px 10px 10px;
 }
 </style>

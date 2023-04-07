@@ -72,7 +72,7 @@ export default {
         .then(res => {
           console.log(res.data)
           that.form.result = JSON.stringify(res.data, null, 4)
-          popUpReminder(this, '假充值成功!!', '', 'teal', 'info')
+          popUpReminder(this, '假充值成功!!', '', 'info')
         }).catch(() => {
         popUpReminder(this, '假充值失败!!')
       })
