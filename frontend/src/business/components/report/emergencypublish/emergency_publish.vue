@@ -216,7 +216,7 @@
         </el-container>
         <div class="sub_btn">
           <el-button size="medium" @click="handleClose">取消提交</el-button>
-          <el-button size="medium" type="primary" @click="on_submit_form" :loading="submitLoading">提交发布审批</el-button>
+          <el-button size="medium" type="primary" @click="on_submit_form" :loading="preData.submitLoading">提交发布审批</el-button>
         </div>
       </el-drawer>
       <!-- 翻页区域 -->
