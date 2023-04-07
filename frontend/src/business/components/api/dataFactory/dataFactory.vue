@@ -12,23 +12,23 @@
             <i class="el-icon-s-custom"></i>
             <span slot="title">{{ $t('api_test.data_factory.account_related') }}</span>
           </el-menu-item>
-<!--          <el-menu-item :index="'/api/dataFactory/autoTestAccount'">-->
-<!--            <i class="el-icon-s-custom"></i>-->
-<!--            <span slot="title">{{ $t('api_test.data_factory.autoTestAccount.text') }}</span>-->
-<!--          </el-menu-item>-->
-<!--          <el-menu-item :index="'/api/dataFactory/globalVariablesForAutoTest'">-->
-<!--            <i class="el-icon-s-custom"></i>-->
-<!--            <span slot="title">{{ $t('api_test.data_factory.globalVariablesForAutoTest.text') }}</span>-->
-<!--          </el-menu-item>-->
+          <!--          <el-menu-item :index="'/api/dataFactory/autoTestAccount'">-->
+          <!--            <i class="el-icon-s-custom"></i>-->
+          <!--            <span slot="title">{{ $t('api_test.data_factory.autoTestAccount.text') }}</span>-->
+          <!--          </el-menu-item>-->
+          <!--          <el-menu-item :index="'/api/dataFactory/globalVariablesForAutoTest'">-->
+          <!--            <i class="el-icon-s-custom"></i>-->
+          <!--            <span slot="title">{{ $t('api_test.data_factory.globalVariablesForAutoTest.text') }}</span>-->
+          <!--          </el-menu-item>-->
         </el-submenu>
       </el-menu>
     </ms-aside-container>
-    <ms-main-container>
+    <ms-main-container class="container">
       <keep-alive>
         <el-row :gutter="10">
           <el-col :span="24" class="grid-content">
-            <el-card>
-        <router-view/>
+            <el-card v-if="!hideCard">
+              <router-view/>
             </el-card>
           </el-col>
         </el-row>
@@ -51,11 +51,24 @@ export default {
       open_list: ["1"],
     }
   },
+  computed: {
+    hideCard() {
+      return this.$route.meta.hideCard;
+    }
+  },
   methods: {}
 }
 </script>
 
 <style scoped>
+.container {
+  /* 或者使用以下代码设置背景图片 */
+  background-image: url("~@/assets/white.jpg"); /* 设置背景图片路径 */
+  background-position: center;
+  background-repeat: no-repeat; /* 设置图片不重复 */
+  background-size: cover; /* 将背景图片缩放到完全覆盖元素 */
+}
+
 .Menu {
   border-right: 0;
 }

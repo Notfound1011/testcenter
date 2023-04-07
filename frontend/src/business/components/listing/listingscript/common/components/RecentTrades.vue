@@ -37,9 +37,7 @@
         </el-button>
       </el-form-item>
     </el-form>
-    <!--    <el-form-item label="结果">-->
     <el-input type="textarea" v-model="form.result" :autosize="{ minRows: 4, maxRows: 20}" readonly></el-input>
-    <!--    </el-form-item>-->
   </div>
 </template>
 
@@ -141,7 +139,7 @@ export default {
         // 解析WebSocket接收到的消息
         const message = JSON.parse(event.data)
         // 解构message
-        const {type, symbol, trades_p: tradesP, trades} = message;
+        const {type, symbol, trades_p, trades} = message;
         // 初始化result和detail
         let result, detail;
         // 如果消息类型不是snapshot或者symbol不在symbols数组中，则直接返回
@@ -149,7 +147,7 @@ export default {
           return;
         }
         // 获取trades_p或者trades数据
-        const tradesData = tradesP?.length > 0 ? tradesP : trades;
+        const tradesData = trades_p?.length > 0 ? trades_p : trades;
         // 如果没有获取到tradesData，则返回错误信息
         if (!tradesData) {
           result = '数据结构不符合要求';
@@ -184,7 +182,6 @@ export default {
         resultSet.add(`${result} | ${detail}`);
         // 将resultSet中的元素拼接为一个字符串，并将JSON格式的message添加到每个元素中，用换行符分隔
         this.form.result = [...resultSet].map(r => `${r} | ${JSON.stringify(message)}`).join('\n');
-        // this.form.result = [...resultSet].join('\n');
         // 从symbols数组中移除当前symbol
         symbols = symbols.filter(s => s !== symbol);
       };
@@ -193,7 +190,7 @@ export default {
       let msgFailed = '';
       let msgSuccess = '';
       if (symbols.length > 0 || lackTradesList.length > 0) {
-        msgFailed = `以下币对无交易 or 交易不满足要求??: ${symbols}`
+        msgFailed = `以下币对无交易 or 交易不满足要求??: ${lackTradesList}`
         this.$message({message: msgFailed, type: 'error'});
       } else if (timeoutList.length > 0) {
         msgTimeout = `以下币对成交间隔超时(>${expectInterval})秒?? : ${timeoutList}`

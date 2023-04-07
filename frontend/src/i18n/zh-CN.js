@@ -375,16 +375,25 @@ export default {
         },
         spot: {
           title: "现货",
-          gis_auth_token: {
-            title: "获取Google Auth Token",
-            get_token: "获取Google Identity Services Auth Token"
+          currency_init: {
+            title: "币种初始化",
+            initialize: "初始化",
+          },
+          fake_recharge: {
+            title: "自动化账号假充值",
+            fake_recharge: "假充值",
           }
         },
         contract: {
           title: "合约",
-          gis_auth_token: {
-            title: "获取Google Auth Token",
-            get_token: "获取Google Identity Services Auth Token"
+          public_param: "公共参数设置",
+          position_handler: {
+            title: "仓位操作",
+            run: "执行"
+          },
+          leverage_riskLimit: {
+            title: "持仓模式、杠杆和风险限额初始化",
+            run: "执行"
           }
         },
       },
