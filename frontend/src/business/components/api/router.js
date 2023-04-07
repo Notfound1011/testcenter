@@ -1,5 +1,3 @@
-
-
 export default {
   path: "/api",
   name: "api",
@@ -40,13 +38,8 @@ export default {
       path: 'dataFactory',
       name: 'dataFactory',
       component: () => import('@/business/components/api/dataFactory/dataFactory'),
+      meta: {hideCard: true},
       children: [
-        {
-          path: '',
-          name: "dataHome",
-          component: () => import('@/business/components/api/dataFactory/dataHome'),
-          meta: {}
-        },
         {
           path: 'account',
           component: () => import('@/business/components/api/dataFactory/components/account')
