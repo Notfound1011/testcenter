@@ -147,10 +147,6 @@
           </el-table-column>
           <el-table-column prop="operation" label="操作" width="120">
             <template v-slot="scope">
-              <!--              <el-row>-->
-              <!--                <el-col :span="12"><div class="grid-content bg-purple"></div></el-col>-->
-              <!--                <el-col :span="12"><div class="grid-content bg-purple-light"></div></el-col>-->
-              <!--              </el-row>-->
               <el-button type="primary" icon="el-icon-edit" @click="openTestCaseEditDialog(scope.row.id)"
                          circle v-permission="['PROJECT_API_CASE_RECORD:READ+EDIT']"></el-button>
               <el-button type="primary" icon="el-icon-document-copy" @click="openTestCaseEditDialog(scope.row.id, true)"
@@ -164,8 +160,7 @@
                        layout="total, sizes, prev, pager, next, jumper" :total="total">
         </el-pagination>
 
-        <test-case-modify ref="testCaseEditDialog"
-                          @openTestCaseEditDialog="openTestCaseEditDialog" @refresh="getCaseList(filterData)"/>
+        <test-case-modify ref="testCaseEditDialog" @openTestCaseEditDialog="openTestCaseEditDialog" @refresh="getCaseList(filterData)"/>
 
         <!--table单元格弹窗-->
         <el-dialog title="详细信息" :visible.sync="tableDialogVisible" width="800px" append-to-body>
@@ -185,10 +180,6 @@
               spot, contract单指<span class="bold-and-underline">现货</span>和<span
               class="bold-and-underline">合约</span>交易相关的case;
             </li>
-            <li>
-              public, no_token_required, no_login_required, 如果用例标签包含这三个的其中一个, 将不使用token or
-              加密(pub-web-gateway);
-            </li>
             <li>每个case必须包含:
               <ul>
                 <li>用例级别: 筛选case要用到的;</li>
@@ -197,7 +188,7 @@
                     class="bold-and-underline">pub-web-gateway</span>请求, host和token验证方式也不同;
                 </li>
                 <li>涉及服务名: 包含<span class="bold-and-underline">-</span>字符的尽量转为<span
-                  class="bold-and-underline">-</span>, 可以使用api文档中的服务名或者实际服务名;
+                  class="bold-and-underline">_</span>, 可以使用api文档中的服务名或者实际服务名;
                 </li>
               </ul>
             </li>
@@ -215,10 +206,11 @@ import MsMainContainer from "@/business/components/common/components/MsMainConta
 import MsContainer from "@/business/components/common/components/MsContainer";
 import TestCaseModify from "./components/TestCaseModify";
 import TestCaseEdit from "../../track/case/components/TestCaseEdit";
-import {humpToLine} from "@/common/js/utils";
+import {humpToLine, fullScreenLoading} from "@/common/js/utils";
 import MsTableAdvSearchBar from "@/business/components/common/components/search/MsTableAdvSearchBar";
 import {AUTO_TEST_SEARCH_CASE} from "../../common/components/search/search-components";
 import floatingBox from "@/common/components/FloatingBox.vue";
+
 
 export default {
   components: {TestCaseEdit, TestCaseModify, MsMainContainer, MsContainer, MsTableAdvSearchBar, floatingBox},
@@ -314,7 +306,8 @@ export default {
       } else {
         this.getCaseListStatus = true;
       }
-      this.$axios.post("/pyServer/TestCase/Search", requestBody).then(res => {
+      let loading = fullScreenLoading(this, '资源加载中...');
+      this.$axios.post("/pyServer/public/test-data/test-case/search", requestBody).then(res => {
         if (res.data.code === 0) {
           this.tableData = this.tableDataList = res.data.data
           this.total = res.data.total
@@ -324,12 +317,14 @@ export default {
             message: res.data
           });
         }
+        loading.close();
         this.getCaseListStatus = false;
       }).catch((error) => {
         this.$notify.error({
           title: "用例查询失败",
           message: error
         });
+        loading.close();
         this.getCaseListStatus = false;
       })
     },
@@ -345,7 +340,9 @@ export default {
         this.getCaseList(filterData)
       } else {
         switch (this.value) {
-          case "caseIdList" || "mark":
+          // case "caseIdList", "mark":  // 使用逗号表达式会有波浪提示...
+          case "caseIdList":
+          case "mark":
             filterData[this.value] = keywords.trim().split(/,|，|\s+/);
             break;
           default:
@@ -427,7 +424,7 @@ export default {
       this.$confirm('确认删除此用例信息？')
         .then(_ => {
           this.deleteInfo.case_id = this.tableData.splice(idx, 1)[0].id;
-          this.$axios.delete("/pyServer/TestCase/Delete", {params: this.deleteInfo, headers: {'x_power': true}})
+          this.$axios.delete("/pyServer/test-data/test-case/delete", {params: this.deleteInfo, headers: {'x_power': true}})
           this.$notify.warning({
             title: this.deleteInfo.case_id,
             message: this.$t('用例已删除').toString()

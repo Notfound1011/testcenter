@@ -213,5 +213,7 @@ export const API_TEST_CONFIG_DATA = [
     {'uuid': '132e59f4-cebc-11ed-b7ac-3a27e1d6caa3', 'type': 'getSetUpSharedConfig', 'description': '设置共享参数配置'},
     {'uuid': '133fb7d0-cebc-11ed-b7ac-3a27e1d6caa3', 'type': 'getDependentFunctionConfig', 'description': '单项依赖配置'},
     {'uuid': '13476b60-cebc-11ed-b7ac-3a27e1d6caa3', 'type': 'getApiCaseTipsConfig', 'description': 'apiCase的提示信息'},
-    {'uuid': '6ea520fc-691d-11ec-940a-3a27e1d6dbb5', 'type': 'getModifyConfigByApiCase', 'description': 'apiCase修改框的case'}
+    {'uuid': '6ea520fc-691d-11ec-940a-3a27e1d6dbb5', 'type': 'getMarkConfigByApiCase', 'description': 'apiModify的mark配置'},
+    {'uuid': '58268020-cfa4-11ed-a6bf-0242ac180004', 'type': 'getEnvConfigByApiCase', 'description': 'api的Env配置'},
+    {'uuid': '5826aeg0-cfa4-11ed-a6bf-0242ac180004', 'type': 'getApplicableAccountConfigByApiCase', 'description': 'apiCase的适用环境配置'},
 ]

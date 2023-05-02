@@ -68,7 +68,7 @@ export default {
   methods: {
     onSubmit() {
       const that = this;
-      that.$axios.post("/pyServer/Tools/SpotFakeRecharge", that.form)
+      that.$axios.post("/pyServer/public/test-data/tools/spot-fake-recharge", that.form)
         .then(res => {
           console.log(res.data)
           that.form.result = JSON.stringify(res.data, null, 4)

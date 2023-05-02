@@ -1,4 +1,6 @@
 <template>
+  <div>
+
   <ms-container>
     <ms-main-container>
       <h2 style="font-weight:bold">{{ $t('api_test.job_scheduler.run_jobs') }}</h2>
@@ -46,17 +48,25 @@
             </template>
           </el-table-column>
         </el-table>
+      </div>
+    </ms-main-container>
+  </ms-container>
 
-        <el-dialog title="调度参数（不修改则使用默认值）" :visible.sync="dialogVisible" width="70%" :before-close="dialogClose">
-          <el-form :inline="true" :model="parameters" :rules="rules" ref="paramForm" label-width="140px">
+    <!-- dialog 动态宽度不好使了, 直接固定值 -->
+    <el-dialog title="调度参数（不修改则使用默认值）" :visible.sync="dialogVisible" width="1100px" :before-close="dialogClose">
+      <el-form :inline="true" :model="parameters" :rules="rules" ref="paramForm" label-width="140px" width="1000px">
+        <el-row :gutter="24">
+          <el-col :span="12">
             <el-form-item :label=label.web_site prop="web_site">
-              <el-select v-model="parameters.web_site" placeholder="选择站点" :style="{ width: width * 0.16+'px'}">
+              <el-select v-model="parameters.web_site" placeholder="选择站点" style="width: 300px">
                 <el-option label="主站" value="phemex"></el-option>
                 <el-option label="土耳其站" value="turkey"></el-option>
               </el-select>
             </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item :label=label.env prop="env">
-              <el-select v-model="parameters.env" placeholder="选择执行环境" :style="{ width: width * 0.16+'px'}"
+              <el-select v-model="parameters.env" placeholder="选择执行环境" style="width: 300px"
                          @change="changePhemexHost">
                 <el-option
                   v-for="item in options.env"
@@ -66,198 +76,199 @@
                 </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item :label=label.rest_api_host prop="rest_api_host">
-              <el-input placeholder="填写rest_api_host" v-model="parameters.rest_api_host"
-                        :style="{ width: width * 0.16+'px'}"></el-input>
-            </el-form-item>
-            <el-form-item :label=label.pub_api_host prop="pub_api_host">
-              <el-input placeholder="填写pub_api_host" v-model="parameters.pub_api_host"
-                        :style="{ width: width * 0.16+'px'}"></el-input>
-            </el-form-item>
-            <el-form-item :label=label.ws_host prop="ws_host">
-              <el-input placeholder="填写ws_host" v-model="parameters.ws_host"
-                        :style="{ width: width * 0.16+'px'}"></el-input>
-            </el-form-item>
-
-            <el-form-item :label=label.spot_symbol_list prop="spot_symbol_list">
-              <el-tooltip class="tooltip" effect="dark"
-                          content='设置现货symbol, 多条用","隔开; 依赖plan_type, 如果plan_type中不包含spot, 将不执行'
-                          placement="right">
-                <i class="el-icon-question"/>
-              </el-tooltip>
-              <el-input placeholder='输入现货symbol, 多条用","隔开' v-model="parameters.spot_symbol_list"
-                        :style="{ width: width * 0.5+'px'}"></el-input>
-            </el-form-item>
-            <el-form-item :label=label.contract_symbol_list prop="contract_symbol_list">
-              <el-tooltip class="tooltip" effect="dark"
-                          content='设置现货symbol, 多条用","隔开; 依赖plan_type, 如果plan_type中不包含contract, 将不执行'
-                          placement="right">
-                <i class="el-icon-question"/>
-              </el-tooltip>
-              <el-input placeholder='输入合约symbol, 多条用","隔开' v-model="parameters.contract_symbol_list"
-                        :style="{ width: width * 0.5+'px'}"></el-input>
-            </el-form-item>
-            <el-form-item :label=label.case_type prop="case_type" class="form-item">
-              <el-select v-model="parameters.case_type" multiple placeholder="选择case类型" style="width: 120%;">
+          </el-col>
+        </el-row>
+        <el-form-item :label=label.symbol_list prop="symbol_list" >
+          <el-input placeholder='输入交易symbol, 多条用","隔开' v-model="parameters.symbol_list" style="width: 843px" />
+          <el-tooltip class="item-tips" effect="dark"
+                      content='设置交易symbol, 多条用","隔开; 依赖plan_type, 如果plan_type中不包含spot, contract将不执行'
+                      placement="right">
+            <i class="el-icon-question"/>
+          </el-tooltip>
+        </el-form-item>
+        <el-row :gutter="24">
+          <el-col :span="12">
+            <el-form-item :label=label.case_type prop="case_type">
+              <el-select v-model="parameters.case_type" multiple placeholder="选择Case类型" style="width: 300px">
                 <el-option label="rest_api" value="rest_api"></el-option>
                 <el-option label="pub_api" value="pub_api"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item :label=label.plan_type prop="plan_type" style="margin-left: 50px;">
-              <el-select placeholder='请选择计划执行类型' multiple v-model="parameters.plan_type" style="width: 140%;">
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label=label.plan_type prop="plan_type">
+              <el-select placeholder='选择计划类型' multiple v-model="parameters.plan_type" style="width: 300px">
                 <el-option label="spot" value="spot"></el-option>
                 <el-option label="contract" value="contract"></el-option>
                 <el-option label="normal" value="normal"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item :label=label.case_id_list prop="case_id_list" class="form-item">
-              <el-input placeholder='填写case_id，多条用","隔开' v-model="parameters.case_id_list"
-                        style="width: 130%;">
-              </el-input>
-            </el-form-item>
-            <el-form-item :label=label.total_spot_price_multiple prop="total_spot_price_multiple"
-                          style="margin-left: 70px;">
-              <el-tooltip class="tooltip" effect="dark"
+          </el-col>
+        </el-row>
+        <el-form-item :label=label.case_id_list prop="case_id_list">
+          <el-input placeholder='填写case_id，多条用","隔开' v-model="parameters.case_id_list" style="width: 843px" >
+          </el-input>
+        </el-form-item>
+        <el-row :gutter="24">
+          <el-col :span="12">
+            <el-form-item :label=label.total_spot_price_multiple prop="total_spot_price_multiple">
+              <el-input placeholder="USDT" v-model="parameters.total_spot_price_multiple" style="width: 300px" />
+              <el-tooltip class="item-tips" effect="dark"
                           content="设置倍数；价值基数为对应币对的最小quote价格" placement="right">
                 <i class="el-icon-question"/>
               </el-tooltip>
-              <el-input placeholder="USDT" v-model="parameters.total_spot_price_multiple"
-                        class="el-input_inner"></el-input>
             </el-form-item>
-            <el-form-item :label=label.total_contract_number prop="total_contract_number" class="form-item">
-              <el-input placeholder="" v-model="parameters.total_contract_number" class="el-input_inner"></el-input>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item :label=label.total_contract_number prop="total_contract_number">
+              <el-input placeholder="" v-model="parameters.total_contract_number" style="width: 300px" />
             </el-form-item>
-            <el-form-item :label=label.execution_case_mark prop="execution_case_mark" class="form-item">
-              <el-tooltip class="tooltip" effect="dark" content='设置要执行的用例筛选的条件; 多条用","隔开' placement="right">
+          </el-col>
+        </el-row>
+        <el-row :gutter="24">
+          <el-col :span="12">
+            <el-form-item :label=label.execution_case_mark prop="execution_case_mark">
+              <el-input placeholder='' v-model="parameters.execution_case_mark" style="width: 300px" />
+              <el-tooltip class="item-tips" effect="dark" content='设置要执行的用例筛选的条件; 多条用","隔开'
+                          placement="right">
                 <i class="el-icon-question"/>
               </el-tooltip>
-              <el-input placeholder='' v-model="parameters.execution_case_mark" class="el-input_inner2"></el-input>
             </el-form-item>
+          </el-col>
+          <el-col :span="12">
             <el-form-item :label=label.not_execution_case_mark prop="not_execution_case_mark">
-              <el-tooltip class="tooltip" effect="dark"
+              <el-input placeholder='' v-model="parameters.not_execution_case_mark" style="width: 300px" />
+              <el-tooltip class="item-tips" effect="dark"
                           content='设置不要执行的用例的筛选条件,多条用","隔开；线上账号kyc全部被剥夺, 需要过滤kyc的case.'
                           placement="right">
                 <i class="el-icon-question"/>
               </el-tooltip>
-              <el-input placeholder='' v-model="parameters.not_execution_case_mark"
-                        class="el-input_inner2"></el-input>
             </el-form-item>
-            <el-form-item :label=label.mark_price_by_contract prop="mark_price_by_contract" style="margin-left: 40px;">
-              <el-tooltip class="tooltip" effect="dark"
-                          content="合约是否按mark price计算; 如果是新合约, 没有ws推送的话, 这里会报错, 默认按last price计算." placement="right">
-                <i class="el-icon-question"/>
-              </el-tooltip>
+          </el-col>
+        </el-row>
+        <el-row :gutter="24">
+          <el-col :span="8">
+            <el-form-item :label=label.mark_price_by_contract prop="mark_price_by_contract">
               <el-switch v-model="parameters.mark_price_by_contract"></el-switch>
-            </el-form-item>
-            <el-form-item :label=label.robot_pending_order prop="robot_pending_order" style="margin-left: 50px;">
-              <el-tooltip class="tooltip" effect="dark"
-                          content="是否需要机器人挂单; 如果是新合约, 没有机器人挂单的话, 需要取消勾选" placement="right">
+              <el-tooltip class="item-tips" effect="dark"
+                          content="合约是否按mark price计算; 如果是新合约, 没有ws推送的话, 这里会报错, 默认按last price计算."
+                          placement="right">
                 <i class="el-icon-question"/>
               </el-tooltip>
-              <el-switch v-model="parameters.robot_pending_order"></el-switch>
             </el-form-item>
-            <el-form-item :label=label.assert_socket_switch prop="assert_socket_switch" style="margin-left: 50px;">
-              <el-tooltip class="tooltip" effect="dark"
+          </el-col>
+          <el-col :span="8">
+            <el-form-item :label=label.robot_pending_order prop="robot_pending_order">
+              <el-switch v-model="parameters.robot_pending_order"></el-switch>
+              <el-tooltip class="item-tips" effect="dark"
+                          content="是否需要机器人挂单; 如果是新合约, 没有机器人挂单的话, 需要取消勾选"
+                          placement="right">
+                <i class="el-icon-question"/>
+              </el-tooltip>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item :label=label.assert_socket_switch prop="assert_socket_switch">
+              <el-switch v-model="parameters.assert_socket_switch"></el-switch>
+              <el-tooltip class="item-tips" effect="dark"
                           content="合约现货可用, 其余的几乎没有要验证socket的部分 - 目前python使用的socket库连接不稳定, 先关掉后续更新库后打开"
                           placement="right">
                 <i class="el-icon-question"/>
               </el-tooltip>
-              <el-switch v-model="parameters.assert_socket_switch"></el-switch>
             </el-form-item>
-          </el-form>
-          <span slot="footer">
+          </el-col>
+        </el-row>
+      </el-form>
+      <span slot="footer">
             <el-button @click="dialogClose">取 消</el-button>
             <el-button type="primary" @click="runConfirm">运 行</el-button>
           </span>
-        </el-dialog>
+    </el-dialog>
 
-        <el-dialog title="调度参数（不修改则使用默认值）" :visible.sync="turkeyDialogVisible" width="70%"
-                   :before-close="turkeyDialogClose">
-          <el-form :inline="true" :model="turkeyParameters" :rules="rules" ref="turkeyParamForm" label-width="140px">
-            <el-form-item label="站点" prop="web_site">
-              <el-select v-model="turkeyParameters.web_site" disabled placeholder="选择站点"
-                         :style="{ width: width * 0.16+'px'}">
-                <el-option label="土耳其站" value="turkey"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item :label=label.env prop="env">
-              <el-select v-model="turkeyParameters.env" @change="changeTurkeyHost" placeholder="选择执行环境"
-                         :style="{ width: width * 0.16+'px'}">
-                <el-option
-                  v-for="item in options.turkeyEnv"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item :label=label.rest_api_host prop="rest_api_host">
-              <el-input placeholder="填写rest_api_host" v-model="turkeyParameters.rest_api_host"
-                        :style="{ width: width * 0.16+'px'}"></el-input>
-            </el-form-item>
-            <el-form-item :label=label.ws_host prop="ws_host">
-              <el-input placeholder="填写ws_host" v-model="turkeyParameters.ws_host"
-                        :style="{ width: width * 0.16+'px'}"></el-input>
-            </el-form-item>
-            <el-form-item :label=label.pub_api_host prop="pub_api_host">
-              <el-input placeholder="暂不填写" v-model="turkeyParameters.pub_api_host" disabled
-                        :style="{ width: width * 0.16+'px'}"></el-input>
-            </el-form-item>
-            <el-form-item :label=label.case_type prop="case_type" class="form-item">
-              <el-select v-model="turkeyParameters.case_type" multiple placeholder="选择case类型" style="width: 120%;">
-                <el-option label="rest_api" value="rest_api"></el-option>
-                <el-option label="pub_api" value="pub_api"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item :label=label.case_id_list prop="case_id_list" class="form-item">
-              <el-input placeholder='填写case_id，多条用","隔开' v-model="turkeyParameters.case_id_list"
-                        style="width: 120%;">
-              </el-input>
-            </el-form-item>
-            <el-form-item :label=label.execution_case_mark prop="execution_case_mark" style="margin-left: 80px;">
-              <el-tooltip class="tooltip" effect="dark" content='设置要执行的用例筛选的条件; 多条用","隔开' placement="right">
-                <i class="el-icon-question"/>
-              </el-tooltip>
-              <el-input placeholder='' v-model="turkeyParameters.execution_case_mark"
-                        class="el-input_inner2"></el-input>
-            </el-form-item>
-            <el-form-item :label=label.not_execution_case_mark prop="not_execution_case_mark">
-              <el-tooltip class="tooltip" effect="dark" content='设置不要执行的用例的筛选条件,多条用","隔开' placement="right">
-                <i class="el-icon-question"/>
-              </el-tooltip>
-              <el-input placeholder='' v-model="turkeyParameters.not_execution_case_mark"
-                        class="el-input_inner2"></el-input>
-            </el-form-item>
-            <el-form-item :label=label.assert_socket_switch prop="assert_socket_switch" style="margin-left: 160px;">
-              <el-tooltip class="tooltip" effect="dark"
-                          content="合约现货可用, 其余的几乎没有要验证socket的部分 - 目前python使用的socket库连接不稳定, 先关掉后续更新库后打开"
-                          placement="right">
-                <i class="el-icon-question"/>
-              </el-tooltip>
-              <el-switch v-model="parameters.assert_socket_switch"></el-switch>
-            </el-form-item>
-          </el-form>
-          <span slot="footer">
+    <el-dialog title="调度参数（不修改则使用默认值）" :visible.sync="turkeyDialogVisible" width="70%"
+               :before-close="turkeyDialogClose">
+      <el-form :inline="true" :model="turkeyParameters" :rules="rules" ref="turkeyParamForm" label-width="140px">
+        <el-form-item label="站点" prop="web_site">
+          <el-select v-model="turkeyParameters.web_site" disabled placeholder="选择站点"
+                     :style="{ width: width * 0.16+'px'}">
+            <el-option label="土耳其站" value="turkey"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item :label=label.env prop="env">
+          <el-select v-model="turkeyParameters.env" @change="changeTurkeyHost" placeholder="选择执行环境"
+                     :style="{ width: width * 0.16+'px'}">
+            <el-option
+              v-for="item in options.turkeyEnv"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item :label=label.rest_api_host prop="rest_api_host">
+          <el-input placeholder="填写rest_api_host" v-model="turkeyParameters.rest_api_host"
+                    :style="{ width: width * 0.16+'px'}"></el-input>
+        </el-form-item>
+        <el-form-item :label=label.ws_host prop="ws_host">
+          <el-input placeholder="填写ws_host" v-model="turkeyParameters.ws_host"
+                    :style="{ width: width * 0.16+'px'}"></el-input>
+        </el-form-item>
+        <el-form-item :label=label.pub_api_host prop="pub_api_host">
+          <el-input placeholder="暂不填写" v-model="turkeyParameters.pub_api_host" disabled
+                    :style="{ width: width * 0.16+'px'}"></el-input>
+        </el-form-item>
+        <el-form-item :label=label.case_type prop="case_type" class="form-item">
+          <el-select v-model="turkeyParameters.case_type" multiple placeholder="选择case类型" style="width: 120%;">
+            <el-option label="rest_api" value="rest_api"></el-option>
+            <el-option label="pub_api" value="pub_api"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item :label=label.case_id_list prop="case_id_list" class="form-item">
+          <el-input placeholder='填写case_id，多条用","隔开' v-model="turkeyParameters.case_id_list"
+                    style="width: 120%;">
+          </el-input>
+        </el-form-item>
+        <el-form-item :label=label.execution_case_mark prop="execution_case_mark" style="margin-left: 80px;">
+          <el-tooltip class="tooltip" effect="dark" content='设置要执行的用例筛选的条件; 多条用","隔开' placement="right">
+            <i class="el-icon-question"/>
+          </el-tooltip>
+          <el-input placeholder='' v-model="turkeyParameters.execution_case_mark"
+                    class="el-input_inner2"></el-input>
+        </el-form-item>
+        <el-form-item :label=label.not_execution_case_mark prop="not_execution_case_mark">
+          <el-tooltip class="tooltip" effect="dark" content='设置不要执行的用例的筛选条件,多条用","隔开' placement="right">
+            <i class="el-icon-question"/>
+          </el-tooltip>
+          <el-input placeholder='' v-model="turkeyParameters.not_execution_case_mark"
+                    class="el-input_inner2"></el-input>
+        </el-form-item>
+        <el-form-item :label=label.assert_socket_switch prop="assert_socket_switch" style="margin-left: 160px;">
+          <el-tooltip class="tooltip" effect="dark"
+                      content="合约现货可用, 其余的几乎没有要验证socket的部分 - 目前python使用的socket库连接不稳定, 先关掉后续更新库后打开"
+                      placement="right">
+            <i class="el-icon-question"/>
+          </el-tooltip>
+          <el-switch v-model="parameters.assert_socket_switch"></el-switch>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
               <el-button @click="turkeyDialogClose">取 消</el-button>
               <el-button type="primary" @click="turkeyRunConfirm">运 行</el-button>
             </span>
-        </el-dialog>
-        <el-dialog title="任务调度" :visible.sync="normalDialogVisible" width="20%">
+    </el-dialog>
+    <el-dialog title="任务调度" :visible.sync="normalDialogVisible" width="20%">
             <span slot="footer">
               <el-button @click="normalDialogClose">取 消</el-button>
               <el-button type="primary" @click="normalRunConfirm">运 行</el-button>
             </span>
-        </el-dialog>
-      </div>
-
-    </ms-main-container>
-  </ms-container>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
 import MsMainContainer from "@/business/components/common/components/MsMainContainer";
 import MsContainer from "@/business/components/common/components/MsContainer";
-import {formatTimeStamp, formatTime, isObjectValueEqual, jenkinsAuth} from "@/common/js/utils";
+import {formatTimeStamp, formatTime, isValueEqual, jenkinsAuth} from "@/common/js/utils";
 
 export default {
   name: "runJobs",
@@ -285,13 +296,9 @@ export default {
       turkeyDialogVisible: false,
       normalDialogVisible: false,
       parameters: {
-        rest_api_host: 'https://fat2.phemex.com',
-        pub_api_host: 'https://fat2-api.phemex.com',
-        ws_host: 'wss://fat2.phemex.com',
         env: 'fat2',
         web_site: 'phemex',
-        spot_symbol_list: 'sBTCUSDT,sETHUSDT',
-        contract_symbol_list: 'BTCUSD,uBTCUSD,cETHUSD',
+        symbol_list: 'sBTCUSDT,sETHUSDT,BTCUSD,uBTCUSD,cETHUSD',
         case_type: ['rest_api', 'pub_api'],
         total_spot_price_multiple: '1.5',
         total_contract_number: '5',
@@ -301,7 +308,8 @@ export default {
         mark_price_by_contract: false,
         execution_case_mark: 'p0',
         not_execution_case_mark: 'error',
-        assert_socket_switch: false
+        assert_socket_switch: true,
+        send_report: false  // 所有通过此页面调用的, 都不允许发送报告(会影响其他人)
       },
       turkeyParameters: {
         rest_api_host: 'https://api.fat.phemex.com.tr',
@@ -346,10 +354,9 @@ export default {
         rest_api_host: "rest_host",
         pub_api_host: "pub_host",
         ws_host: "ws_host",
-        spot_symbol_list: "现货币对列表",
-        contract_symbol_list: "合约币对列表",
+        symbol_list: "交易币对列表",
         case_type: "case类型",
-        plan_type: "计划执行类型",
+        plan_type: "测试计划类型",
         case_id_list: "指定case id",
         total_spot_price_multiple: "spot价值(倍数)",
         total_contract_number: "合约成交数量",
@@ -360,10 +367,17 @@ export default {
         not_execution_case_mark: "不执行的用例"
       },
       options: {
-        env: [{value: 'fat', label: 'fat'}, {value: 'fat2', label: 'fat2'}, {value: 'fat3', label: 'fat3'},
-          {value: 'fat4', label: 'fat4'}, {value: 'fat5', label: 'fat5'},
-          {value: 'ea', label: 'ea'}, {value: 'prod', label: 'prod'}],
-        turkeyEnv: [{value: 'fat', label: 'fat'}, {value: 'prod', label: 'prod'}]
+        env: [
+          {value: 'fat', label: 'fat'},
+          {value: 'fat2', label: 'fat2'},
+          {value: 'fat3', label: 'fat3'},
+          {value: 'ea', label: 'ea'},
+          {value: 'prod', label: 'prod'}
+        ],
+        turkeyEnv: [
+          {value: 'fat', label: 'fat'},
+          {value: 'prod', label: 'prod'}
+        ]
       }
     }
   },
@@ -388,46 +402,10 @@ export default {
   methods: {
     changePhemexHost() {
       switch (this.parameters.env) {
-        case 'prod':
-          this.parameters.rest_api_host = 'https://phemex.com'
-          this.parameters.pub_api_host = 'https://api.phemex.com'
-          this.parameters.ws_host = 'wss://phemex.com'
-          this.parameters.case_type = ['rest_api', 'pub_api']
-          break;
         case 'ea':
-          this.parameters.rest_api_host = 'https://ea.phemex.com'
-          this.parameters.pub_api_host = ''
-          this.parameters.ws_host = 'wss://ea.phemex.com'
           this.parameters.case_type = ['rest_api']
           break;
-        case 'fat2':
-          this.parameters.rest_api_host = 'https://fat2.phemex.com'
-          this.parameters.pub_api_host = 'https://fat2-api.phemex.com'
-          this.parameters.ws_host = 'wss://fat2.phemex.com'
-          this.parameters.case_type = ['rest_api', 'pub_api']
-          break;
-        case 'fat3':
-          this.parameters.rest_api_host = 'https://fat3.phemex.com'
-          this.parameters.pub_api_host = 'https://fat3-api.phemex.com'
-          this.parameters.ws_host = 'wss://fat3.phemex.com'
-          this.parameters.case_type = ['rest_api', 'pub_api']
-          break;
-        case 'fat4':
-          this.parameters.rest_api_host = 'https://fat4.phemex.com'
-          this.parameters.pub_api_host = 'https://fat4-api.phemex.com'
-          this.parameters.ws_host = 'wss://fat4.phemex.com'
-          this.parameters.case_type = ['rest_api', 'pub_api']
-          break;
-        case 'fat5':
-          this.parameters.rest_api_host = 'https://fat5.phemex.com'
-          this.parameters.pub_api_host = 'https://fat5-api.phemex.com'
-          this.parameters.ws_host = 'wss://fat5.phemex.com'
-          this.parameters.case_type = ['rest_api', 'pub_api']
-          break;
         default:
-          this.parameters.rest_api_host = 'https://fat.phemex.com'
-          this.parameters.pub_api_host = 'https://fat-api.phemex.com'
-          this.parameters.ws_host = 'wss://fat.phemex.com'
           this.parameters.case_type = ['rest_api', 'pub_api']
       }
     },
@@ -479,13 +457,9 @@ export default {
     },
 
     runJobs(name, body) {
-      if (['fat2', 'fat3', 'fat4', 'fat5'].indexOf(body.env) > -1) {
-        // indexOf结果就是查找的字符串所在的位置，0代表子串在最开始，大于-1包含，等于-1为不包含
-        // fat在jenkins上共用一个fat参数
-        body.env = 'fat'
-      }
       // 带参数的build
       if (body !== undefined) {
+        console.log(body)
         let url = "/jenkins/job/" + name + "/buildWithParameters"
         this.$axios({
           url: url,
@@ -591,7 +565,7 @@ export default {
 
     // 主站任务调度的弹框关闭
     dialogClose() {
-      if (isObjectValueEqual(JSON.parse(JSON.stringify(this.parameters)), this.parametersOrigin)) {
+      if (isValueEqual(JSON.parse(JSON.stringify(this.parameters)), this.parametersOrigin)) {
         this.dialogVisible = false;   //如果前后数据没有变化，则直接关闭弹窗
       } else {
         this.$confirm('job未执行，确认关闭？')
@@ -604,7 +578,7 @@ export default {
     },
     // 土站任务调度的弹框关闭
     turkeyDialogClose() {
-      if (isObjectValueEqual(JSON.parse(JSON.stringify(this.turkeyParameters)), this.turkeyParametersOrigin)) {
+      if (isValueEqual(JSON.parse(JSON.stringify(this.turkeyParameters)), this.turkeyParametersOrigin)) {
         this.turkeyDialogVisible = false;   //如果前后数据没有变化，则直接关闭弹窗
       } else {
         this.$confirm('job未执行，确认关闭？')
@@ -650,6 +624,10 @@ export default {
 
 .tooltip {
   margin-right: 10px;
+}
+
+.item-tips {
+  margin-left: 6px;
 }
 
 .form-item {

@@ -23,7 +23,7 @@
       </el-tooltip>
     </div>
 
-    <!-- 这个就是 1个输入框 + 两个按钮的默认模式! 用于 三个请求体, 2个请求返回的组件-->
+    <!-- 这个就是 1个输入框 + 两个按钮的默认模式! -->
     <el-row v-else type="flex" :gutter="20" class="row-bg" justify="space-between">
       <el-col :span="20">
         <el-form status-icon :rules="inputRules">
@@ -80,7 +80,7 @@
                 </el-option-group>
               </el-select>
               <el-tooltip effect="dark"
-                          :content="itemValue.functionType ? (dataToBeConfig[itemIndex] && dataToBeConfig[itemIndex].description ? dataToBeConfig[itemIndex].description: '该字段暂未设置提醒') : '请设置类型'"
+                          :content="itemValue.function_type ? (dataToBeConfig[itemIndex] && dataToBeConfig[itemIndex].description ? dataToBeConfig[itemIndex].description: '该字段暂未设置提醒') : '请设置类型'"
                           placement="top">
                 <i class="el-icon-question drawer-el-icon"/>
               </el-tooltip>
@@ -110,6 +110,8 @@
           <!-- 分割线 -->
           <el-divider content-position="center">{{ `Step - ${itemIndex + 1}` }}</el-divider>
         </div>
+
+
         <!-- 为空的默认展示 -->
         <el-empty v-show="dataToBeProcessed.length <= 0" class="drawer-empty" description="暂无数据"></el-empty>
       </div>
@@ -124,12 +126,8 @@
 </template>
 
 <script>
-import {getApiTestConfig, isObjectValueEqual, popUpReminder, isKeyValueObject} from '@/common/js/utils';
+import {getApiTestConfig, isObjectValueEqual, popUpReminder} from '@/common/js/utils';
 
-// 字段名统一使用
-const _executeDataKeyName = '_EXECUTE_DATA';
-const _executeDependentKeyName = '_EXECUTE_DEPENDENT';
-const _setGlobalSharedDataKeyName = '_SET_GLOBAL_SHARED_DATA';
 
 export default {
   // 组件别名
@@ -147,47 +145,47 @@ export default {
      */
     const checkInput = (rule, value, callback) => {
       const _that = this;
+      if (!_that.inputValue && _that.basicData instanceof Object && _that.basicData.hasOwnProperty('_SET_GLOBAL_SHARED_DATA')) {
+        return callback(new Error('仅设置`依赖项`的情况下, 理论上不允许为空!'));
+      }
       try {
-        if (_that.inputValue.trim() === '' && _that.basicData.hasOwnProperty(_setGlobalSharedDataKeyName) && !_that.basicData.hasOwnProperty(_executeDependentKeyName)) {
-          _that.$emit('synchronize_basic_data', _that.editKey, _executeDataKeyName, null)
-            return callback(new Error('仅设置`依赖项`的情况下, 理论上不允许为空!'));
-          }
-        else if (_that.inputValue.trim() === '') {
-          _that.$emit('synchronize_basic_data', _that.editKey, _executeDataKeyName, null)
-        }else{
-          let tmpInputJson = JSON.parse(_that.inputValue);
-          if (isKeyValueObject(tmpInputJson)){
-            _that.inputValue = JSON.stringify(tmpInputJson, null, 4)
-            _that.$emit('synchronize_basic_data', _that.editKey, _executeDataKeyName, tmpInputJson)
-          }else{
-            _that.$emit('synchronize_basic_data', _that.editKey, _executeDataKeyName, null)
-            return callback(new Error('应当输入为 key value 的 json, Array的数据不会生效!!'));
-          }
+        if (!_that.inputValue || _that.inputValue === '') {
+          _that.$emit('update_basic_data', _that.editKey, '_EXECUTE_DATA', null)
+          return
+        }
+        let tmpInputJson = JSON.parse(_that.inputValue);
+        if (tmpInputJson instanceof Object && !tmpInputJson.hasOwnProperty('length')) {
+          _that.inputValue = JSON.stringify(tmpInputJson, null, 4)
+          console.log('update_basic_data', tmpInputJson)
+          _that.$emit('update_basic_data', _that.editKey, '_EXECUTE_DATA', tmpInputJson)
+        } else {
+          _that.$emit('update_basic_data', _that.editKey, '_EXECUTE_DATA', null)
+          return callback(new Error('最外层应当是 key: value; 不应该是array;'));
         }
       } catch (e) {
-        _that.$emit('synchronize_basic_data', _that.editKey, _executeDataKeyName, null)
+        _that.$emit('update_basic_data', _that.editKey, '_EXECUTE_DATA', null)
         return callback(new Error('转json格式错误, 在最终提交时, 错误的数据不会生效!!'));
       }
+      // } finally {
+      // }
     };
     return {
-      // 存放数据的容器, 用于对比用的, 不会多操作什么
-      basicData: {},
-      arrayData: [],
-      // 基础配置,
-      drawerConfig: {},
       displayInputString: 'json格式, 如果该值为空 & 设置`共享参数`或`依赖项`, 此时强行保存会移除该项的内容! 样例: \n{"key":"value"}',
+      drawerConfig: {},  // 根据打开不同的类型, 动态变化配置
+
       displayTips: {},  // `el-drawer`内的一些解释文案, 接口请求的配置
       configContent: [],  // `el-drawer`配置内容
+
       drawer: false,
-      // 输入框内容, 实际是 _EXECUTE_DATA 数据, 仅同步到父组件, 独立处理好处理
+
+      // 输入框内容
       inputValue: '', // 输入框内的数据
       inputRules: {
         'oneInputRules': {validator: checkInput, trigger: 'blur'}
       },
-      // 设置 [依赖, 共享, 前置条件, 后续清理] 的临时操作容器
       rawDataToBeProcessed: [], // 待处理数据的原数据,
       dataToBeProcessed: [], // 待处理的实际数据 drawer内操作的数据, 均是list
-      dataToBeConfig: []  // 待处理数据的对应config配置, 一些提示文案,等
+      dataToBeConfig: []  // 待处理数据的对应config配置.
     }
   },
   // 方法集合
@@ -208,7 +206,7 @@ export default {
             _that.loading = true;
             setTimeout(() => {
               // 上报事件
-              _that.$emit('synchronize_basic_data', _that.editKey, _that.drawerConfig.keyName, _that.dataToBeProcessed)
+              _that.$emit('update_basic_data', _that.editKey, _that.drawerConfig.editKey, _that.dataToBeProcessed)
               _that.dataToBeProcessed = [];
               _that.rawDataToBeProcessed = [];
               // _that.$refs.drawer.closeDrawer();  // 触发关闭回调
@@ -242,39 +240,43 @@ export default {
           })
       }
     },
+
     /**
-     * @description Drawer 的一些显示配置, 和上报事件的变更key; 以及初始化 列表的 处理函数
+     * @description Drawer 的一些显示配置, 和上报事件的变更key;
      * @param type
      */
     updateDrawerConfig(type) {
       const drawerConfig = {
         'executionDependentFunction': {
           'title': '设置单项依赖内容',
-            'getConfigType': 'getDependentFunctionConfig',
-            'keyName': _executeDependentKeyName
+          'getConfigType': 'getDependentFunctionConfig',
+          // 'editKey': '@#EXECUTION_DEPENDENT_FUNCTION#@'
+          'editKey': '_EXECUTE_DEPENDENT'
         },
         'setUpSharedData': {
           'title': '设置全局共享内容',
-            'getConfigType': 'getSetUpSharedConfig',
-            'keyName': _setGlobalSharedDataKeyName
+          'getConfigType': 'getSetUpSharedConfig',
+          // 'editKey': '@#SET_UP_SHARED_DATA#@'
+          'editKey': '_SET_GLOBAL_SHARED_DATA'
         },
         'setDepend': {
           'title': '设置用例执行前依赖内容',
-            'getConfigType': 'getApiTestDependConfig',
-            'keyName': ''
+          'getConfigType': 'getApiTestDependConfig',
+          'editKey': ''
         },
         'setClearUp': {
           'title': '设置用例执行后清理内容',
-            'getConfigType': 'getApiTestDependConfig',  // 清理几乎和设置依赖差不多的方式, 直接复用
-            'keyName': ''
-        }
+          'getConfigType': 'getApiTestDependConfig',  // 清理几乎和设置依赖差不多的方式, 直接复用
+          'editKey': ''
+        },
       }
       this.drawerConfig = drawerConfig[type]
-      if (this.basicData[drawerConfig[type]['keyName']]) {
-        this.dataToBeProcessed = this.basicData[drawerConfig[type]['keyName']]
+      if (this.basicData[drawerConfig[type]['editKey']]) {
+        this.dataToBeProcessed = this.basicData[drawerConfig[type]['editKey']]
       } else {
         this.dataToBeProcessed = []
       }
+
     },
     /**
      * @description: 打开`drawer`时获取的主备注信息
@@ -286,29 +288,28 @@ export default {
       // 变更配置项
       _that.updateDrawerConfig(typeName);
       let configId = getApiTestConfig(_that.drawerConfig.getConfigType);
-      let tipsId = getApiTestConfig('getApiCaseTipsConfig');
       // 根据是否有生成配置去执行请求
-      if (!configId || !tipsId) {
-        popUpReminder(_that, '获取信息失败!!', '配置项/tips')
+      if (!configId) {
+        popUpReminder(_that, '获取配置项uuid失败!', _that.drawerConfig.title)
       } else {
-        // 同步到原始数据容器, 用于提交时做对比, 使用 concat() 复制一个 新的 对象 而不在原有的基础上引用
+        // 请求配置的提示信息, 这里不影响主功能
+        _that.getTipsConfig();
+        // 同步到原始数据容器, 用于提交时做对比
         _that.rawDataToBeProcessed = _that.dataToBeProcessed.concat()
         // 使用他们封装好的方法, 这里请求具体配置
-        _that.$axios.get("/pyServer/TestConfig/Search", {params: {'configId': `${configId},${tipsId}`}, timeout: 2000})
+        _that.$axios.get("/pyServer/TestConfig/Search", {params: {'config_id': configId}, timeout: 2000})
           .then(result => {
             if (result.status === 200 && result.data.code === 0) {
-              // tips好像没啥特别的校验, 直接赋值即可
-              _that.displayTips = result.data.data[tipsId]['configData']
-              // config 需要判断一下, 要不有逻辑问题
-              if (Array.isArray(result.data.data[configId]['configData']) && result.data.data[configId]['configData'].length > 0) {
-                _that.configContent = result.data.data[configId]['configData'];
+              // 判断接口返回是否为空
+              if (result.data.data[0]['config_data'] && JSON.stringify(result.data.data[0]['config_data']) !== '{}') {
+                _that.configContent = result.data.data[0]['config_data'];
                 // 判断 _that.dataToBeProcessed 是否真的有值, 如果有, 要生成对应 _that.dataToBeConfig
-                if (Array.isArray(_that.dataToBeProcessed) && _that.dataToBeProcessed.length > 0) {
+                if (_that.dataToBeProcessed instanceof Array && _that.dataToBeProcessed.length > 0) {
                   for (let tmpIndex in _that.dataToBeProcessed) {
                     for (let groupIndex in _that.configContent) {
                       for (let optionIndex in _that.configContent[groupIndex]['options']) {
-                        if (_that.dataToBeProcessed[tmpIndex]['functionType'] === _that.configContent[groupIndex]['options'][optionIndex]['functionType']) {
-                          _that.dataToBeConfig.push(_that.configContent[groupIndex]['options'][optionIndex])
+                        if (_that.dataToBeProcessed[tmpIndex]['function_type'] === _that.configContent[groupIndex]['options'][optionIndex]['functionType']) {
+                          _that.dataToBeConfig[tmpIndex] = _that.configContent[groupIndex]['options'][optionIndex]
                         }
                       }
                     }
@@ -324,16 +325,37 @@ export default {
           })
           .catch((err) => {
             console.log(err);
-            popUpReminder(_that, '请求失败, 请检查网络状态!!!', _that.drawerConfig.title)
+            popUpReminder(_that, '请求失败, 请检查网络状态!', _that.drawerConfig.title)
           })
       }
     },
     /**
-     * @description: 添加一个基础元素, 仅在队列里添加一个 `functionType` 基础key
+     * @description: 打开`drawer` 时要获取的`提示`配置信息
+     * @return {void}
+     */
+    getTipsConfig() {
+      const _that = this;
+      let configId = getApiTestConfig('getApiCaseTipsConfig');
+      // 根据是否有生成配置去执行请求
+      if (!configId) {
+        popUpReminder(_that, '的uuid获取失败, 酌情联系开发者(应当不影响使用)', '提示信息')
+      } else {
+        // 使用他们封装好的方法, 这里请求具体配置
+        _that.$axios.get("/pyServer/TestConfig/Search", {params: {'config_id': configId}, timeout: 2000})
+          .then(result => {
+            _that.displayTips = result.data.data[0]['config_data'];
+          })
+          .catch((err) => {
+            popUpReminder(_that, '获取异常, 酌情联系开发者(应当不影响使用)', '提示信息')
+          })
+      }
+    },
+    /**
+     * @description: 添加一个基础元素, 仅在队列里添加一个 `function_type` 基础key
      * @return {*}
      */
     addItem() {
-      this.dataToBeProcessed.push({'functionType': null});
+      this.dataToBeProcessed.push({'function_type': null});
       this.dataToBeConfig.push({});
     },
     /**
@@ -341,8 +363,8 @@ export default {
      * @param {Number} itemIndex 传索引
      */
     copyItem(itemIndex) {
-      this.dataToBeProcessed.push(JSON.parse(JSON.stringify(this.dataToBeProcessed[itemIndex])));
-      this.dataToBeConfig.push(JSON.parse(JSON.stringify(this.dataToBeConfig[itemIndex])));
+      this.dataToBeProcessed.push(this.dataToBeProcessed[itemIndex]);
+      this.dataToBeConfig.push(this.dataToBeConfig[itemIndex]);
     },
     /**
      * @description: 根据索引删除一个元素, js中的array操作没有传统的, 针对下标的移除方法, 这里使用splice讨巧实现,
@@ -361,17 +383,35 @@ export default {
      */
     updateItemFunctionType(event, itemIndex) {
       const _that = this;
-      _that.dataToBeProcessed[itemIndex]['functionType'] = _that.dataToBeConfig[itemIndex]['functionType']
+      _that.dataToBeProcessed[itemIndex]['function_type'] = _that.dataToBeConfig[itemIndex]['functionType']
     },
     /**
-     * @description: 处理 basicData 中的字符串数据
+     * @description: 处理字符串数据
      * @return {*}
      */
-    processExecutionDataByBasic() {
-      if (this.basicData[_executeDataKeyName]){
-        this.inputValue = JSON.stringify(this.basicData[_executeDataKeyName], null, 4)
-      }else{
-        this.inputValue = ''
+    handleBasicData() {
+      const _that = this;
+      // 如果是socket 或者 response 必须从 expect 中取
+      if (_that.editKey === 'response' || _that.editKey === 'socket') {
+        if (_that.basicData && _that.basicData instanceof Object) {
+          if (_that.basicData[_that.editKey] && _that.basicData[_that.editKey] instanceof Object) {
+            if (_that.basicData[_that.editKey].hasOwnProperty('_EXECUTE_DATA')) {
+              _that.inputValue = JSON.stringify(_that.basicData[_that.editKey]['_EXECUTE_DATA'], null, 4)
+            } else {
+              _that.inputValue = ''
+            }
+          } else {
+            _that.inputValue = ''
+          }
+        } else {
+          _that.inputValue = ''
+        }
+      } else if (_that.basicData instanceof Object && _that.basicData.hasOwnProperty('_EXECUTE_DATA')) {
+        _that.inputValue = JSON.stringify(_that.basicData['_EXECUTE_DATA'], null, 4)
+      } else if (_that.basicData instanceof String) {
+        _that.inputValue = _that.basicData
+      } else {
+        _that.inputValue = ''
       }
     }
   },
@@ -391,10 +431,19 @@ export default {
   },
   // 单向数据流, 不建议直接操作props, 容易把数据弄成非响应式的, 出异常就难受了
   props: {
-    // 可能会传 null array, keyValue的Json(这三个都算object...)
-    processedData: {
-      type: Object,  // 有可能是null undefined 之类的
-      required: false
+    // 输入框要处理的数据, 怕有命名冲突, 才命名这个, null也是object...
+    // default 和 validator没起到作用, 可能是版本低了, 只限制类型和必填
+    basicData: {
+      type: [Object, Array],  // expect 1.0传进来的是arr, 兼容这个, 如果为空, 会传null进来
+      required: false  // 上面限制为null不好使, 还是非必填
+    },
+    // 需要处理为 依赖项, 清理项时用的, 为列表
+    arrayData: {
+      type: Array,
+      // required: false
+      default: () => {
+        return []
+      }
     },
     // 变更的key, 上报时用的
     editKey: {
@@ -412,18 +461,8 @@ export default {
       default: false
     }
   },
-  // 组件的钩子函数
   created() {
-    const _that = this;
-    // 处理processedData, 如果传的数据是符合规则 && 是否是有值的, 如果是就赋值, 如果不符合, 就跳过
-    if (isKeyValueObject(_that.processedData)){
-      if (Object.keys(_that.processedData).length > 0){
-        _that.basicData = _that.processedData
-      }
-    }else if (Array.isArray(_that.processedData) && _that.processedData.length > 0){
-      _that.arrayData = _that.processedData;
-    }
-    _that.processExecutionDataByBasic();
+    this.handleBasicData();
   }
 }
 </script>
