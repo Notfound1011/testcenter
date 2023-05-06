@@ -5,7 +5,7 @@
 
 
     <parent>
-        <artifactId>metersphere-server</artifactId>
+        <artifactId>testcenter</artifactId>
         <groupId>io.metersphere</groupId>
         <version>${revision}</version>
     </parent>

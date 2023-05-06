@@ -352,8 +352,9 @@ export default {
         title: "上币脚本",
         common: {
           title: "通用",
-          gis_auth_token: {
-            title: "获取Google Identity Services Auth Token"
+          access_token: {
+            title: "获取Google Access Token",
+            get: "点击获取"
           },
           sync_prod_info: {
             title: "同步产品信息文档"
