@@ -79,7 +79,6 @@
           :highlight-current-row="true"
           :row-class-name="tableRowClassName"
           @filter-change="filter"
-          @cell-dblclick="cell_dblclick"
           style="width: 100%">
           <el-table-column prop="id" label="ID" min-width="60" sortable fixed="left"></el-table-column>
           <el-table-column prop="caseName" label="用例名称" min-width="230" fixed="left"></el-table-column>
@@ -87,12 +86,6 @@
                            column-key="method">
           </el-table-column>
           <el-table-column prop="path" label="接口path" min-width="180"></el-table-column>
-          <!--          <el-table-column prop="bodyByJson" label="json" :formatter="formatObject"-->
-          <!--                           align="left" min-width="140" show-overflow-tooltip>-->
-          <!--          </el-table-column>-->
-          <!--          <el-table-column prop="expect" label="预期结果" :formatter="formatObject"-->
-          <!--                           align="left" min-width="140" show-overflow-tooltip>-->
-          <!--          </el-table-column>-->
           <el-table-column prop="mark" label="用例标签" header-align="center" min-width="240">
             <template v-slot="scope">
               <el-tag v-for="item in scope.row.mark" :key="item" type="" effect="plain" class="tag-group">
@@ -134,8 +127,8 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="createdPerson" label="创建人" :formatter="formatCreatedData" min-width="100"/>
-          <el-table-column prop="updatedPerson" label="更新人" :formatter="formatUpdatedData" min-width="100"/>
+          <el-table-column prop="createdPerson" label="创建人" :formatter="formatOperatorData" min-width="100"/>
+          <el-table-column prop="updatedPerson" label="更新人" :formatter="formatOperatorData" min-width="100"/>
           <el-table-column prop="remark" label="备注" align="left" min-width="200"
                            show-overflow-tooltip></el-table-column>
           <el-table-column prop="status" label="状态" min-width="80">
@@ -160,17 +153,7 @@
                        layout="total, sizes, prev, pager, next, jumper" :total="total">
         </el-pagination>
 
-        <test-case-modify ref="testCaseEditDialog" @openTestCaseEditDialog="openTestCaseEditDialog" @refresh="getCaseList(filterData)"/>
-
-        <!--table单元格弹窗-->
-        <el-dialog title="详细信息" :visible.sync="tableDialogVisible" width="800px" append-to-body>
-          <el-input
-            type="textarea"
-            v-model="json_body_detail"
-            :autosize="{ minRows: 2, maxRows: 20}"
-            :disabled="true">
-          </el-input>
-        </el-dialog>
+        <test-case-modify v-if="openModify" :case-id="editCaseId" :copy-case="copyCase" :initialVisible.sync="openModify" @refresh="getCaseList(filterData)"/>
 
         <!-- 字段介绍 -->
         <el-dialog title="字段介绍" :visible.sync="introductionStatus" width="800px" append-to-body>
@@ -206,7 +189,7 @@ import MsMainContainer from "@/business/components/common/components/MsMainConta
 import MsContainer from "@/business/components/common/components/MsContainer";
 import TestCaseModify from "./components/TestCaseModify";
 import TestCaseEdit from "../../track/case/components/TestCaseEdit";
-import {humpToLine, fullScreenLoading} from "@/common/js/utils";
+import {humpToLine, fullScreenLoading, isKeyValueObject} from "@/common/js/utils";
 import MsTableAdvSearchBar from "@/business/components/common/components/search/MsTableAdvSearchBar";
 import {AUTO_TEST_SEARCH_CASE} from "../../common/components/search/search-components";
 import floatingBox from "@/common/components/FloatingBox.vue";
@@ -232,23 +215,18 @@ export default {
       ],
       value: 'caseName',
       keywords: '',
-      deleteInfo: {
-        case_id: 0
-      },
       total: 0,
       tableData: [],
-      tableDataList: [],
-      json_body_detail: [],
-      expect: [],
-      bodyByJson: '',
-      tableDialogVisible: false,
-
+      // tableDataList: [],
       filterData: {
         page: 1,
         limit: 30
       },
-      getCaseListStatus: false,
-      introductionStatus: false
+      getCaseListStatus: false,  // 防止多次获取, 这里是监控器, 用于验证请求状态
+      introductionStatus: false,  // 介绍的 el-dialog
+      openModify: false,  // 打开caseModify子组件
+      editCaseId: null,  // 如果有值的话, 表示修改case; null 0 undefined 就是新增case
+      copyCase: false  // 关联上面的, 支持copy一条case;
     }
   },
   activated() {
@@ -309,7 +287,7 @@ export default {
       let loading = fullScreenLoading(this, '资源加载中...');
       this.$axios.post("/pyServer/public/test-data/test-case/search", requestBody).then(res => {
         if (res.data.code === 0) {
-          this.tableData = this.tableDataList = res.data.data
+          this.tableData = res.data.data
           this.total = res.data.total
         } else {
           this.$notify.warning({
@@ -364,46 +342,18 @@ export default {
         }
       }
     },
-    humpToLine(name) {
-      return name.replace(/([A-Z])/g, "_$1").toLowerCase();
-    },
-    cell_dblclick(row, column, cell, event) {
-      //双击单元格打开展示详细信息
-      if (column.property === "bodyByJson") {
-        //根据bodyByJson获取详细信息
-        this.json_body_detail = JSON.stringify(row.bodyByJson, null, 4);
-        if (this.json_body_detail != null) {
-          this.tableDialogVisible = true;
-        }
-      }
-      if (column.property === "expect") {
-        //根据expect循环获取预期结果详细信息
-        this.json_body_detail = JSON.stringify(row.expect, null, 4);
-        if (this.json_body_detail != null) {
-          this.tableDialogVisible = true;
-        }
-      }
-    },
-    formatObject(row, column) {
-      let expect = row[column.property];
-      if (expect == null) {
-        return expect
-      }
-      return JSON.stringify(expect, null, 4);
-    },
-
-    formatCreatedData(row, column) {
-      let createdPerson = row[column.property];
-      if (createdPerson !== null) {
-        return createdPerson.name
-      } else {
-        return '-'
-      }
-    },
-    formatUpdatedData(row, column) {
-      let updatedPerson = row[column.property];
-      if (updatedPerson !== null) {
-        return updatedPerson.name
+    /**
+     * 更新创建人 or 修改人信息
+     * @param row 每一行的数据
+     * @param column 当前列的对象
+     * @returns {*|string}
+     */
+    formatOperatorData(row, column) {
+      let operatorData = row[column.property];
+      if (typeof(operatorData) === 'string' && operatorData) {
+        return operatorData
+      } else if (isKeyValueObject(operatorData) && operatorData.name){
+        return operatorData.name
       } else {
         return '-'
       }
@@ -419,40 +369,50 @@ export default {
       this.getCaseList(this.filterData)
     },
 
-    //删除测试用例,暂时没用到
-    delCase(idx) {
-      this.$confirm('确认删除此用例信息？')
-        .then(_ => {
-          this.deleteInfo.case_id = this.tableData.splice(idx, 1)[0].id;
-          this.$axios.delete("/pyServer/test-data/test-case/delete", {params: this.deleteInfo, headers: {'x_power': true}})
-          this.$notify.warning({
-            title: this.deleteInfo.case_id,
-            message: this.$t('用例已删除').toString()
-          });
-        })
-        .catch(_ => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
-        });
-    },
+    // //删除测试用例,暂时没用到
+    // delCase(idx) {
+    //   this.$confirm('确认删除此用例信息？')
+    //     .then(_ => {
+    //       this.deleteInfo.case_id = this.tableData.splice(idx, 1)[0].id;
+    //       this.$axios.delete("/pyServer/test-data/test-case/delete", {params: this.deleteInfo, headers: {'x_power': true}})
+    //       this.$notify.warning({
+    //         title: this.deleteInfo.case_id,
+    //         message: this.$t('用例已删除').toString()
+    //       });
+    //     })
+    //     .catch(_ => {
+    //       this.$message({
+    //         type: 'info',
+    //         message: '已取消删除'
+    //       });
+    //     });
+    // },
     /**
      * @description 传id的话, 防止页面长时间没刷新, 导致异常输入传入
      * @param {Integer|undefined} caseId, apiCaseId, 变更传整数, 新增传undefined
      * @param {Boolean} copy, 是否是复制case
      */
     openTestCaseEditDialog(caseId, copy = false) {
-      this.$refs.testCaseEditDialog.openTestCaseEditDialog(caseId, copy);
+      this.editCaseId = caseId
+      this.copyCase = copy
+      this.openModify = true
     }
   },
   created(){
+    const _that = this;
     // 如果路径上有查询参数,
-    if (this.$route.query.caseId){
-      this.value = 'caseIdList';
-      this.keywords = this.$route.query.caseId;
-      this.filterData['caseIdList'] = [this.$route.query.caseId];
+    if (_that.$route.query.caseId){
+      _that.value = 'caseIdList';
+      _that.keywords = _that.$route.query.caseId;
+      _that.filterData['caseIdList'] = [_that.$route.query.caseId];
     }
+    // 增加弹窗
+    setTimeout(() => {
+      _that.$alert('<strong>该录入方式即将停用, 请迁移到新项目</strong><a target="_blank" href="http://bitbucket.cmexpro.com/projects/DEVOPS/repos/phemex_api_test/browse">LINK</a>', '停用通知', {
+        confirmButtonText: '确定',
+        dangerouslyUseHTMLString: true
+      });
+    }, 1000);
   }
 }
 
@@ -475,7 +435,7 @@ export default {
   text-align: center;
   margin-top: 10px;
   margin-bottom: 10px;
-  width: 10%;
+  width: 200px;
 }
 
 .tag-group {
