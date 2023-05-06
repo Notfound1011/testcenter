@@ -1,6 +1,6 @@
 <template>
   <div>
-`    <h3><i class="iconfont icon-authority"></i>{{ $t('commons.listing.listing_script.common.access_token.title') }}
+    <h3><i class="iconfont icon-authority"></i>{{ $t('commons.listing.listing_script.common.access_token.title') }}
     </h3>
     <el-button type="primary" @click="getAccessToken">{{
         $t('commons.listing.listing_script.common.access_token.get')

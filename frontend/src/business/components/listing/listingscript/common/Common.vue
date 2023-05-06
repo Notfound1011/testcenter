@@ -1,14 +1,16 @@
 <template>
   <div>
-    <google-login></google-login>
-    <el-divider></el-divider>
-    <sync-prod-info-docs></sync-prod-info-docs>
-    <el-divider></el-divider>
-    <verify-bitbucket></verify-bitbucket>
-    <el-divider></el-divider>
-    <order-book></order-book>
-    <el-divider></el-divider>
-    <recent-trades></recent-trades>
+    <!--    <google-login></google-login>-->
+    <!--    <el-divider></el-divider>-->
+    <el-card class="box-card">
+      <sync-prod-info-docs></sync-prod-info-docs>
+      <el-divider></el-divider>
+      <verify-bitbucket></verify-bitbucket>
+      <el-divider></el-divider>
+      <order-book></order-book>
+      <el-divider></el-divider>
+      <recent-trades></recent-trades>
+    </el-card>
   </div>
 </template>
 
@@ -26,5 +28,7 @@ export default {
 </script>
 
 <style scoped>
-
+.box-card {
+  margin: 10px;
+}
 </style>

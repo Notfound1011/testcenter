@@ -4,13 +4,18 @@
     <el-form :inline="true" ref="form" :model="form">
       <el-form-item label="类型" required :rules="rules" prop="option">
         <el-select v-model="form.option" placeholder="请选择类型">
-          <el-option v-for="(option, index) in types" :key="index" :label="option.label" :value="option.value"></el-option>
+          <el-option v-for="(option, index) in types" :key="index" :label="option.label"
+                     :value="option.value"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="环境" required :rules="rules" prop="env">
         <el-select v-model="form.env" placeholder="请选择环境">
-          <el-option v-for="(option, index) in envs" :key="index" :label="option.label" :value="option.value"></el-option>
+          <el-option v-for="(option, index) in envs" :key="index" :label="option.label"
+                     :value="option.value"></el-option>
         </el-select>
+      </el-form-item>
+      <el-form-item label="Bitbucket AccessToken" required :rules="rules" prop="accessToken">
+        <el-input v-model="form.accessToken" placeholder=""></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitForm">提交</el-button>
@@ -26,7 +31,8 @@ export default {
     return {
       form: {
         option: "",
-        env: "",
+        env: "fat",
+        accessToken: ""
       },
       types: [
         {label: "currency", value: "currency"},
@@ -34,10 +40,7 @@ export default {
         {label: "contract", value: "contract_symbol"},
       ],
       envs: [
-        {label: "fat2", value: "fat2"},
         {label: "fat", value: "fat"},
-        {label: "fat3", value: "fat3"},
-        {label: "ea", value: "ea"},
         {label: "prod", value: "prod"},
       ],
       // 表单验证内容
