@@ -377,6 +377,9 @@ export default {
 
 .add-btn {
   text-align: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: 200px;
 }
 
 .table-content {

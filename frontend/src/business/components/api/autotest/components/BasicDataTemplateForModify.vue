@@ -7,7 +7,7 @@
           <el-form-item prop="oneInputRules">
             <!-- 把输入框放这个组件里的目的是区分: 输入框展示的字符串和json格式的数据 -->
             <el-input type="textarea" :autosize="{ minRows: 3, maxRows: 10 }"
-                      :placeholder="drawerConfig.placeholder"
+                      placeholder="json格式, 如果该值为空 & 设置`共享参数`或`依赖项`, 此时强行保存会移除该项的内容!"
                       v-model="inputValue"/>
           </el-form-item>
         </el-form>
@@ -215,7 +215,7 @@ export default {
       buttonList: [],
       // drawer的全部配置, 这里的
       drawerAllConfig: {
-        'executionDependentFunction': {'title': '设置单项依赖内容','getConfigType': 'getDependentFunctionConfig', 'keyName': _DEPENDENT_KEY_NAME, 'placeholder': 'json格式, 如果该值为空 & 设置`共享参数`或`依赖项`, 此时强行保存会移除该项的内容!'},
+        'executionDependentFunction': {'title': '设置单项依赖内容','getConfigType': 'getDependentFunctionConfig', 'keyName': _DEPENDENT_KEY_NAME, 'placeholder': ''},
         'setUpSharedData': {'title': '设置全局共享内容', 'getConfigType': 'getSetUpSharedConfig', 'keyName': _GLOBAL_SHARED_KEY_NAME, 'placeholder': ''},
         'requestParametrize': {'title': '设置单项参数化值', 'getConfigType': '', 'keyName': _PARAMETRIZE_KEY_NAME, 'placeholder': '设置改项目的参数化配置, 数据结构: [{key: value}];\n其中{key: value}是每一次要更新的内容, 可以是多个key,value;'},
         'dataSchema': {'title': '设置数据验证模型', 'getConfigType': '', 'keyName': _DATA_SCHEMA_KEY_NAME, 'placeholder': '验证jsonSchema.'},
