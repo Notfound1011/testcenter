@@ -33,7 +33,7 @@ import 'element-ui/lib/theme-chalk/display.css';
 import './../common/css/iconfont.css'
 import * as echarts from 'echarts';
 
-import errorHandler from "@/common/js/error-handler";
+import {generalError, promiseError} from "@/common/js/error-handler";
 
 Vue.prototype.$echarts = echarts
 Vue.use(mavonEditor)
@@ -91,7 +91,8 @@ Vue.directive('preventReClick', {
 // 添加全局事件总线
 Vue.prototype.$EventBus = new Vue();
 // 添加针对`全局`的错误处理函数
-Vue.config.errorHandler = errorHandler
+Vue.config.errorHandler = generalError
+window.onunhandledrejection = promiseError
 
 new Vue({
   el: '#app',

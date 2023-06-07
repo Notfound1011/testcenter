@@ -10,7 +10,15 @@ class PyRequestError extends Error {
     super(error);
     this.name = 'PyRequestError';
     this._error_reminder = function (){
-      if (error.response.status === 401) {
+      if (error.response.status === 200 && error.response.data.code !== 0){
+        Vue.prototype.$notify({
+          title: '执行失败!',
+          message: error.response.data.msg ? error.response.data.msg : 'Execution failed, please contact the developer!',
+          duration: 5000,
+          type: 'warning'
+        });
+      }
+      else if (error.response.status === 401) {
         Vue.prototype.$confirm('登录过期, 请重新登录!', '身份验证失败', {
           confirmButtonText: '确定',
           type: 'warning'
@@ -59,9 +67,8 @@ pyRequest.interceptors.request.use(
 // 添加响应拦截器
 pyRequest.interceptors.response.use(
   (response) => {
-    // 对响应数据进行处理
-
-    return response.data;
+    // 返回 response 对象, 不做任何处理;
+    return response;
   },
   (error) => {
     throw new PyRequestError(error);
