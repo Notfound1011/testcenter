@@ -76,16 +76,29 @@ export default {
     },
   },
   mounted() {
-    // this.getBatchOptions()
+    this.getBatchOptions()
   },
   methods: {
     // todo: 批次从接口获取  默认最新一个
     getBatchOptions() {
-      this.$axios.get('/xxx/xxx',
-        {params: {'type': 'contract'}}
+      this.$axios.get('/pyServer/public/test-data/tools/publish-coins/product-basic-data/search',
+        {params: {'dataType': 'contract'}}
       )
         .then(response => {
-          this.batchOptions = response.body;
+          let data = response.data.data;
+          // console.log(this.batchOptions)
+          // 提取 batchAlias 和 symbol
+          const batchAliases = data.map(item => item.batchAlias);
+          const symbols = data.flatMap(item => item.productData.map(product => product.symbol));
+
+          // 创建映射对象数组
+          const mapping = data.map(item => ({
+            batchAlias: item.batchAlias,
+            symbols: item.productData.map(product => product.symbol)
+          }));
+
+          console.log(mapping);
+
         })
         .catch(() => {
           this.$message({message: '接口返回值异常, 请联系开发者！！！', type: 'error'});

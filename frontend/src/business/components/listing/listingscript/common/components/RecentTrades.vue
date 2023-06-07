@@ -44,29 +44,20 @@
 <script>
 export default {
   name: 'RecentTrades',
+  props: ['batchOptions'],
   data() {
     return {
       websocket: null,
       form: {
-        env: 'wss://fat2.phemex.com/ws',
+        env: 'wss://ws10-fat2.phemex.com',
         symbols: '',
         batch: '',
         result: '',
         expectInterval: ''
       },
       envs: [
-        {label: 'fat2', value: 'wss://fat2.phemex.com/ws'},
-        {label: 'ea', value: 'wss://ea.phemex.com/ws'},
-        // {label: 'fat', value: 'wss://fat.phemex.com/ws'},
-        // {label: 'fat3', value: 'wss://fat3.phemex.com/ws'}
-      ],
-      // todo: 批次从接口获取  默认最新一个
-      batchOptions: [
-        {label: '批次1', value: 'batch1'},
-        {label: '批次2', value: 'batch2'},
-        {label: '批次3', value: 'batch3'},
-        {label: '批次4', value: 'batch4'},
-        {label: '批次5', value: 'batch5'},
+        {label: 'fat2', value: 'wss://ws10-fat2.phemex.com'},
+        {label: 'ea', value: 'wss://ws10-ea.phemex.com'}
       ]
     };
   },
@@ -100,12 +91,11 @@ export default {
     onWebSocketOpen() {
       console.log('WebSocket connection is open');
       // this.websocket.send('{"method": "tick.subscribe", "params": [".MUSDT"], "id": 1}');
-      // todo: 根据批次batchOptions 来查找symbols
       let symbols
       if (this.form.symbols !== '') {
         symbols = this.form.symbols.split(',');
       } else {
-        // axios调用接口，根据批次batchOptions 来查找symbols
+        symbols = this.form.batch.split(',');
       }
       symbols.forEach((symbol, index) => {
         const currentLabel = this.envs.find(item => item.value === this.form.env).label;
@@ -129,7 +119,12 @@ export default {
         throw new Error('expectInterval must be a positive number');
       }
       // 将symbols从字符串转换为数组
-      let symbols = this.form.symbols.split(',');
+      let symbols
+      if (this.form.symbols !== '') {
+        symbols = this.form.symbols.split(',')
+      } else {
+        symbols = this.form.batch.split(',')
+      }
       // 创建一个Set用于去重
       const resultSet = new Set();
       const timeoutList = [];

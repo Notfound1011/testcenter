@@ -921,8 +921,8 @@ export function getApiTestConfig(typeName) {
  * @param {object} that this
  * @param {String} normalString 普通颜色的字符串
  * @param {String} specialString 带颜色的字符串
- * @param {String} specialColor 具体颜色
  * @param {String} msgType 消息等级 success/warning/info/error
+ * @param {String} specialColor 具体颜色
  * @return {void}
  */
 export function popUpReminder(that, normalString, specialString = '', msgType = 'error', specialColor = 'teal') {

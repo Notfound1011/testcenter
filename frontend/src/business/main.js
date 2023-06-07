@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import ElementUI from 'element-ui';
+// import {Notification} from 'element-ui';
 import '../assets/theme/index.css';
 import icon from "../common/js/icon";
 import filters from "../common/js/filter";
@@ -31,6 +32,9 @@ import 'mavon-editor/dist/css/index.css'
 import 'element-ui/lib/theme-chalk/display.css';
 import './../common/css/iconfont.css'
 import * as echarts from 'echarts';
+
+import {generalError, promiseError} from "@/common/js/error-handler";
+import { pyRequest } from '@/common/js/request'
 
 Vue.prototype.$echarts = echarts
 Vue.use(mavonEditor)
@@ -87,6 +91,12 @@ Vue.directive('preventReClick', {
 
 // 添加全局事件总线
 Vue.prototype.$EventBus = new Vue();
+
+// 添加针对`全局`的错误处理函数
+Vue.config.errorHandler = generalError
+window.onunhandledrejection = promiseError
+// 添加针对 pyService 的 axios 二次封装;
+Vue.prototype.$PyRequest = pyRequest;
 
 new Vue({
   el: '#app',

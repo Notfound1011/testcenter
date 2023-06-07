@@ -149,6 +149,5 @@ module.exports = {
       .after('html-planReport')
       .use(HtmlWebpackInlineSourcePlugin);
     config.plugins.delete('prefetch');
-
   }
 };
