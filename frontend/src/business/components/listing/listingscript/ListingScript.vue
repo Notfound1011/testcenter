@@ -22,9 +22,7 @@
       <keep-alive>
         <el-row :gutter="10">
           <el-col :span="24" class="grid-content">
-            <el-card v-if="!hideCard">
-              <router-view/>
-            </el-card>
+            <router-view v-if="!hideCard"/>
           </el-col>
         </el-row>
       </keep-alive>

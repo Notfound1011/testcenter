@@ -49,31 +49,25 @@
 <script>
 export default {
   name: 'OrderBook',
+  props:['batchOptions'],
   data() {
     return {
       websocket: null,
       form: {
-        env: 'wss://fat2.phemex.com/ws',
+        env: 'wss://ws10-fat2.phemex.com',
         symbols: '',
         batch: '',
         result: '',
         verifyLength: ''
       },
       envs: [
-        {label: 'fat2', value: 'wss://fat2.phemex.com/ws'},
-        {label: 'ea', value: 'wss://ea.phemex.com/ws'},
-        // {label: 'fat', value: 'wss://fat.phemex.com/ws'},
-        // {label: 'fat3', value: 'wss://fat3.phemex.com/ws'}
-      ],
-      // todo: 批次从接口获取  默认最新一个
-      batchOptions: [
-        {label: '批次1', value: 'batch1'},
-        {label: '批次2', value: 'batch2'},
-        {label: '批次3', value: 'batch3'},
-        {label: '批次4', value: 'batch4'},
-        {label: '批次5', value: 'batch5'},
+        {label: 'fat2', value: 'wss://ws10-fat2.phemex.com'},
+        {label: 'ea', value: 'wss://ws10-ea.phemex.com'}
       ]
     };
+  },
+  mounted() {
+    console.log(this.batchOptions)
   },
   computed: {
     symbolsEnabled() {
@@ -109,8 +103,9 @@ export default {
       if (this.form.symbols !== '') {
         symbols = this.form.symbols.split(',');
       } else {
-        // axios调用接口，根据批次batchOptions 来查找symbols
+        symbols = this.form.batch.split(',');
       }
+      console.log(symbols)
       symbols.forEach((symbol, index) => {
         const currentLabel = this.envs.find(item => item.value === this.form.env).label;
         const bookStr = this.getType(currentLabel, symbol) === "PerpetualV2" ? 'orderbook_p' : 'orderbook'
@@ -133,7 +128,12 @@ export default {
         throw new Error('verifyLength must be a positive number');
       }
       // 将symbols从字符串转换为数组
-      let symbols = this.form.symbols.split(',');
+      let symbols
+      if (this.form.symbols !== '') {
+        symbols = this.form.symbols.split(',')
+      } else {
+        symbols = this.form.batch.split(',')
+      }
       // 创建一个Set用于去重
       const resultSet = new Set();
       const failedList = [];
@@ -141,6 +141,7 @@ export default {
       this.websocket.onmessage = event => {
         // 解析WebSocket接收到的消息
         const message = JSON.parse(event.data);
+        // console.log(message)
         // 解构message对象
         const {type, symbol, orderbook_p, book} = message;
         // 初始化result和detail
@@ -152,8 +153,8 @@ export default {
         }
 
         // 获取orderbook_p或者book数据
-        const bookData = orderbook_p?.length > 0 ? orderbook_p : book;
-
+        const bookData = (orderbook_p && orderbook_p.asks && orderbook_p.bids) ? orderbook_p : book;
+        // console.log(bookData)
         // 如果没有获取到bookData，则返回错误信息
         if (!bookData) {
           result = '数据结构不符合要求';

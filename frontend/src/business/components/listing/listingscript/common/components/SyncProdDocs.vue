@@ -3,10 +3,13 @@
     <h3><i class="el-icon-document"></i> {{ $t('commons.listing.listing_script.common.sync_prod_info.title') }}</h3>
     <el-form :inline="true" ref="form" :model="form">
       <el-form-item label="类型" required :rules="rules" prop="option">
-        <el-select v-model="form.option" placeholder="请选择类型">
-          <el-option v-for="(option, index) in options" :key="index" :label="option.label"
-                     :value="option.value"></el-option>
-        </el-select>
+        <el-tooltip effect="dark" placement="top"
+                    content="与产品信息文档对应关系：spot-->现货；contract-->USDT合约,正向USD合约,反向合约；currency-->资产参数">
+          <el-select v-model="form.option" placeholder="请选择类型">
+            <el-option v-for="(option, index) in options" :key="index" :label="option.label"
+                       :value="option.value"></el-option>
+          </el-select>
+        </el-tooltip>
       </el-form-item>
       <el-form-item label="批次" required :rules="rules" prop="batch">
         <el-input v-model="form.batch" placeholder="多个批次用,隔开"></el-input>
@@ -18,13 +21,15 @@
         <el-input v-model="form.remark" placeholder=""></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm">创建</el-button>
+        <el-button type="primary" @click="submitForm" :disabled="!isFormValid">同步并创建</el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
+import pyRequest from "@/common/js/request";
+
 export default {
   name: 'SyncProdInfoDocs',
   data() {
@@ -46,8 +51,15 @@ export default {
       },
     };
   },
+  computed: {
+    isFormValid() {
+      return (
+        this.form.option !== '' && this.form.batch !== '' && this.form.alias !== ''
+      );
+    }
+  },
   methods: {
-    submitForm() {
+    async submitForm() {
       // 创建批次
       let requestBody = {
         dataType: this.form.option,
@@ -57,36 +69,17 @@ export default {
       if (this.form.remark !== "") {
         requestBody.remark = this.form.remark;
       }
-      this.$axios.post("/pyServer/test-data/tools/publish-coins/product-basic-data/create", requestBody).then((res, reject) => {
-        if (res.data.code === 0) {
-          this.$notify.success({
-            title: "创建批次成功",
-            message: res.data.msg
-          });
-        } else {
-          this.$notify.warning({
-            title: "创建批次失败",
-            message: res.data.msg
-          });
-        }
-        console.log(reject)
-        if (reject) {
-          console.log(reject)
-          this.$notify.error({
-            title: "创建批次失败",
-            message: reject
-          });
-        }
-      }).catch(() => {
-        // this.$notify.error({
-        //   title: "创建批次失败",
-        //   message: error
-        // });
-      })
+      await pyRequest.post("/test-data/tools/publish-coins/product-basic-data/create", requestBody)
+
+      // res => {
+      //   this.$notify.success({
+      //     title: "创建批次成功",
+      //     message: res.data.msg
+      //   });
 
       this.$refs['form'].validate(valid => {
         if (valid) {
-          console.log('表单验证通过')
+          // console.log('表单验证通过')
         } else {
           let errField = [];
           if (['', undefined, null].includes(this.form.option)) {
