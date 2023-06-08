@@ -9,7 +9,7 @@ class PyRequestError extends Error {
   constructor(error) {
     super(error);
     this.name = 'PyRequestError';
-    this._error_reminder = function (){
+    this._errorReminder = function (){
       if (error.response.status === 200 && error.response.data.code !== 0){
         Vue.prototype.$notify({
           title: '执行失败!',
@@ -39,7 +39,7 @@ class PyRequestError extends Error {
 }
 
 
-const pyRequest = axios.create({
+export const pyRequest = axios.create({
   baseURL: "/api/tc/pyServer",
   timeout: 5000,
   // 把 params 的的list参数, 转成 a,b 这种
