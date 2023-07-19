@@ -350,9 +350,6 @@ export default {
       title: "快速上幣",
       listing_script: {
         title: "上幣腳本"
-      },
-      public_variable: {
-        title: "公共變量"
       }
     },
     quality_market: {

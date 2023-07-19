@@ -364,10 +364,7 @@ export default {
           },
           orderbook: {
             title: "现货/合约 orderbook深度校验",
-            buttons: {
-              socketVerify: "socket方式校验orderbook",
-              apiVerify: "api方式校验orderbook"
-            }
+            verify: "校验"
           },
           recent_trades: {
             title: "现货/合约 最近成交校验",
@@ -387,6 +384,7 @@ export default {
         },
         contract: {
           title: "合约",
+          account_param: "自定义账号设置",
           public_param: "公共参数设置",
           position_handler: {
             title: "仓位操作",
@@ -397,9 +395,6 @@ export default {
             run: "执行"
           }
         },
-      },
-      public_variable: {
-        title: "公共变量"
       },
       account: {
         title: "账号设置",

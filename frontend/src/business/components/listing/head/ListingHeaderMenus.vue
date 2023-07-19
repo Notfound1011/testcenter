@@ -7,9 +7,6 @@
           <el-menu-item :index="'/listing/script'" style="margin-left: 2%">
             {{ $t('commons.listing.listing_script.title') }}
           </el-menu-item>
-          <el-menu-item :index="'/listing/public-variable'">
-            {{ $t('commons.listing.public_variable.title') }}
-          </el-menu-item>
           <el-menu-item :index="'/listing/account'">
             {{ $t('commons.listing.account.title') }}
           </el-menu-item>

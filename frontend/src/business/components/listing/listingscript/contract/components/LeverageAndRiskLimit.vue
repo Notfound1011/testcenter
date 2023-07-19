@@ -9,6 +9,7 @@
         </el-button>
       </el-form-item>
     </el-form>
+    <el-input type="textarea" v-model="result" :autosize="{ minRows: 4, maxRows: 20}" readonly></el-input>
   </div>
 </template>
 
@@ -17,7 +18,9 @@ export default {
   name: 'LeverageAndRiskLimit',
   props: ['form'],
   data() {
-    return {};
+    return {
+      result: ''
+    };
   },
   computed: {
     // 根据表单的值来判断按钮是否禁用
@@ -30,6 +33,7 @@ export default {
     submitForm() {
       // todo: 调用后端API
       // 例如 axios.post('/api/submit-form', this.form)
+      this.result = 'test result'
     },
   },
 };

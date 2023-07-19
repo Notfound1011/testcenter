@@ -59,7 +59,7 @@ export default {
     }
   },
   methods: {
-    async submitForm() {
+    submitForm() {
       // 创建批次
       let requestBody = {
         dataType: this.form.option,
@@ -69,17 +69,15 @@ export default {
       if (this.form.remark !== "") {
         requestBody.remark = this.form.remark;
       }
-      await pyRequest.post("/test-data/tools/publish-coins/product-basic-data/create", requestBody)
-
-      // res => {
-      //   this.$notify.success({
-      //     title: "创建批次成功",
-      //     message: res.data.msg
-      //   });
 
       this.$refs['form'].validate(valid => {
         if (valid) {
-          // console.log('表单验证通过')
+          pyRequest.post("/test-data/tools/publish-coins/product-basic-data/create", requestBody).then(res => {
+            this.$notify.success({
+              title: "创建批次成功",
+              message: res.data.msg
+            });
+          })
         } else {
           let errField = [];
           if (['', undefined, null].includes(this.form.option)) {

@@ -29,11 +29,6 @@ export default {
       ]
     },
     {
-      path: 'public-variable',
-      name: 'public-variable',
-      component: () => import('@/business/components/listing/publicvariable/PublicVariable.vue'),
-    },
-    {
       path: 'account',
       name: 'account',
       component: () => import('@/business/components/listing/account/Account.vue'),

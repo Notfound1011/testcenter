@@ -33,12 +33,7 @@
       <br>
       <el-form-item>
         <el-button type="primary" :disabled="isButtonDisabled" @click="subscribe" class="el-button">
-          {{ $t('commons.listing.listing_script.common.orderbook.buttons.socketVerify') }}
-        </el-button>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" class="el-button">
-          {{ $t('commons.listing.listing_script.common.orderbook.buttons.apiVerify') }}
+          {{ $t('commons.listing.listing_script.common.orderbook.verify') }}
         </el-button>
       </el-form-item>
     </el-form>

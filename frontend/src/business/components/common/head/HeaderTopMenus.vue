@@ -37,10 +37,10 @@
     </el-menu-item>
 
     <!--  现货合约上币  -->
-    <el-menu-item index="/listing" v-if="check('reports')" onselectstart="return false"
-                  v-permission="['PROJECT_REPORT_ANALYSIS:READ']">
-      {{ $t('commons.listing.title') }}
-    </el-menu-item>
+<!--    <el-menu-item index="/listing" v-if="check('reports')" onselectstart="return false"-->
+<!--                  v-permission="['PROJECT_REPORT_ANALYSIS:READ']">-->
+<!--      {{ $t('commons.listing.title') }}-->
+<!--    </el-menu-item>-->
 
     <el-menu-item index="/project" onselectstart="return false"
                   v-permission="['PROJECT_USER:READ', 'PROJECT_ENVIRONMENT:READ', 'PROJECT_OPERATING_LOG:READ', 'PROJECT_FILE:READ+JAR', 'PROJECT_FILE:READ+FILE',

@@ -349,9 +349,6 @@ export default {
       title: "Quick Listing",
       listing_script: {
         title: "Listing Script"
-      },
-      public_variable: {
-        title: "Public Variable"
       }
     },
     quality_market: {

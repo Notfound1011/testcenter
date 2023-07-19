@@ -16,6 +16,7 @@
         </el-button>
       </el-form-item>
     </el-form>
+    <el-input type="textarea" v-model="result" :autosize="{ minRows: 4, maxRows: 20}" readonly></el-input>
   </div>
 </template>
 
@@ -26,6 +27,7 @@ export default {
   data() {
     return {
       type: 1,
+      result: ''
     };
   },
   computed: {
@@ -39,6 +41,7 @@ export default {
     submitForm() {
       // todo: 调用后端API
       // 例如 axios.post('/api/submit-form', this.form)
+      this.result = 'test result'
     },
   },
 };
