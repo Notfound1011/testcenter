@@ -30,8 +30,14 @@
       {{ $t('commons.quality_market.title') }}
     </el-menu-item>
 
+    <!--  效能工具  -->
+    <el-menu-item index="/efficientTools" v-if="check('efficientTools')" onselectstart="return false"
+                  v-permission="['PROJECT_REPORT_ANALYSIS:READ']">
+      {{ $t('commons.efficient_tools.title') }}
+    </el-menu-item>
+
     <!--  phemex站点导航  -->
-    <el-menu-item index="/navigation" v-if="check('reports')" onselectstart="return false"
+    <el-menu-item index="/navigation" v-if="check('navigation')" onselectstart="return false"
                   v-permission="['PROJECT_REPORT_ANALYSIS:READ']">
       {{ $t('commons.site_navigation.title') }}
     </el-menu-item>

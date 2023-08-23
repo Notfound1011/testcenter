@@ -26,6 +26,7 @@ const router = new VueRouter({
     ...requireContext.keys().map(k => requireContext(k).workstation),
     ...requireContext.keys().map(k => requireContext(k).ui),
     Navigation,
+    efficientTools,
     Listing,
     Setting,
     API,
