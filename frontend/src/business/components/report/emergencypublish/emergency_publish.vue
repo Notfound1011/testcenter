@@ -429,7 +429,10 @@ export default {
         publish_service: [{required: true, type: 'array', message: '请至少选择一个相关变更服务', trigger: 'change'}],
         publish_reason: [{required: true, message: '请输入紧急变更概述',trigger: 'blur'}],
         links: {
-          jiraLink: {link: []},
+          jiraLink: {link: [
+              { required: false, message: '请输入相关JIRA链接', trigger: 'blur' },
+              { validator: this.validateLinks, trigger: 'blur' }
+            ]},
           confluenceLink: {link: [
               {required: false, message: '请输入confluence链接',trigger: 'blur'},
               {validator: this.validateLinks, trigger: 'blur'}
@@ -520,17 +523,14 @@ export default {
         this.preData.serviceInputShow = newPublishType.includes(18) || newPublishType.includes(19) || newPublishType.includes(20); // 服务变更
         this.preData.configInputShow = newPublishType.includes(19) || newPublishType.includes(30); // 配置变更
         this.preData.changeAuditShow = newPublishType.includes(17); // DB变更
-        if (newPublishType.includes(31) || newPublishType.includes(32)) {
-          //数据订正jira修改为必填
-          this.rules.links.jiraLink.link = [
-            { required: true, message: '请输入相关JIRA链接', trigger: 'blur' },
-            { validator: this.validateLinks, trigger: 'blur' }
-          ]
-        } else {
-          this.rules.links.jiraLink.link = [
-            { validator: this.validateLinks, trigger: 'blur' }
-          ]
-        }
+        //数据订正jira修改为必填
+        // const baseRule = { validator: this.validateLinks, trigger: 'blur' };
+        // this.rules.links.jiraLink.link = newPublishType.includes(31) || newPublishType.includes(32)
+        //   ? [
+        //     { required: true, message: '请输入相关JIRA链接', trigger: 'blur' },
+        //     baseRule
+        //   ]
+        //   : [baseRule];
       },
       deep:true
     }
