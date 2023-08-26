@@ -74,7 +74,7 @@ export default {
   data () {
     return {
       form_data: {
-        env: 'fat',site: 'GL', mail_prefix: '', mail_suffix: 'cmexpro', group: 0, referral: ''
+        env: 'fat',site: 'GL', mail_prefix: '', mail_suffix: 'cmexpro', group: '', referral: ''
       },
       form_rule: {
         env: [{ required: true, message: 'must select environment pls.' }],
