@@ -16,7 +16,7 @@
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="Phemex Site" prop="site">
-                <el-radio-group v-model="form_data.site" size="medium">
+                <el-radio-group v-model="form_data.site" size="small">
                   <el-radio-button border label="GL">PhemexGL</el-radio-button>
                 </el-radio-group>
               </el-form-item>
@@ -24,16 +24,19 @@
                 <el-input v-model="form_data['mail_prefix']" placeholder="input your phemex mail prefix" clearable></el-input>
               </el-form-item>
               <el-form-item label="Mail Suffix" prop="mail_suffix">
-                <el-radio-group v-model="form_data.mail_suffix" size="medium">
+                <el-radio-group v-model="form_data.mail_suffix" size="small">
+                  <el-tooltip content="mail prefix need input full mail address." placement="top">
+                    <el-radio-button border label="custom">custom</el-radio-button>
+                  </el-tooltip>
                   <el-radio-button border label="cmexpro">@cmexpro.com</el-radio-button>
                   <el-radio-button border label="phemex">@phemex.com</el-radio-button>
                 </el-radio-group>
               </el-form-item>
               <el-form-item label="Referral" prop="referral">
-                <el-input v-model="form_data['referral']" placeholder="referral code if need" clearable></el-input>
+                <el-input v-model="form_data['referral']" placeholder="referral code if you need" clearable></el-input>
               </el-form-item>
               <el-form-item label="Group" prop="group">
-                <el-input v-model="form_data['group']" placeholder="referral group code if need" clearable></el-input>
+                <el-input v-model="form_data['group']" placeholder="referral group code if you need" clearable></el-input>
               </el-form-item>
               <el-form-item size="medium">
                 <el-button icon="el-icon-s-promotion" type="primary" @click="on_submit_form" :loading="loading">do register</el-button>
@@ -90,11 +93,22 @@ export default {
     }
   },
   created () {
+    this.getCurrentUserMailPrefix()
     this.form_data = commonOperator.initCrucialFromData(this.routerPath, this.form_data)
     this.res_result = commonOperator.initCrucialResultData(this.routerPath)
     this.generateTableData()
   },
   methods: {
+    // 获取当前人邮箱前缀
+    getCurrentUserMailPrefix() {
+      const local_mail = JSON.parse(window.localStorage.getItem('Admin-Token'))['email']
+      const parts = local_mail.split('@');
+      this.form_data.mail_prefix = parts[0]
+      const suffix = parts[1].split('.')
+      this.form_data.mail_suffix = suffix[0]
+      console.log(suffix[0])
+    },
+    // 绘制请求结果table
     generateTableData() {
       this.tableData = Object.keys(this.res_result).map(key => {
         return { key, value: this.res_result[key] };
@@ -106,7 +120,8 @@ export default {
         commonOperator.saveCrucialData(this.routerPath, this.form_data, null)
         if (!valid) return
         this.loading = true
-        const { data: res } = await this.$axios.post('naguri/ef_api/quick_register', this.form_data).catch((error) => {
+        const headers = commonOperator.getNaguriSignature()
+        const { data: res } = await this.$axios.post('naguri/ef_api/quick_register', this.form_data, {headers}).catch((error) => {
           commonOperator.messageTips('error', error)
           this.loading = false
         })
@@ -121,6 +136,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+/deep/.el-form-item__label {
+  font-weight: bold;
+}
 /deep/.el-card__header{
   padding: 16px 18px;
   border-bottom: 1px solid #ebeef5;

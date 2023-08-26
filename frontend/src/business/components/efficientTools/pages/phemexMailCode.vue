@@ -76,7 +76,8 @@ export default {
     async init_submit () {
       if (this.form_data.email) {
         commonOperator.saveCrucialData(this.routerPath, this.form_data, null)
-        const { data: codeRes } = await this.$axios.get('naguri/ef_api/mail_code?email=' + encodeURIComponent(this.form_data.email)).catch((error) => {
+        const headers = commonOperator.getNaguriSignature()
+        const { data: codeRes } = await this.$axios.get('naguri/ef_api/mail_code?email=' + encodeURIComponent(this.form_data.email), {headers}).catch((error) => {
           commonOperator.messageTips('error', error)
           this.loading = false
         })
@@ -89,7 +90,8 @@ export default {
         if (!valid) return
         commonOperator.saveCrucialData(this.routerPath, this.form_data, null)
         this.loading = true
-        const { data: codeRes } = await this.$axios.get('naguri/ef_api/mail_code?email=' + encodeURIComponent(this.form_data.email)).catch((error) => {
+        const headers = commonOperator.getNaguriSignature()
+        const { data: codeRes } = await this.$axios.get('naguri/ef_api/mail_code?email=' + encodeURIComponent(this.form_data.email), {headers}).catch((error) => {
           commonOperator.messageTips('error', error)
           this.loading = false
         })
@@ -103,6 +105,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+/deep/.el-form-item__label {
+  font-weight: bold;
+}
 /deep/.el-card__header{
   padding: 16px 18px;
   border-bottom: 1px solid #ebeef5;

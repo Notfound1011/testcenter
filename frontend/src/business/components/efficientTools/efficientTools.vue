@@ -26,7 +26,7 @@
 <script>
 import MsMainContainer from "@/business/components/common/components/MsMainContainer";
 import MsContainer from "@/business/components/common/components/MsContainer";
-import {notificationTips} from "@/business/components/report/emergencypublish/common";
+import {notificationTips, getNaguriSignature} from "@/business/components/report/emergencypublish/common";
 export default {
   inheritAttrs: false,
   props: [],
@@ -51,7 +51,8 @@ export default {
   },
   methods: {
     async get_all_menu () {
-      const { data: res } = await this.$axios.get('naguri/ef_api/efficient_menus').catch((error) => {
+      const headers = getNaguriSignature()
+      const { data: res } = await this.$axios.get('naguri/ef_api/efficient_menus', {headers}).catch((error) => {
         console.log(error)
         notificationTips('error', 'menus exception pls contact @Pauri')
       })

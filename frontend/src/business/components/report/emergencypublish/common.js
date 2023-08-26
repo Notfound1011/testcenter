@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import {Message, Notification} from 'element-ui'
 
 // 消息通知
@@ -82,7 +83,6 @@ export function initCrucialFromData(routePath, formData = []) {
   return formData;
 }
 
-
 // 数据初始化返回值部分
 export function initCrucialResultData (routerPath) {
   let resResult
@@ -93,4 +93,15 @@ export function initCrucialResultData (routerPath) {
     resResult = []
   }
   return resResult
+}
+
+// 简单验签
+export function getNaguriSignature() {
+  const secretKey = "f6b68200fbf7b0e1d74635f8eb0fb2fd"
+  const timestamp = new Date().getTime().toString();
+  const signature = crypto.createHmac('md5', secretKey).update(timestamp).digest('hex');
+  return {
+    'naguri-timestamp': timestamp,
+    'naguri-sign': signature
+  };
 }
