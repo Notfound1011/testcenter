@@ -154,7 +154,7 @@
                     </el-form-item>
                   </el-col>
                   <el-col :span="24">
-                    <el-form-item label-width="110px" label="相关JIRA链接 (多个请保持每行一条)" prop="links.jiraLink.link" :required="preData.jiraRequire">
+                    <el-form-item label-width="110px" label="相关JIRA链接 (多个请保持每行一条)" prop="links.jiraLink.link">
                       <el-input v-model="formData.links.jiraLink.link" type="textarea" :autosize="{minRows: 1, maxRows: 3}" placeholder="请输入JIRA链接相关JIRA链接" clearable
                                 prefix-icon='el-icon-link' :style="{width: '100%'}"></el-input>
                     </el-form-item>
@@ -222,7 +222,7 @@
       <!-- 翻页区域 -->
       <el-pagination style="height: 70px;" :disabled="onPublish['status']"
                      background
-                     :pager-count=21
+                     :pager-count=12
                      :current-page = "publishPage.currentPage"
                      layout="prev, pager, next"
                      :total="publishPage.emPublishCount"
@@ -429,10 +429,22 @@ export default {
         publish_service: [{required: true, type: 'array', message: '请至少选择一个相关变更服务', trigger: 'change'}],
         publish_reason: [{required: true, message: '请输入紧急变更概述',trigger: 'blur'}],
         links: {
-          jiraLink: {link: [{required: false, message: '请输入JIRA链接', trigger: 'blur'}]},
-          confluenceLink: {link: [{required: false, message: '请输入confluence链接',trigger: 'blur'}]},
-          configPrLink: {link: [{required: true, message: '请输入newConfig PR 链接',trigger: 'blur'}]},
-          changeAuditLink: {link: [{required: true, message: '请输入changeAudit PR链接',trigger: 'blur'}]}
+          jiraLink: {link: [
+              { required: false, message: '请输入相关JIRA链接', trigger: 'blur' },
+              { validator: this.validateLinks, trigger: 'blur' }
+            ]},
+          confluenceLink: {link: [
+              {required: false, message: '请输入confluence链接',trigger: 'blur'},
+              {validator: this.validateLinks, trigger: 'blur'}
+            ]},
+          configPrLink: {link: [
+              {required: true, message: '请输入newConfig PR 链接',trigger: 'blur'},
+              {validator: this.validateLinks, trigger: 'blur'}
+            ]},
+          changeAuditLink: {link: [
+              {required: true, message: '请输入changeAudit PR链接',trigger: 'blur'},
+              {validator: this.validateLinks, trigger: 'blur'}
+            ]}
         },
         developer: {users: [{required: true, type: 'array', message: '请至少选择一个相关开发人员', trigger: 'change'}]},
         reviewer: {users: [{required: true, type: 'array', message: '请至少选择一个开发review人员,无则选自己', trigger: 'change'}]},
@@ -442,7 +454,6 @@ export default {
         publish_time: [{required: true, message: '请选择预计变更时间', trigger: 'change'}],
       },
       preData: {
-        jiraRequire: false,
         serviceInputShow: false,
         configInputShow: false,
         changeAuditShow: false,
@@ -512,7 +523,14 @@ export default {
         this.preData.serviceInputShow = newPublishType.includes(18) || newPublishType.includes(19) || newPublishType.includes(20); // 服务变更
         this.preData.configInputShow = newPublishType.includes(19) || newPublishType.includes(30); // 配置变更
         this.preData.changeAuditShow = newPublishType.includes(17); // DB变更
-        this.preData.jiraRequire = newPublishType.includes(31) || newPublishType.includes(32); //数据订正jira修改为必填
+        //数据订正jira修改为必填
+        // const baseRule = { validator: this.validateLinks, trigger: 'blur' };
+        // this.rules.links.jiraLink.link = newPublishType.includes(31) || newPublishType.includes(32)
+        //   ? [
+        //     { required: true, message: '请输入相关JIRA链接', trigger: 'blur' },
+        //     baseRule
+        //   ]
+        //   : [baseRule];
       },
       deep:true
     }
@@ -528,6 +546,20 @@ export default {
   },
   inject: ["reload"],
   methods: {
+    validateLinks(rule, value, callback) {
+      const linksArray = value.split('\n');
+      for (const link of linksArray) {
+        if (link.trim() !== '' && !link.trim().startsWith('http')) {
+          return callback(new Error('链接必须以http或者https开头'));
+        }
+
+        const httpCount = link.split('http').length - 1;
+        if (httpCount >= 2) {
+          return callback(new Error('多个链接请换行填写,保持每行一条'));
+        }
+      }
+      callback();
+    },
     monthlyChartVisibleStatus(action = 'close') {
       const query = { ...this.$route.query };
       const isOpen = query.monthlyChartVisible === 'open';

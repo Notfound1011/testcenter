@@ -10,6 +10,7 @@ import Project from "@/business/components/project/router";
 import Reports from "@/business/components/report/router";
 import Navigation from "@/business/components/navigation/router";
 import Listing from "@/business/components/listing/router";
+import efficientTools from "@/business/components/efficientTools/router"
 import {getCurrentUserId, hasPermissions} from "@/common/js/utils";
 
 Vue.use(VueRouter);
@@ -25,6 +26,7 @@ const router = new VueRouter({
     },
     ...requireContext.keys().map(k => requireContext(k).workstation),
     ...requireContext.keys().map(k => requireContext(k).ui),
+    efficientTools,
     Navigation,
     Listing,
     Setting,

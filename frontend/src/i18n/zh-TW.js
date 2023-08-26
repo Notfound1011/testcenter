@@ -346,6 +346,9 @@ export default {
     site_navigation: {
       title: "站點導航"
     },
+    efficient_tools: {
+      title: "效能工具"
+    },
     listing: {
       title: "快速上幣",
       listing_script: {
