@@ -7,27 +7,13 @@ export function notificationTips (type, title, message) {
   switch (type) {
     case 'success':
     case 'warning':
-      Notification({
-        title: title,
-        message: message,
-        type: type,
-        position: 'top-left',
-        showClose: false
-      })
+      Notification({title: title, message: message, type: type, position: 'bottom-right', showClose: false})
       break
     case 'info':
-      Notification.info({
-        title: title,
-        message: message,
-        position: 'top-left'
-      })
+      Notification.info({title: title, message: message, position: 'bottom-right'})
       break
     case 'error':
-      Notification.error({
-        title: title,
-        message: message,
-        position: 'top-left'
-      })
+      Notification.error({title: title, message: message, position: 'top-right'})
       break
   }
 }
@@ -37,10 +23,7 @@ export function messageTips (type, message) {
   switch (type) {
     case 'success':
     case 'warning':
-      Message({
-        message: message,
-        type: type
-      })
+      Message({message: message, type: type})
       break
     case 'info':
       Message.info(message)

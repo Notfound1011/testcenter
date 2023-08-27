@@ -1,10 +1,10 @@
 <template>
   <ms-container>
     <ms-main-container>
-      <el-row>
+      <el-row class='naguri_container'>
         <el-col class="form_area">
           <el-card>
-            <div slot="header" class="clearfix">
+            <div slot="header">
               <span class="card_header">Send Remote Curl</span>
             </div>
             <el-form ref="form_ref" :model="form_data" :rules="form_rule" label-width="150px" size="medium" >
@@ -61,14 +61,39 @@
                 <el-button icon="el-icon-s-promotion" type="primary" @click="on_submit_form" :loading="loading">Send Curl</el-button>
               </el-form-item>
             </el-form>
+            <div v-if="!isEmptyObjectOrArray(res_result)" class="code-container">
+              <pre class="code">{{ res_result }}</pre>
+            </div>
           </el-card>
         </el-col>
-        <el-col class="res_area">
-          <el-card class="res_card">
+        <el-col class="table-col">
+          <el-card>
             <div slot="header">
-              <span class="card_header">Response</span>
+              <span class="card_header">My Curl Collection</span>
             </div>
-            <pre class="box">{{ res_result }}</pre>
+            <div class="table-area">
+              <el-table
+                :data="tableData"
+                :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+                style="width: 100%;background: transparent; overflow:auto;"
+                height="100%"
+                border highlight-current-row>
+                <el-table-column
+                  prop="date"
+                  label="日期"
+                  width="180">
+                </el-table-column>
+                <el-table-column
+                  prop="name"
+                  label="姓名"
+                  width="180">
+                </el-table-column>
+                <el-table-column
+                  prop="address"
+                  label="地址">
+                </el-table-column>
+              </el-table>
+            </div>
           </el-card>
         </el-col>
       </el-row>
@@ -99,14 +124,167 @@ export default {
         curl_method: [{ required: true, message: 'must select curl method pls.' }],
         curl_path: [{ required: true, message: 'must select curl path pls.' }],
       },
-      res_result: [],
+      res_result: {},
       curlServerData: [],
       loading: false,
       table_header_style: {
         background: '#eef1f6',
         color: '#606266'
       },
-      routerPath: this.$route.path.toString()
+      routerPath: this.$route.path.toString(),
+      tableData: [{
+        date: '2016-05-02',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-04',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1517 弄'
+      }, {
+        date: '2016-05-01',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1519 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }]
     }
   },
   created () {
@@ -115,6 +293,10 @@ export default {
     this.res_result = commonOperator.initCrucialResultData(this.routerPath)
   },
   methods: {
+    isEmptyObjectOrArray(data) {
+      return Object.keys(data).length === 0 && data.constructor === Object ||
+        Array.isArray(data) && data.length === 0;
+    },
     openLink() {
       window.open('http://3.1.250.199:7001/admin/#/admin/efficient_tools/effremotecurlserver/', '_blank');
     },
@@ -126,7 +308,10 @@ export default {
         const local_env = window.localStorage.getItem(this.routerPath + '#curl_env')
         local_curl_env = local_env ? local_env : this.form_data.curl_env;
       }
-      const { data: res } = await this.$axios.get('naguri/ef_api/remote_curl?env=' + local_curl_env, {headers}).catch((error) => {
+      const { data: res } = await this.$axios.get(
+        'naguri/ef_api/remote_curl?env=' + local_curl_env,
+        {headers, timeout: 5000}
+      ).catch((error) => {
         commonOperator.messageTips('error', error)
       })
       const local_curl_server = window.localStorage.getItem(this.routerPath + '#curl_server')
@@ -145,13 +330,17 @@ export default {
         if (!valid) return
         this.loading = true
         const headers = commonOperator.getNaguriSignature()
-        const { data: res } = await this.$axios.post('naguri/ef_api/remote_curl', this.form_data, {headers}).catch((error) => {
-          commonOperator.messageTips('error', error)
+        const { data: res } = await this.$axios.post(
+          'naguri/ef_api/remote_curl', this.form_data,
+          {headers, timeout: 5000}
+        ).catch((error) => {
+          commonOperator.notificationTips('error', error)
           this.loading = false
         })
         this.res_result = res
         commonOperator.saveCrucialData(this.routerPath, null, res)
         this.loading = false
+        commonOperator.messageTips('success', 'response is success.')
       })
     }
   }
@@ -172,13 +361,31 @@ export default {
   padding: 6px 10px;
   min-height: 330px;
 }
-.clearfix:before,
-.clearfix:after {
-  display: table;
-  content: "";
+.naguri_container {
+  display: flex;
 }
-.clearfix:after {
-  clear: both
+.form_area{
+  padding-top: 20px;
+  width: 500px;
+  min-width: 500px;
+  margin-left: 20px;
+  height: 100%;
+}
+.table-col{
+  width: 80%;
+  min-width: 500px;
+  padding-top: 20px;
+  margin-left: 20px;
+  height: 800px;
+}
+.table-area {
+  overflow: scroll;
+}
+.res_area{
+  padding-top: 20px;
+  width: 430px;
+  min-width: 430px;
+  margin-left: 20px;
 }
 .res_card .box {
   min-height: 60vh;
@@ -187,17 +394,6 @@ export default {
 }
 .card_header{
   font-weight: bold;
-}
-.form_area{
-  padding-top: 20px;
-  width: 550px;
-  min-width: 550px;
-}
-.res_area{
-  padding-top: 20px;
-  width: 430px;
-  min-width: 430px;
-  margin-left: 20px;
 }
 .el-select{
   width: 80%;
@@ -215,5 +411,18 @@ export default {
   text-decoration: none;
   color: #409eff; /* or any other color you prefer */
 }
+.code-container {
+  background-color: #3a3737;
+  color: #ffffff;
+  font-family: 'Courier New', monospace;
+  padding: 10px;
+  border-radius: 5px;
+  overflow: scroll;
+}
+.code {
+  display: inline-block;
+  margin-left: 5px;
+}
+
 </style>
 
