@@ -179,25 +179,12 @@ export default {
   padding: 6px 10px;
   min-height: 330px;
 }
-.naguri_container {
-  display: flex;
-}
 .form_area{
   padding-top: 20px;
   width: 500px;
   min-width: 500px;
   margin-left: 20px;
   height: 100%;
-}
-.table-col{
-  width: 80%;
-  min-width: 500px;
-  padding-top: 20px;
-  margin-left: 20px;
-  height: 800px;
-}
-.table-area {
-  overflow: scroll;
 }
 .res_area{
   padding-top: 20px;
@@ -228,18 +215,6 @@ export default {
   font-size: 20px;
   text-decoration: none;
   color: #409eff; /* or any other color you prefer */
-}
-.code-container {
-  background-color: #3a3737;
-  color: #ffffff;
-  font-family: 'Courier New', monospace;
-  padding: 10px;
-  border-radius: 5px;
-  overflow: scroll;
-}
-.code {
-  display: inline-block;
-  margin-left: 5px;
 }
 
 </style>

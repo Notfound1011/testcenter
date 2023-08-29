@@ -109,9 +109,6 @@ export default {
   padding: 6px 10px;
   min-height: 330px;
 }
-.naguri_container {
-  display: flex;
-}
 .form_area{
   padding-top: 20px;
   width: 50%;
