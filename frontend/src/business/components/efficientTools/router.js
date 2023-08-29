@@ -19,6 +19,10 @@ export default {
     {
       path: '/efficientTools/remoteCurl',
       component: () => import('@/business/components/efficientTools/pages/remoteCurl'),
-    }
+    },
+    {
+      path: '/efficientTools/spotFakeRecharge',
+      component: () => import('@/business/components/efficientTools/pages/spotFakeRecharge.vue'),
+    },
   ]
 }

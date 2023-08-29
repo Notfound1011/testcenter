@@ -99,14 +99,14 @@ export default {
         curl_method: [{ required: true, message: 'must select curl method pls.' }],
         curl_path: [{ required: true, message: 'must select curl path pls.' }],
       },
-      res_result: [],
+      res_result: {},
       curlServerData: [],
       loading: false,
       table_header_style: {
         background: '#eef1f6',
         color: '#606266'
       },
-      routerPath: this.$route.path.toString()
+      routerPath: this.$route.path.toString(),
     }
   },
   created () {
@@ -126,7 +126,10 @@ export default {
         const local_env = window.localStorage.getItem(this.routerPath + '#curl_env')
         local_curl_env = local_env ? local_env : this.form_data.curl_env;
       }
-      const { data: res } = await this.$axios.get('naguri/ef_api/remote_curl?env=' + local_curl_env, {headers}).catch((error) => {
+      const { data: res } = await this.$axios.get(
+        'naguri/ef_api/remote_curl?env=' + local_curl_env,
+        {headers, timeout: 5000}
+      ).catch((error) => {
         commonOperator.messageTips('error', error)
       })
       const local_curl_server = window.localStorage.getItem(this.routerPath + '#curl_server')
@@ -145,13 +148,17 @@ export default {
         if (!valid) return
         this.loading = true
         const headers = commonOperator.getNaguriSignature()
-        const { data: res } = await this.$axios.post('naguri/ef_api/remote_curl', this.form_data, {headers}).catch((error) => {
-          commonOperator.messageTips('error', error)
+        const { data: res } = await this.$axios.post(
+          'naguri/ef_api/remote_curl', this.form_data,
+          {headers, timeout: 5000}
+        ).catch((error) => {
+          commonOperator.notificationTips('error', error)
           this.loading = false
         })
         this.res_result = res
         commonOperator.saveCrucialData(this.routerPath, null, res)
         this.loading = false
+        commonOperator.messageTips('success', 'response is success.')
       })
     }
   }
@@ -172,13 +179,18 @@ export default {
   padding: 6px 10px;
   min-height: 330px;
 }
-.clearfix:before,
-.clearfix:after {
-  display: table;
-  content: "";
+.form_area{
+  padding-top: 20px;
+  width: 500px;
+  min-width: 500px;
+  margin-left: 20px;
+  height: 100%;
 }
-.clearfix:after {
-  clear: both
+.res_area{
+  padding-top: 20px;
+  width: 430px;
+  min-width: 430px;
+  margin-left: 20px;
 }
 .res_card .box {
   min-height: 60vh;
@@ -187,17 +199,6 @@ export default {
 }
 .card_header{
   font-weight: bold;
-}
-.form_area{
-  padding-top: 20px;
-  width: 550px;
-  min-width: 550px;
-}
-.res_area{
-  padding-top: 20px;
-  width: 430px;
-  min-width: 430px;
-  margin-left: 20px;
 }
 .el-select{
   width: 80%;
@@ -215,5 +216,6 @@ export default {
   text-decoration: none;
   color: #409eff; /* or any other color you prefer */
 }
+
 </style>
 

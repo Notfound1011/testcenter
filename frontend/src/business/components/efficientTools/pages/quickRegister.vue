@@ -121,7 +121,10 @@ export default {
         if (!valid) return
         this.loading = true
         const headers = commonOperator.getNaguriSignature()
-        const { data: res } = await this.$axios.post('naguri/ef_api/quick_register', this.form_data, {headers}).catch((error) => {
+        const { data: res } = await this.$axios.post(
+          'naguri/ef_api/quick_register', this.form_data,
+          {headers, timeout: 5000}
+        ).catch((error) => {
           commonOperator.messageTips('error', error)
           this.loading = false
         })
@@ -129,6 +132,7 @@ export default {
         commonOperator.saveCrucialData(this.routerPath, null, res)
         this.generateTableData()
         this.loading = false
+        commonOperator.messageTips('success', 'response is success.')
       })
     }
   }
@@ -169,6 +173,7 @@ export default {
   padding-top: 20px;
   width: 550px;
   min-width: 550px;
+  margin-left: 20px;
 }
 .res_area{
   padding-top: 20px;

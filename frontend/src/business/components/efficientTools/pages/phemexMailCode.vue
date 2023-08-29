@@ -77,7 +77,10 @@ export default {
       if (this.form_data.email) {
         commonOperator.saveCrucialData(this.routerPath, this.form_data, null)
         const headers = commonOperator.getNaguriSignature()
-        const { data: codeRes } = await this.$axios.get('naguri/ef_api/mail_code?email=' + encodeURIComponent(this.form_data.email), {headers}).catch((error) => {
+        const { data: codeRes } = await this.$axios.get(
+          'naguri/ef_api/mail_code?email=' + encodeURIComponent(this.form_data.email),
+          {headers, timeout: 5000}
+        ).catch((error) => {
           commonOperator.messageTips('error', error)
           this.loading = false
         })
@@ -91,13 +94,17 @@ export default {
         commonOperator.saveCrucialData(this.routerPath, this.form_data, null)
         this.loading = true
         const headers = commonOperator.getNaguriSignature()
-        const { data: codeRes } = await this.$axios.get('naguri/ef_api/mail_code?email=' + encodeURIComponent(this.form_data.email), {headers}).catch((error) => {
+        const { data: codeRes } = await this.$axios.get(
+          'naguri/ef_api/mail_code?email=' + encodeURIComponent(this.form_data.email),
+          {headers, timeout: 5000}
+        ).catch((error) => {
           commonOperator.messageTips('error', error)
           this.loading = false
         })
         this.res_result = codeRes
         commonOperator.saveCrucialData(this.routerPath, null, codeRes)
         this.loading = false
+        commonOperator.messageTips('success', 'response is success.')
       })
     }
   }
@@ -131,6 +138,7 @@ export default {
   font-weight: bold;
 }
 .form_area{
+  margin-left: 20px;
   padding-top: 20px;
   width: 550px;
   min-width: 550px;

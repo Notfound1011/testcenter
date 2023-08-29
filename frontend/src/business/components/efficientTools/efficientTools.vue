@@ -52,9 +52,12 @@ export default {
   methods: {
     async get_all_menu () {
       const headers = getNaguriSignature()
-      const { data: res } = await this.$axios.get('naguri/ef_api/efficient_menus', {headers}).catch((error) => {
+      const { data: res } = await this.$axios.get(
+        'naguri/ef_api/efficient_menus',
+        {headers, timeout: 5000}
+      ).catch((error) => {
         console.log(error)
-        notificationTips('error', 'menus exception pls contact @Pauri')
+        notificationTips('error', 'menus exception pls contact @Pauri.')
       })
       this.all_menu = res
     },
