@@ -152,4 +152,7 @@ export default {
 .el-input{
   width: 80%;
 }
+.el-form{
+  margin-top: 10px;
+}
 </style>

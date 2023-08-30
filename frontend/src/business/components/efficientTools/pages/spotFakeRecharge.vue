@@ -116,4 +116,7 @@ export default {
   margin-left: 20px;
   height: 100%;
 }
+.el-form{
+  margin-top: 10px;
+}
 </style>
