@@ -216,6 +216,8 @@ export default {
   text-decoration: none;
   color: #409eff; /* or any other color you prefer */
 }
-
+.el-form{
+  margin-top: 10px;
+}
 </style>
 
