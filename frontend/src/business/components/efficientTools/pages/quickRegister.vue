@@ -120,7 +120,7 @@ export default {
         commonOperator.saveCrucialData(this.routerPath, this.form_data, null)
         if (!valid) return
         this.loading = true
-        const headers = commonOperator.getNaguriSignature()
+        const headers = commonOperator.parseNaguriHeader()
         const { data: res } = await this.$axios.post(
           'naguri/ef_api/quick_register', this.form_data,
           {headers, timeout: 5000}
@@ -173,7 +173,6 @@ export default {
   padding-top: 20px;
   width: 550px;
   min-width: 550px;
-  margin-left: 20px;
 }
 .res_area{
   padding-top: 20px;

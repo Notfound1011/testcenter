@@ -8,7 +8,7 @@
             <el-form-item label="环境" prop="env">
               <el-radio-group v-model="form.env" size="medium">
                 <el-radio-button border label="testnet">testnet</el-radio-button>
-                <el-radio-button border label="fat1">fat</el-radio-button>
+                <el-radio-button border label="fat">fat</el-radio-button>
                 <el-radio-button border label="fat2">fat2</el-radio-button>
                 <el-radio-button border label="fat3">fat3</el-radio-button>
               </el-radio-group>
