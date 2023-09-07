@@ -26,7 +26,7 @@
 <script>
 import MsMainContainer from "@/business/components/common/components/MsMainContainer";
 import MsContainer from "@/business/components/common/components/MsContainer";
-import {notificationTips, getNaguriSignature} from "@/business/components/report/emergencypublish/common";
+import {notificationTips, parseNaguriHeader} from "@/business/components/report/emergencypublish/common";
 export default {
   inheritAttrs: false,
   props: [],
@@ -51,7 +51,7 @@ export default {
   },
   methods: {
     async get_all_menu () {
-      const headers = getNaguriSignature()
+      const headers = parseNaguriHeader()
       const { data: res } = await this.$axios.get(
         'naguri/ef_api/efficient_menus',
         {headers, timeout: 5000}
