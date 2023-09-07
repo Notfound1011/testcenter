@@ -24,5 +24,9 @@ export default {
       path: '/efficientTools/spotFakeRecharge',
       component: () => import('@/business/components/efficientTools/pages/spotFakeRecharge.vue'),
     },
+    {
+      path: '/efficientTools/currencyConfig',
+      component: () => import('@/business/components/efficientTools/pages/currencyConfig.vue'),
+    },
   ]
 }
