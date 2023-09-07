@@ -40,7 +40,16 @@ export function saveCrucialData (routePath, data = null, result = null) {
     const dataKeys = Object.keys(data)
     for (let j = 0; j < dataKeys.length; j++) {
       const mixKey = routePath + '#' + dataKeys[j]
-      window.localStorage.setItem(mixKey, data[dataKeys[j]])
+      const value = data[dataKeys[j]]
+      if (typeof value === 'string') {
+        window.localStorage.setItem(mixKey, value);
+      } else if (Array.isArray(value)) {
+        const jsonValue = JSON.stringify(value);
+        window.localStorage.setItem(mixKey, jsonValue);
+      } else if (typeof value === 'boolean') {
+        const stringValue = value.toString();
+        window.localStorage.setItem(mixKey, stringValue);
+      }
     }
   }
   if (result !== null) {
@@ -52,14 +61,16 @@ export function saveCrucialData (routePath, data = null, result = null) {
 // 数据初始化表单部分
 export function initCrucialFromData(routePath, formData = []) {
   const keys = Object.keys(formData);
-
   for (let i = 0; i < keys.length; i++) {
-    const mixKey = routePath + '#' + keys[i];
-
-    if (window.localStorage.getItem(mixKey)) {
-      formData[keys[i]] = decodeURIComponent(window.localStorage.getItem(mixKey));
-    } else {
-      formData[keys[i]] = formData[keys[i]];
+    const key = keys[i];
+    const mixKey = routePath + '#' + key;
+    const storedValue = window.localStorage.getItem(mixKey);
+    if (storedValue !== null) {
+      try {
+        formData[key] = JSON.parse(storedValue);
+      } catch (error) {
+        formData[key] = storedValue;
+      }
     }
   }
 
