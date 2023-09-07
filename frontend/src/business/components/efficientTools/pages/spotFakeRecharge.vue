@@ -61,7 +61,6 @@
 
 <script>
 
-import {popUpReminder} from "@/common/js/utils";
 import * as commonOperator from "@/business/components/report/emergencypublish/common";
 
 export default {
