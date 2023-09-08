@@ -9,7 +9,7 @@
             {{ $t("i18n.home") }}
           </el-menu-item>
 
-          <el-menu-item :index="'/api/testCaseRecord'" v-permission="['PROJECT_API_CASE_RECORD:READ']">
+          <el-menu-item :index="'/api/testCaseRecord'" v-if="isVisible()" v-permission="['PROJECT_API_CASE_RECORD:READ']">
             {{ $t("i18n.testCaseRecord") }}
           </el-menu-item>
 
@@ -17,7 +17,7 @@
             {{ $t("i18n.jobScheduler") }}
           </el-menu-item>
 
-          <el-menu-item :index="'/api/dataFactory'">
+          <el-menu-item :index="'/api/dataFactory'" v-if="isVisible()">
             {{ $t('api_test.data_factory.title') }}
           </el-menu-item>
 
@@ -33,11 +33,11 @@
             {{ $t("i18n.report") }}
           </el-menu-item>
 
-          <el-menu-item :index="'/api/autoTestAccount'" v-permission="['PROJECT_API_REPORT:READ']">
+          <el-menu-item :index="'/api/autoTestAccount'" v-if="isVisible()" v-permission="['PROJECT_API_REPORT:READ']">
             {{ $t("i18n.autoTestAccount") }}
           </el-menu-item>
 
-          <el-menu-item :index="'/api/globalVariablesForAutoTest'" v-permission="['PROJECT_API_REPORT:READ']">
+          <el-menu-item :index="'/api/globalVariablesForAutoTest'" v-if="isVisible()" v-permission="['PROJECT_API_REPORT:READ']">
             {{ $t("i18n.globalVariablesForAutoTest") }}
           </el-menu-item>
 <!--          <el-menu-item :index="'/api/writeCode'" v-permission="['PROJECT_API_REPORT:READ']">-->

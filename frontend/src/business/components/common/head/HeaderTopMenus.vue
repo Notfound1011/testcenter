@@ -128,7 +128,7 @@ export default {
     },
     active() {
       if (this.activeIndex === '/api') {
-        window.location.href = "/#/api/testCaseRecord";
+        window.location.href = "/#/api/jobScheduler";
       }
     },
     check(key) {
