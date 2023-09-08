@@ -85,7 +85,8 @@ export default {
     },
     async getCurrencyConfig () {
       const { data: currencyConfigRes } = await this.$axios.get(
-        `naguri/ef_api/mock?env=${this.formData.env}&currency=BTC&getAll=true`,
+        `/pyServer/public/test-data/tools/get-currency-config?env=${this.form.env}&currency=BTC&getAll=true`,
+        // `naguri/ef_api/mock?env=${this.formData.env}&currency=BTC&getAll=true`,
       ).catch((error) => {
         commonOperator.messageTips('error', error)
       })
