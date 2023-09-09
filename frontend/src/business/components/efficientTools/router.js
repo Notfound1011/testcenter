@@ -10,23 +10,39 @@ export default {
   children: [
     {
       path: '/efficientTools/mailCode',
-      component: () => import('@/business/components/efficientTools/pages/phemexMailCode'),
+      component: () => import('@/business/components/efficientTools/pages/efficientTools/phemexMailCode.vue'),
     },
     {
       path: '/efficientTools/quickRegister',
-      component: () => import('@/business/components/efficientTools/pages/quickRegister'),
+      component: () => import('@/business/components/efficientTools/pages/efficientTools/quickRegister.vue'),
     },
     {
       path: '/efficientTools/remoteCurl',
-      component: () => import('@/business/components/efficientTools/pages/remoteCurl'),
+      component: () => import('@/business/components/efficientTools/pages/efficientTools/remoteCurl.vue'),
     },
     {
       path: '/efficientTools/spotFakeRecharge',
-      component: () => import('@/business/components/efficientTools/pages/spotFakeRecharge.vue'),
+      component: () => import('@/business/components/efficientTools/pages/efficientTools/spotFakeRecharge.vue'),
     },
     {
       path: '/efficientTools/currencyConfig',
-      component: () => import('@/business/components/efficientTools/pages/currencyConfig.vue'),
+      component: () => import('@/business/components/efficientTools/pages/phemexProduct/currencyConfig.vue'),
     },
+    {
+      path: '/efficientTools/spotSymbol',
+      component: () => import('@/business/components/efficientTools/pages/phemexProduct/spotSymbol.vue'),
+    },
+    {
+      path: '/efficientTools/spotMarginSymbol',
+      component: () => import('@/business/components/efficientTools/pages/phemexProduct/spotMarginSymbol.vue'),
+    },
+    {
+      path: '/efficientTools/contractSymbol',
+      component: () => import('@/business/components/efficientTools/pages/phemexProduct/contractSymbol.vue'),
+    },
+    {
+      path: '/efficientTools/contractSymbolUsdt',
+      component: () => import('@/business/components/efficientTools/pages/phemexProduct/contractSymbolUsdt.vue'),
+    }
   ]
 }

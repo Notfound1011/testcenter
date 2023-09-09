@@ -20,8 +20,8 @@
                 <el-radio-button border label="phemex">PhemexGL</el-radio-button>
               </el-radio-group>
             </el-form-item> -->
-            <el-form-item label="金额" prop="amount">
-              <el-input v-model="form.amount" placeholder="baseCureency, 输入金额, 无需放大精度."></el-input>
+            <el-form-item label="等价USDT金额" prop="amount">
+              <el-input type="number" v-model="form.amount" placeholder="baseCureency, 输入金额, 无需放大精度."></el-input>
             </el-form-item>
             <el-form-item label="UID列表" prop="uidListString">
               <el-input v-model="form.uidListString" placeholder="多个用,隔开"></el-input>
@@ -120,7 +120,7 @@ export default {
             commonOperator.messageTips('success', '假充值成功!!')
             commonOperator.saveCrucialData(this.routerPath, null, res.data);
           }).catch(() => {
-          commonOperator.messageTips('error', '假充值成功!!')
+          commonOperator.messageTips('error', '假充值失败!!')
         })
       })
     },
