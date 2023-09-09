@@ -1,14 +1,14 @@
 <template>
   <ms-container>
     <el-aside>
-      <el-menu :default-active="active_page" router>
-        <el-submenu :index="item['id'] + ''" v-for="item in all_menu" :key="item['id']">
+      <el-menu :default-active="activePage" router>
+        <el-submenu :index="item['id'] + ''" v-for="item in allMenu" :key="item['id']">
           <template slot="title">
             <i :class="item['icon_class']"></i>
             <span>{{ item['menu_name'] }}</span>
           </template>
           <el-menu-item :index="subItem['menu_path']" v-for="subItem in item['sub_menus']" :key="subItem['parent_id']"
-                        @click="save_click_menu(subItem['menu_path'])">
+                        @click="saveClickMenu(subItem['menu_path'])">
             <template slot="title">
               <i :class="subItem['icon_class']"></i>
               <span>{{ subItem['menu_name'] }}</span>
@@ -36,34 +36,34 @@ export default {
 
   data () {
     return {
-      all_menu: [],
-      active_page: ''
+      allMenu: [],
+      activePage: ''
     }
   },
   created () {
-    this.get_all_menu()
+    this.getAllMenu()
     if (window.localStorage.getItem('active_page')) {
-      this.active_page = window.localStorage.getItem('active_page')
-      this.$router.push(this.active_page)
+      this.activePage = window.localStorage.getItem('active_page')
+      this.$router.push(this.activePage)
     } else {
-      this.save_click_menu(this.$route.path)
+      this.saveClickMenu(this.$route.path)
     }
   },
   methods: {
-    async get_all_menu () {
+    async getAllMenu () {
       const headers = parseNaguriHeader()
-      const { data: res } = await this.$axios.get(
+      const { data: menusResponse } = await this.$axios.get(
         'naguri/ef_api/efficient_menus',
         {headers, timeout: 5000}
       ).catch((error) => {
         console.log(error)
         notificationTips('error', 'menus exception pls contact @Pauri.')
       })
-      this.all_menu = res
+      this.allMenu = menusResponse
     },
-    save_click_menu (activePath) {
+    saveClickMenu (activePath) {
       window.localStorage.setItem('active_page', activePath)
-      this.active_page = activePath
+      this.activePage = activePath
     }
   }
 }
