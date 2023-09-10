@@ -8,7 +8,7 @@
               <span class="card_header">Send Remote Curl</span>
             </div>
             <div class="card_body">
-              <el-form ref="form_ref" :model="form_data" :rules="form_rule" label-width="150px" size="medium" >
+              <el-form ref="form_ref" :model="form_data" :rules="form_rule" label-width="150px" size="medium" style="margin-left: -25px">
                 <el-form-item label="Environment" prop="curl_env">
                   <el-radio-group v-model="form_data.curl_env" size="medium" @change="getCurlServerChange">
                     <el-radio-button border label="fat">fat</el-radio-button>
@@ -16,7 +16,7 @@
                     <el-radio-button border label="fat3">fat3</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
-                <el-form-item label="Curl Method" prop="curl_method">
+                <el-form-item label="CurlMethod" prop="curl_method">
                   <el-radio-group v-model="form_data.curl_method" size="small">
                     <el-radio-button border label="get">GET</el-radio-button>
                     <el-radio-button border label="post">POST</el-radio-button>
@@ -24,7 +24,7 @@
                     <el-radio-button border label="delete">DELETE</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
-                <el-form-item label="Curl Server" prop="curl_server">
+                <el-form-item label="CurlServer" prop="curl_server">
                   <div class="server-container">
                     <el-select style="width: 70%;font-weight: bold;" v-model="form_data['curl_server']" :multiple=false filterable placeholder="select curl server name.">
                       <el-option v-for="item in curlServerData" :key="item['id']" :label="item['server_name']" :value="item['server_name']">
@@ -36,16 +36,16 @@
                     </el-tooltip>
                   </div>
                 </el-form-item>
-                <el-form-item label="Curl Path" prop="curl_path">
+                <el-form-item label="CurlPath" prop="curl_path">
                   <el-input style="width: 90%" v-model="form_data['curl_path']" placeholder="input curl path."></el-input>
                 </el-form-item>
-                <el-form-item label="Curl Headers" prop="curl_headers">
+                <el-form-item label="CurlHeaders" prop="curl_headers">
                   <el-input style="width: 90%" v-model="form_data['curl_headers']" placeholder="input curl headers if you need."></el-input>
                 </el-form-item>
-                <el-form-item label="Curl Params" prop="curl_params">
+                <el-form-item label="CurlParams" prop="curl_params">
                   <el-input style="width: 90%" v-model="form_data['curl_params']" placeholder="input curl params."></el-input>
                 </el-form-item>
-                <el-form-item label="Curl Body" prop="curl_body">
+                <el-form-item label="CurlBody" prop="curl_body">
                   <el-input style="width: 90%" v-model="form_data['curl_body']" placeholder="input curl body."></el-input>
                 </el-form-item>
                 <div style="display: flex;justify-content: center">
@@ -61,21 +61,19 @@
           </el-card>
         </div>
         <div class="table-area">
-          <el-table height="100%"
-                    :data="curlAssembleResponse.results"
+          <el-table height="100%" :data="curlAssembleResponse.results"
                     :header-cell-style="{background:'#eef1f6',color:'#606266'}"
                     style="background: transparent; overflow:auto;">
             <el-table-column type="expand">
               <template slot-scope="scope">
-                <el-form ref="form_ref" :model="scope.row" :rules="form_rule" inline class="demo-table-expand" >
-                  <el-form-item label="Curl Server">
-                    <span>{{ scope.row['curl_server'] }}</span>
-                  </el-form-item>
-                  <el-form-item label="Curl Path">
-                    <span>{{ scope.row['curl_path'] }}</span>
-                  </el-form-item>
-                  <el-form-item label="Curl Desc">
-                    <el-input size="small" type="textarea" autosize v-model="scope.row['curl_name']" placeholder="input curl desc."></el-input>
+                <el-form labelPosition="right" label-width="120px" ref="form_ref" :model="scope.row" :rules="form_rule" inline class="demo-table-expand" >
+                  <el-form-item label="Curl Target">
+                    <el-tag effect="plain" :type="commonOperator.tagStyle(scope.row['curl_method'])" size="mini" style="margin: 2px" >
+                      {{ scope.row['curl_method'] | uppercase }}
+                    </el-tag>
+                    <span style="text-decoration: underline; color: blue;">
+                      http://{{ scope.row['curl_server'] }}{{ scope.row['curl_path'] }}
+                      </span>
                   </el-form-item>
                   <el-form-item label="Support Envs">
                     <el-select size="small" v-model="scope.row['curl_env']" :multiple=false placeholder="select support curl env.">
@@ -83,6 +81,9 @@
                         <span>{{ env }}</span>
                       </el-option>
                     </el-select>
+                  </el-form-item>
+                  <el-form-item label="Curl Desc">
+                    <el-input size="small" type="textarea" autosize v-model="scope.row['curl_name']" placeholder="input curl desc."></el-input>
                   </el-form-item>
                   <el-form-item label="Curl Headers">
                     <el-input size="small" type="textarea" autosize v-model="scope.row['curl_headers']" placeholder="input curl headers if you need."></el-input>
@@ -93,7 +94,7 @@
                   <el-form-item label="Curl Body">
                     <el-input size="small" type="textarea" autosize v-model="scope.row['curl_body']" placeholder="input curl body."></el-input>
                   </el-form-item>
-                  <el-form-item>
+                  <div class="extendBtn">
                     <el-button size="mini" type="warning" :loading="loadings.rowSave"
                                @click="onSubmitForm('save', scope.row, true, 'rowSave')">Apply Edit</el-button>
                     <template>
@@ -107,7 +108,7 @@
                         <el-button style="margin-left: 10px" slot="reference" size="mini" type="danger" icon="el-icon-delete"></el-button>
                       </el-popconfirm>
                     </template>
-                  </el-form-item>
+                  </div>
                 </el-form>
               </template>
             </el-table-column>
@@ -305,6 +306,7 @@ export default {
   padding-top: 20px;
   width: 450px;
   min-width: 450px;
+  flex: 1;
 }
 .card_header{
   font-weight: bold;
@@ -316,11 +318,11 @@ export default {
   height: calc(80vh - 85px);
 }
 .table-area{
-  width: calc(70% - 21px) !important;
   height: calc(90vh - 70px);
   padding-top: 20px;
   margin-left: 20px;
-  max-height: 1000px;
+  flex: 3;
+  min-width: 300px;
 }
 .el-pagination {
   margin-top: 10px;
@@ -351,13 +353,17 @@ export default {
 }
 .demo-table-expand {
   display: flex;
-  margin-left: 10px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  justify-content: space-around;
+  margin-left: 50px !important;
   .el-form-item {
-    width: 500px;
     .el-textarea {
-      width: 380px;
+      width: 400px;
     }
+  }
+  .extendBtn {
+    display: flex;
+    margin-left: 120px;
   }
 }
 </style>
