@@ -29,9 +29,9 @@
         <el-table
           class="tableArea" size="small" height="100%" border :data="filterSymbolConfig" stripe
           :header-cell-style="{background:'#eef1f6',color:'#606266'}">
-          <el-table-column label="symbol" prop="symbol" align="center"></el-table-column>
+          <el-table-column label="symbol" prop="symbol" align="center" width="130"></el-table-column>
           <el-table-column label="code" prop="code" align="center"></el-table-column>
-          <el-table-column label="displaySymbol" prop="displaySymbol" align="center"></el-table-column>
+          <el-table-column label="displaySymbol" prop="displaySymbol" align="center" width="150"></el-table-column>
           <el-table-column label="quoteCurrency" prop="quoteCurrency" align="center"></el-table-column>
           <el-table-column label="priceScale" prop="priceScale" align="center"></el-table-column>
           <el-table-column label="ratioScale" prop="ratioScale" align="center"></el-table-column>

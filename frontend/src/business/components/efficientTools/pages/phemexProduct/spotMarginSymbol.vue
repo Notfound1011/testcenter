@@ -24,15 +24,15 @@
           <el-table-column label="code" prop="code" align="center"></el-table-column>
           <el-table-column label="leverage" prop="leverage" align="center"></el-table-column>
           <el-table-column label="markDelete" prop="markDelete" align="center">
-            <template slot-scope="scope"><span v-if="scope.row.markDelete">1</span><span v-else>0</span></template>
+            <template slot-scope="scope"><span v-if="scope.row['markDelete']">1</span><span v-else>0</span></template>
           </el-table-column>
           <el-table-column label="coefficient" prop="coefficient" align="center"></el-table-column>
-          <el-table-column label="defaultHourlyInterestRate" prop="defaultHourlyInterestRate" align="center"></el-table-column>
-          <el-table-column label="minAmountToBorrowPerAccount" prop="minAmountToBorrowPerAccount" align="center"></el-table-column>
-          <el-table-column label="defaultMaxAmountToBorrowPerAccount" prop="defaultMaxAmountToBorrowPerAccount" align="center"></el-table-column>
-          <el-table-column label="maxAmountToBorrow" prop="maxAmountToBorrow" align="center"></el-table-column>
-          <el-table-column label="liqFeeRate" prop="liqFeeRate" align="center"></el-table-column>
-          <el-table-column label="priceCoefficientInAdl" prop="priceCoefficientInAdl" align="center"></el-table-column>
+          <el-table-column label="defaultHourlyInterestRate" prop="defaultHourlyInterestRate" align="center" width="200"></el-table-column>
+          <el-table-column label="minAmountToBorrowPerAccount" prop="minAmountToBorrowPerAccount" align="center" width="220"></el-table-column>
+          <el-table-column label="defaultMaxAmountToBorrowPerAccount" prop="defaultMaxAmountToBorrowPerAccount" align="center" width="260"></el-table-column>
+          <el-table-column label="maxAmountToBorrow" prop="maxAmountToBorrow" align="center" width="200"></el-table-column>
+          <el-table-column label="liqFeeRate" prop="liqFeeRate" align="center" ></el-table-column>
+          <el-table-column label="priceCoefficientInAdl" prop="priceCoefficientInAdl" align="center" width="200"></el-table-column>
         </el-table>
       </div>
     </ms-main-container>
