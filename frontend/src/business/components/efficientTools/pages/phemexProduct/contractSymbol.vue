@@ -29,10 +29,10 @@
         <el-table
           class="tableArea" size="small" height="100%" border stripe :data="filterSymbolConfig"
           :header-cell-style="{background:'#eef1f6',color:'#606266'}">
-          <el-table-column label="symbol" prop="symbol" align="center"></el-table-column>
+          <el-table-column label="symbol" prop="symbol" align="center" width="130"></el-table-column>
           <el-table-column label="code" prop="code" align="center"></el-table-column>
           <el-table-column label="type" prop="type" align="center"></el-table-column>
-          <el-table-column label="displaySymbol" prop="displaySymbol" align="center"></el-table-column>
+          <el-table-column label="displaySymbol" prop="displaySymbol" align="center" width="150"></el-table-column>
           <el-table-column label="indexSymbol" prop="indexSymbol" align="center"></el-table-column>
           <el-table-column label="markSymbol" prop="markSymbol" align="center"></el-table-column>
           <el-table-column label="fundingRateSymbol" prop="fundingRateSymbol" align="center"></el-table-column>
