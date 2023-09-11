@@ -357,6 +357,7 @@ export default {
   justify-content: space-around;
   margin-left: 50px !important;
   .el-form-item {
+    margin-top: 10px;
     .el-textarea {
       width: 400px;
     }
@@ -364,6 +365,7 @@ export default {
   .extendBtn {
     display: flex;
     margin-left: 120px;
+    margin-top: 10px
   }
 }
 </style>
