@@ -113,7 +113,6 @@ export default {
 }
 .box_header {
   font: 500 20px CAPTION;
-  border-bottom: 1px solid #d0d0d0;
   font-weight: bold;
   margin: 0 0 10px;
 }
