@@ -8,7 +8,7 @@
               <span class="card_header">Query Phemex Email Code</span>
             </div>
             <el-form :model="form_data" :rules="form_rule" ref="form_ref" label-width="80px" size="medium">
-              <el-form-item label="Email" prop="email">
+              <el-form-item label="Query Email" prop="email">
                 <el-input
                   prefix-icon="el-icon-message"
                   v-model="form_data.email"
@@ -21,16 +21,10 @@
                 <el-button icon="el-icon-s-promotion" type="primary" @click="on_submit_form" :loading="loading">Query</el-button>
               </el-form-item>
             </el-form>
-          </el-card>
-        </el-col>
-        <el-col class="res_area">
-          <el-card class="res_card">
-            <div slot="header">
-              <span class="card_header">Response</span>
-            </div>
-            <el-table :data="res_result" :header-cell-style="table_header_style" border>
-              <el-table-column prop="mail_type" label="business" width="240px" align="center"></el-table-column>
-              <el-table-column prop="mail_code" label="code" width="150px" align="center"></el-table-column>
+            <div></div>
+            <el-table :data="res_result" :header-cell-style="table_header_style" highlight-current-row stripe border>
+              <el-table-column prop="mail_type" label="business" width="320" align="center"></el-table-column>
+              <el-table-column prop="mail_code" label="code" align="center"></el-table-column>
             </el-table>
           </el-card>
         </el-col>
@@ -138,8 +132,8 @@ export default {
 }
 .form_area{
   padding-top: 20px;
-  width: 550px;
-  min-width: 550px;
+  width: 600px;
+  min-width: 600px;
 }
 .res_area{
   padding-top: 20px;
@@ -151,6 +145,14 @@ export default {
   width: 80%;
 }
 .el-form{
+  margin-left: auto;
+  font-weight: bold;
   margin-top: 10px;
+  /deep/ .el-form-item__label {
+    width: 120px !important;
+  }
+  .el-button {
+    width: 85%;
+  }
 }
 </style>
