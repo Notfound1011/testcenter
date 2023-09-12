@@ -358,6 +358,7 @@ export default {
   margin-left: 50px !important;
   .el-form-item {
     margin-top: 10px;
+    width: 95%;
     .el-textarea {
       width: 400px;
     }
