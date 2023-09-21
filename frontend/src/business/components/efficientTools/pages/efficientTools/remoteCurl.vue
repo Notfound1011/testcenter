@@ -95,7 +95,7 @@
                   <el-form-item label="Curl Body">
                     <el-input size="small" type="textarea" autosize v-model="scope.row['curl_body']" placeholder="input curl body."></el-input>
                   </el-form-item>
-                  <div class="extendBtn" v-if="!scope.row['is_creator']" style="text-decoration: underline;">Share From: @{{ scope.row['curl_creator'] }}</div>
+                  <div v-if="!scope.row['is_creator']" style="text-decoration: underline;">Share From: @{{ scope.row['curl_creator'] }}</div>
                   <div class="extendBtn" v-if="scope.row['is_creator']">
                     <el-button size="mini" type="warning" :loading="loadings.rowSave"
                                @click="onSubmitForm('save', scope.row, true, 'rowSave')">Apply Edit</el-button>
