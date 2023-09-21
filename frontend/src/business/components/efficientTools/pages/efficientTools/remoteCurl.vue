@@ -68,7 +68,6 @@
             <el-table-column type="expand">
               <template slot-scope="scope">
                 <el-form labelPosition="right" label-width="120px" ref="form_ref" :model="scope.row" :rules="form_rule" inline class="demo-table-expand" >
-                  <span v-if="!scope.row['is_creator']" style="text-decoration: underline;">Share From: @{{ scope.row['curl_creator'] }}</span>
                   <el-form-item label="Curl Target">
                     <el-tag effect="plain" :type="commonOperator.tagStyle(scope.row['curl_method'])" size="mini" style="margin: 2px" >
                       {{ scope.row['curl_method'] | uppercase }}
@@ -95,6 +94,9 @@
                   </el-form-item>
                   <el-form-item label="Curl Body">
                     <el-input size="small" type="textarea" autosize v-model="scope.row['curl_body']" placeholder="input curl body."></el-input>
+                  </el-form-item>
+                  <el-form-item v-if="!scope.row['is_creator']" label="Share From">
+                    <span style="text-decoration: underline;font-weight: bold"> @{{ scope.row['curl_creator'] }}</span>
                   </el-form-item>
                   <div class="extendBtn" v-if="scope.row['is_creator']">
                     <el-button size="mini" type="warning" :loading="loadings.rowSave"
