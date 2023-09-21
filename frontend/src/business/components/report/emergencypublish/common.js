@@ -67,7 +67,11 @@ export function initCrucialFromData(routePath, formData = []) {
     const storedValue = window.localStorage.getItem(mixKey);
     if (storedValue !== null) {
       try {
-        formData[key] = JSON.parse(storedValue);
+        formData[key] = storedValue;
+        if (routePath === '/efficientTools/spotFakeRecharge')
+        {
+          formData[key] = JSON.parse(storedValue);
+        }
       } catch (error) {
         formData[key] = storedValue;
       }

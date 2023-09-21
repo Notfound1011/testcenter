@@ -14,6 +14,7 @@
                     <el-radio-button border label="fat">fat</el-radio-button>
                     <el-radio-button border label="fat2">fat2</el-radio-button>
                     <el-radio-button border label="fat3">fat3</el-radio-button>
+                    <el-radio-button border label="dev">dev</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item label="CurlMethod" prop="curl_method">
@@ -83,7 +84,7 @@
                     </el-select>
                   </el-form-item>
                   <el-form-item label="Curl Desc">
-                    <el-input size="small" type="textarea" autosize v-model="scope.row['curl_name']" placeholder="input curl desc."></el-input>
+                    <el-input :disabled="!scope.row['is_creator']" size="small" type="textarea" autosize v-model="scope.row['curl_name']" placeholder="input curl desc."></el-input>
                   </el-form-item>
                   <el-form-item label="Curl Headers">
                     <el-input size="small" type="textarea" autosize v-model="scope.row['curl_headers']" placeholder="input curl headers if you need."></el-input>
@@ -94,7 +95,8 @@
                   <el-form-item label="Curl Body">
                     <el-input size="small" type="textarea" autosize v-model="scope.row['curl_body']" placeholder="input curl body."></el-input>
                   </el-form-item>
-                  <div class="extendBtn">
+                  <div class="extendBtn" v-if="!scope.row['is_creator']" style="text-decoration: underline;">Share From: @{{ scope.row['curl_creator'] }}</div>
+                  <div class="extendBtn" v-if="scope.row['is_creator']">
                     <el-button size="mini" type="warning" :loading="loadings.rowSave"
                                @click="onSubmitForm('save', scope.row, true, 'rowSave')">Apply Edit</el-button>
                     <template>
@@ -112,8 +114,9 @@
                 </el-form>
               </template>
             </el-table-column>
-            <el-table-column label="Curl Desc" align="left" width="220">
+            <el-table-column label="Curl Desc" align="left" width="270">
               <template slot-scope="scope">
+                <el-tag v-if="!scope.row['is_creator']" effect="plain" size="mini" style="margin: 2px" >Share</el-tag>
                 <span>{{ scope.row['curl_name'] }}</span>
               </template>
             </el-table-column>
