@@ -95,6 +95,9 @@
                   <el-form-item label="Curl Body">
                     <el-input size="small" type="textarea" autosize v-model="scope.row['curl_body']" placeholder="input curl body."></el-input>
                   </el-form-item>
+                  <el-form-item v-if="scope.row['is_creator']" label="Share Curl">
+                    <el-switch v-model="scope.row['curl_share']" active-text="Yes" inactive-text="No"></el-switch>
+                  </el-form-item>
                   <el-form-item v-if="!scope.row['is_creator']" label="Share From">
                     <span style="text-decoration: underline;font-weight: bold"> @{{ scope.row['curl_creator'] }}</span>
                   </el-form-item>
@@ -118,7 +121,7 @@
             </el-table-column>
             <el-table-column label="Curl Desc" align="left" width="270">
               <template slot-scope="scope">
-                <el-tag v-if="!scope.row['is_creator']" effect="plain" size="mini" style="margin: 2px" >Share</el-tag>
+                <el-tag v-if="scope.row['curl_share']" effect="dark" type="info" size="mini" style="margin: 2px" >Share</el-tag>
                 <span>{{ scope.row['curl_name'] }}</span>
               </template>
             </el-table-column>
@@ -165,7 +168,7 @@ export default {
   data () {
     return {
       form_data: {
-        curl_env: 'fat', curl_server: '', curl_method: 'post',
+        curl_env: 'fat', curl_server: '', curl_method: 'post', curl_share: true,
         curl_headers: '', curl_path: '', curl_params: '', curl_body: ''
       },
       form_rule: {
