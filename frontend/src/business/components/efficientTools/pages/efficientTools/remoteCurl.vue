@@ -168,7 +168,7 @@ export default {
   data () {
     return {
       form_data: {
-        curl_env: 'fat', curl_server: '', curl_method: 'post', curl_share: true,
+        curl_env: 'fat', curl_server: '', curl_method: 'post', curl_share: false,
         curl_headers: '', curl_path: '', curl_params: '', curl_body: ''
       },
       form_rule: {
