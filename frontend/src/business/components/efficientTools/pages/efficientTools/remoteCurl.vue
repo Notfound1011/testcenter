@@ -32,7 +32,7 @@
                         <span>{{ item['server_name'] }}</span>
                       </el-option>
                     </el-select>
-                    <el-tooltip content="Click to TC Admin. Add a new server" placement="top">
+                    <el-tooltip content="Contact Qa Team To Add a New Environment Server." placement="top">
                       <a class="server-link" href="#" target="_blank" @click="openLink">+</a>
                     </el-tooltip>
                   </div>
@@ -72,9 +72,9 @@
                     <el-tag effect="plain" :type="commonOperator.tagStyle(scope.row['curl_method'])" size="mini" style="margin: 2px" >
                       {{ scope.row['curl_method'] | uppercase }}
                     </el-tag>
-                    <span style="text-decoration: underline; color: blue;">
-                      http://{{ scope.row['curl_server'] }}{{ scope.row['curl_path'] }}
-                      </span>
+                    <span style="color: #006fff;">
+                      http://<span style="color: #FF6C37;font-style: italic;" v-text="'{{'+scope.row['curl_server']+'}}'"></span>{{ scope.row['curl_path'] }}
+                    </span>
                   </el-form-item>
                   <el-form-item label="Support Envs">
                     <el-select size="small" v-model="scope.row['curl_env']" :multiple=false placeholder="select support curl env.">
@@ -197,7 +197,7 @@ export default {
   },
   methods: {
     openLink() {
-      window.open('http://3.1.250.199:7001/admin/#/admin/efficient_tools/effremotecurlserver/', '_blank');
+      window.open('https://cmexpro.slack.com/archives/D03F106JQ80', '_blank');
     },
     async deleteCurl(curlId) {
       const headers = commonOperator.parseNaguriHeader()

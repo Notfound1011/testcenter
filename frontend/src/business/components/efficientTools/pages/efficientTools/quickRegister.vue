@@ -26,7 +26,7 @@
               <el-form-item label="Mail Suffix" prop="mail_suffix">
                 <el-radio-group v-model="form_data.mail_suffix" size="small">
                   <el-tooltip content="mail prefix need input full mail address." placement="top">
-                    <el-radio-button border label="custom">custom</el-radio-button>
+                    <el-radio-button border label="custom">CustomSuffix</el-radio-button>
                   </el-tooltip>
                   <el-radio-button border label="cmexpro">@cmexpro.com</el-radio-button>
                   <el-radio-button border label="phemex">@phemex.com</el-radio-button>
