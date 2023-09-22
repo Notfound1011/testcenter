@@ -48,7 +48,7 @@
               <el-switch v-model="form.allCurrency"></el-switch>
             </el-form-item> -->
             <el-form-item>
-              <el-button type="primary" @click="onSubmit">充 值</el-button>
+              <el-button type="primary" @click="onSubmit" style="width: 50%">充 值</el-button>
               <!-- <el-button type="primary" @click="reset">重 置</el-button> -->
             </el-form-item>
             <pre class="code-container">{{ res_result }}</pre>

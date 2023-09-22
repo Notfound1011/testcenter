@@ -43,6 +43,10 @@ export default {
     {
       path: '/efficientTools/contractSymbolUsdt',
       component: () => import('@/business/components/efficientTools/pages/phemexProduct/contractSymbolUsdt.vue'),
+    },
+    {
+      path: '/efficientTools/chainSettings',
+      component: () => import('@/business/components/efficientTools/pages/phemexProduct/chainSettings.vue'),
     }
   ]
 }
