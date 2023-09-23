@@ -86,9 +86,11 @@ export default {
   },
   methods: {
     async getSymbolConfig (overrideEnv='') {
+      const headers = commonOperator.parseNaguriHeader()
       const apiEnv = overrideEnv || this.apiEnv
       const { data: symbolConfigRes } = await this.$axios.get(
         'naguri/ef_api/chain_settings?env=' + apiEnv,
+        {headers, timeout: 5000}
       ).catch((error) => {
         commonOperator.messageTips('error', error)
       })
