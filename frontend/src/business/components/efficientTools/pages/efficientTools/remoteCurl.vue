@@ -17,7 +17,7 @@
                     <el-radio-button border label="dev">dev</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
-                <el-form-item label="CurlMethod" prop="curl_method">
+                <el-form-item label="Curl Method" prop="curl_method">
                   <el-radio-group v-model="form_data.curl_method" size="small">
                     <el-radio-button border label="get">GET</el-radio-button>
                     <el-radio-button border label="post">POST</el-radio-button>
@@ -25,7 +25,7 @@
                     <el-radio-button border label="delete">DELETE</el-radio-button>
                   </el-radio-group>
                 </el-form-item>
-                <el-form-item label="CurlServer" prop="curl_server">
+                <el-form-item label="Curl Server" prop="curl_server">
                   <div class="server-container">
                     <el-select style="width: 70%;font-weight: bold;" v-model="form_data['curl_server']" :multiple=false filterable placeholder="select curl server name.">
                       <el-option v-for="item in curlServerData" :key="item['id']" :label="item['server_name']" :value="item['server_name']">
@@ -37,22 +37,22 @@
                     </el-tooltip>
                   </div>
                 </el-form-item>
-                <el-form-item label="CurlPath" prop="curl_path">
+                <el-form-item label="Curl Path" prop="curl_path">
                   <el-input style="width: 90%" v-model="form_data['curl_path']" placeholder="input curl path."></el-input>
                 </el-form-item>
-                <el-form-item label="CurlHeaders" prop="curl_headers">
+                <el-form-item label="Curl Headers" prop="curl_headers">
                   <el-input style="width: 90%" v-model="form_data['curl_headers']" placeholder="input curl headers if you need."></el-input>
                 </el-form-item>
-                <el-form-item label="CurlParams" prop="curl_params">
+                <el-form-item label="Curl Params" prop="curl_params">
                   <el-input style="width: 90%" v-model="form_data['curl_params']" placeholder="input curl params."></el-input>
                 </el-form-item>
-                <el-form-item label="CurlBody" prop="curl_body">
+                <el-form-item label="Curl Body" prop="curl_body">
                   <el-input style="width: 90%" v-model="form_data['curl_body']" placeholder="input curl body."></el-input>
                 </el-form-item>
                 <div style="display: flex;justify-content: center">
-                  <el-button icon="el-icon-star-off" type="warning" :loading="loadings.formSave"
+                  <el-button icon="el-icon-star-off" type="warning" :loading="loadings.formSave" style="width: 20%"
                              @click="onSubmitForm('save', null, false, 'formSave')">Save</el-button>
-                  <el-button icon="el-icon-s-promotion" type="primary" :loading="loadings.formSend"
+                  <el-button icon="el-icon-s-promotion" type="primary" :loading="loadings.formSend" style="width: 40%"
                              @click="onSubmitForm('send', null, false, 'formSend')">Send Curl</el-button>
                 </div>
                 <div></div>
@@ -69,10 +69,10 @@
               <template slot-scope="scope">
                 <el-form labelPosition="right" label-width="120px" ref="form_ref" :model="scope.row" :rules="form_rule" inline class="demo-table-expand" >
                   <el-form-item label="Curl Target">
-                    <el-tag effect="plain" :type="commonOperator.tagStyle(scope.row['curl_method'])" size="mini" style="margin: 2px" >
+                    <el-tag effect="plain" :type="commonOperator.tagStyle(scope.row['curl_method'])" size="mini" style="margin: 2px" class="cusFont">
                       {{ scope.row['curl_method'] | uppercase }}
                     </el-tag>
-                    <span style="font-weight: bold">http://<span style="color: #FF6C37;font-style: italic;" v-text="'{{'+scope.row['curl_server']+'}}'"></span>{{ scope.row['curl_path'] }}</span>
+                    <span class="cusFont"> http://<span style="color: #FF6C37;font-style: italic;" v-text="'{{'+scope.row['curl_server']+'}}'"></span>{{ scope.row['curl_path'] }}</span>
                   </el-form-item>
                   <el-form-item label="Support Envs">
                     <el-select size="small" v-model="scope.row['curl_env']" :multiple=false placeholder="select support curl env.">
@@ -93,10 +93,10 @@
                   <el-form-item label="Curl Body">
                     <el-input size="small" type="textarea" autosize v-model="scope.row['curl_body']" placeholder="input curl body."></el-input>
                   </el-form-item>
-                  <el-form-item v-if="scope.row['is_creator']" label="Share Curl">
+                  <el-form-item v-if="scope.row['is_creator']">
                     <el-switch v-model="scope.row['curl_share']" active-text="Yes" inactive-text="No"></el-switch>
                   </el-form-item>
-                  <el-form-item v-if="!scope.row['is_creator']" label="Share From">
+                  <el-form-item v-if="!scope.row['is_creator']" label="Shared by">
                     <span style="text-decoration: underline;font-weight: bold"> @{{ scope.row['curl_creator'] }}</span>
                   </el-form-item>
                   <div class="extendBtn" v-if="scope.row['is_creator']">
@@ -118,21 +118,21 @@
             </el-table-column>
             <el-table-column label="Curl Desc" align="left" width="270">
               <template slot-scope="scope">
-                <el-tag v-if="scope.row['curl_share']" effect="dark" type="info" size="mini" style="margin: 2px" >Share</el-tag>
-                <span>{{ scope.row['curl_name'] }}</span>
+                <el-tag v-if="scope.row['curl_share']" effect="plain" size="mini" style="margin: 2px;color: #6FA9E1;border-color: #6FA9E1;" >Share</el-tag>
+                <span class="cusFont">{{ scope.row['curl_name'] }}</span>
               </template>
             </el-table-column>
             <el-table-column label="Curl Preview" align="left">
               <template slot-scope="scope">
-                <el-tag effect="plain" :type="commonOperator.tagStyle(scope.row['curl_method'])" size="mini" style="margin: 2px" >
+                <el-tag effect="plain" :type="commonOperator.tagStyle(scope.row['curl_method'])" size="mini" style="margin: 2px;" class="cusFont">
                   {{ scope.row['curl_method'] | uppercase }}
                 </el-tag>
-                <span style="font-size: 13px"> {{ scope.row['curl_path'] }}</span>
+                <span class="cusFont"> {{ scope.row['curl_path'] }}</span>
               </template>
             </el-table-column>
             <el-table-column label="Send" align="center" width="95">
               <template slot-scope="scope">
-                <el-button type="success" icon="el-icon-s-promotion" :loading="loadings.rowSend"
+                <el-button type="success" icon="el-icon-s-promotion" :loading="loadings.rowSend" size="medium"
                            @click="onSubmitForm('send', scope.row, true, 'rowSend')" circle></el-button>
               </template>
             </el-table-column>
@@ -214,8 +214,8 @@ export default {
     },
     validateLinks(rule, value, callback) {
       const link = value;
-      if (link.trim() !== '' && link.trim().startsWith('http')) {
-        return callback(new Error('链接只需要填写path即可.'));
+      if (link.trim() !== '' && (link.trim().startsWith('http') || link.includes('?') || link.includes('='))) {
+        return callback(new Error('Only path allowed.'));
       }
       callback();
     },
@@ -373,5 +373,10 @@ export default {
     margin-left: 120px;
     margin-top: 10px
   }
+}
+.cusFont{
+  font-size: 14px;
+  font-family: monospace;
+  font-weight: 600
 }
 </style>
