@@ -93,7 +93,7 @@
                   <el-form-item label="Curl Body">
                     <el-input size="small" type="textarea" autosize v-model="scope.row['curl_body']" placeholder="input curl body."></el-input>
                   </el-form-item>
-                  <el-form-item v-if="scope.row['is_creator']">
+                  <el-form-item v-if="scope.row['is_creator']" label="Share Curl">
                     <el-switch v-model="scope.row['curl_share']" active-text="Yes" inactive-text="No"></el-switch>
                   </el-form-item>
                   <el-form-item v-if="!scope.row['is_creator']" label="Shared by">
