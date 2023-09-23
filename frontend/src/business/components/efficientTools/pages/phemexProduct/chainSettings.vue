@@ -26,11 +26,11 @@
         <el-table
           class="tableArea" size="small" height="100%" border :data="filterSymbolConfig" stripe
           :header-cell-style="{background:'#eef1f6',color:'#606266'}">
+          <el-table-column label="chainId" prop="chainId" align="center"></el-table-column>
+          <el-table-column label="chain" prop="chain" align="center"></el-table-column>
+          <el-table-column label="chainName" prop="chainName" align="center" width="90"></el-table-column>
           <el-table-column label="addrExtra" prop="addrExtra" align="center"></el-table-column>
           <el-table-column label="assetsPrecision" prop="assetsPrecision" align="center"></el-table-column>
-          <el-table-column label="chain" prop="chain" align="center"></el-table-column>
-          <el-table-column label="chainId" prop="chainId" align="center"></el-table-column>
-          <el-table-column label="chainName" prop="chainName" align="center"></el-table-column>
           <el-table-column label="chainTokenUrl" prop="chainTokenUrl" align="center"></el-table-column>
           <el-table-column label="contractName" prop="contractName" align="center" width="320"></el-table-column>
           <el-table-column label="currency" prop="currency" align="center"></el-table-column>

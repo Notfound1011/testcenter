@@ -72,9 +72,7 @@
                     <el-tag effect="plain" :type="commonOperator.tagStyle(scope.row['curl_method'])" size="mini" style="margin: 2px" >
                       {{ scope.row['curl_method'] | uppercase }}
                     </el-tag>
-                    <span style="color: #006fff;">
-                      http://<span style="color: #FF6C37;font-style: italic;" v-text="'{{'+scope.row['curl_server']+'}}'"></span>{{ scope.row['curl_path'] }}
-                    </span>
+                    <span style="font-weight: bold">http://<span style="color: #FF6C37;font-style: italic;" v-text="'{{'+scope.row['curl_server']+'}}'"></span>{{ scope.row['curl_path'] }}</span>
                   </el-form-item>
                   <el-form-item label="Support Envs">
                     <el-select size="small" v-model="scope.row['curl_env']" :multiple=false placeholder="select support curl env.">
@@ -110,8 +108,7 @@
                         confirm-button-text='Confirm' cancel-button-text='Cancel'
                         icon="el-icon-info" icon-color="red"
                         confirm-button-type="danger" cancel-button-type="info"
-                        @confirm="deleteCurl(scope.row['curl_id'])"
-                      >
+                        @confirm="deleteCurl(scope.row['curl_id'])">
                         <el-button style="margin-left: 10px" slot="reference" size="mini" type="danger" icon="el-icon-delete"></el-button>
                       </el-popconfirm>
                     </template>
@@ -133,9 +130,9 @@
                 <span style="font-size: 13px"> {{ scope.row['curl_path'] }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="Send" prop="c_time" align="center" width="95">
+            <el-table-column label="Send" align="center" width="95">
               <template slot-scope="scope">
-                <el-button type="success" size="medium" icon="el-icon-s-promotion" :loading="loadings.rowSend"
+                <el-button type="success" icon="el-icon-s-promotion" :loading="loadings.rowSend"
                            @click="onSubmitForm('send', scope.row, true, 'rowSend')" circle></el-button>
               </template>
             </el-table-column>
