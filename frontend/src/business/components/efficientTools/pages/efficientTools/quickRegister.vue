@@ -39,7 +39,7 @@
                 <el-input v-model="form_data['group']" placeholder="referral group code if you need" clearable></el-input>
               </el-form-item>
               <el-form-item size="medium">
-                <el-button icon="el-icon-s-promotion" type="primary" @click="on_submit_form" :loading="loading">do register</el-button>
+                <el-button icon="el-icon-s-promotion" type="primary" @click="on_submit_form" :loading="loading" style="width: 70%">do register</el-button>
               </el-form-item>
             </el-form>
           </el-card>
