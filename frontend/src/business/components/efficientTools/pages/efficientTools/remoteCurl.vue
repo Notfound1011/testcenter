@@ -376,7 +376,6 @@ export default {
 }
 .cusFont{
   font-size: 14px;
-  font-family: monospace;
-  font-weight: 600
+  font-weight: 500
 }
 </style>
