@@ -1,8 +1,8 @@
 <template>
   <ms-container>
     <ms-main-container>
-      <el-row>
-        <el-col class="form_area">
+      <div style="display: flex; flex-direction: row">
+        <div class="form_area">
           <el-card>
             <div slot="header" class="clearfix">
               <span class="card_header">Quickly Register</span>
@@ -32,6 +32,9 @@
                   <el-radio-button border label="phemex">@phemex.com</el-radio-button>
                 </el-radio-group>
               </el-form-item>
+              <el-form-item label="Password" prop="password">
+                <el-input v-model="form_data['password']" placeholder="default 123qweasD@" clearable></el-input>
+              </el-form-item>
               <el-form-item label="Referral" prop="referral">
                 <el-input v-model="form_data['referral']" placeholder="referral code if you need" clearable></el-input>
               </el-form-item>
@@ -43,9 +46,7 @@
               </el-form-item>
             </el-form>
           </el-card>
-        </el-col>
-        <el-col class="res_area">
-          <el-card class="res_card">
+          <el-card style="margin-top: 10px">
             <div slot="header">
               <span class="card_header">Response</span>
             </div>
@@ -54,8 +55,25 @@
               <el-table-column prop="value"></el-table-column>
             </el-table>
           </el-card>
-        </el-col>
-      </el-row>
+        </div>
+        <div class="table-area">
+          <el-table height="100%" :data="testUserDataResponse.results" border stripe
+                    :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+                    style="background: transparent;">
+            <el-table-column label="Env" prop="env" width="70"></el-table-column>
+            <el-table-column label="UserId" align="center" prop="user_id"></el-table-column>
+            <el-table-column label="Given Prefix" align="center" prop="mail_prefix" width="270"></el-table-column>
+            <el-table-column label="Account Email" align="center" prop="email" width="300"></el-table-column>
+            <el-table-column label="Referral" align="center" prop="user_referral"></el-table-column>
+            <el-table-column label="Password" align="center" prop="pass_word"></el-table-column>
+            <el-table-column label="Group" align="center" prop="group"></el-table-column>
+            <el-table-column label="Referral By" align="center" prop="referral"></el-table-column>
+          </el-table>
+          <el-pagination background :pager-count=12 :current-page = "testUserDataPage.currentPage"
+                         layout="total, prev, pager, next" :total="testUserDataPage.testUserDataCount"
+                         @current-change="handleCurrentChange" :page-size=40 style="margin-top: 5px"></el-pagination>
+        </div>
+      </div>
     </ms-main-container>
   </ms-container>
 </template>
@@ -67,6 +85,11 @@ import * as commonOperator from "@/common/naguri/naguri";
 
 export default {
   name: "quickRegister.vue",
+  computed: {
+    commonOperator() {
+      return commonOperator
+    }
+  },
   components: {MsMainContainer, MsContainer},
   inheritAttrs: false,
   props: [],
@@ -74,7 +97,7 @@ export default {
   data () {
     return {
       form_data: {
-        env: 'fat',site: 'GL', mail_prefix: '', mail_suffix: 'cmexpro', group: '', referral: ''
+        env: 'fat', site: 'GL', mail_prefix: '', mail_suffix: 'cmexpro', group: null, referral: null, password: null,
       },
       form_rule: {
         env: [{ required: true, message: 'must select environment pls.' }],
@@ -89,7 +112,9 @@ export default {
         background: '#eef1f6',
         color: '#606266'
       },
-      routerPath: this.$route.path.toString()
+      routerPath: this.$route.path.toString(),
+      testUserDataResponse: {results: []},
+      testUserDataPage: {testUserDataCount: 0, currentPage: 1,},
     }
   },
   created () {
@@ -97,6 +122,7 @@ export default {
     this.form_data = commonOperator.initCrucialFromData(this.routerPath, this.form_data)
     this.res_result = commonOperator.initCrucialResultData(this.routerPath)
     this.generateTableData()
+    this.getRegisterTestUsers()
   },
   methods: {
     // 获取当前人邮箱前缀
@@ -113,6 +139,9 @@ export default {
       this.tableData = Object.keys(this.res_result).map(key => {
         return { key, value: this.res_result[key] };
       });
+    },
+    handleCurrentChange (val) {
+      this.getRegisterTestUsers(val)
     },
     // 执行请求发送
     on_submit_form () {
@@ -133,8 +162,20 @@ export default {
         this.generateTableData()
         this.loading = false
         commonOperator.messageTips('success', 'response is success.')
+        await this.getRegisterTestUsers(1,30);
       })
-    }
+    },
+    async getRegisterTestUsers (page=1, pageSize=30) {
+      const headers = commonOperator.parseNaguriHeader()
+      const { data: apiResponse } = await this.$axios.get(
+        'naguri/ef_api/quick_register?page='+page+'&page_size='+pageSize,
+        {headers, timeout: 5000}
+      ).catch((error) => {
+        commonOperator.messageTips('error', error)
+      })
+      this.testUserDataResponse = apiResponse
+      this.testUserDataPage.testUserDataCount = apiResponse['count']
+    },
   }
 }
 </script>
@@ -161,11 +202,6 @@ export default {
 .clearfix:after {
   clear: both
 }
-.res_card .box {
-  min-height: 60vh;
-  height: 60px;
-  overflow: scroll;
-}
 .card_header{
   font-weight: bold;
 }
@@ -173,12 +209,14 @@ export default {
   padding-top: 20px;
   width: 550px;
   min-width: 550px;
+  flex: 1;
 }
-.res_area{
+.table-area{
+  height: calc(90vh - 70px);
   padding-top: 20px;
-  width: 430px;
-  min-width: 430px;
   margin-left: 20px;
+  flex: 3;
+  min-width: 300px;
 }
 .el-input{
   width: 80%;
