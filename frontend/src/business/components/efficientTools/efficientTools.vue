@@ -26,7 +26,7 @@
 <script>
 import MsMainContainer from "@/business/components/common/components/MsMainContainer";
 import MsContainer from "@/business/components/common/components/MsContainer";
-import {notificationTips, parseNaguriHeader} from "@/business/components/report/emergencypublish/common";
+import {notificationTips, parseNaguriHeader} from "@/common/naguri/naguri";
 export default {
   inheritAttrs: false,
   props: [],

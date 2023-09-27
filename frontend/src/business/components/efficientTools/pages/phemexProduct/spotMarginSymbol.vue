@@ -42,7 +42,7 @@
 <script>
 import MsMainContainer from "@/business/components/common/components/MsMainContainer.vue";
 import MsContainer from "@/business/components/common/components/MsContainer.vue";
-import * as commonOperator from "@/business/components/report/emergencypublish/common";
+import * as commonOperator from "@/common/naguri/naguri";
 
 export default {
   name: "spotMarginSymbol",

@@ -414,9 +414,8 @@
 <script>
 import MsMainContainer from "@/business/components/common/components/MsMainContainer";
 import MsContainer from "@/business/components/common/components/MsContainer";
-import {messageTips, notificationTips} from "@/business/components/report/emergencypublish/common"
 import * as echarts from 'echarts';
-import * as commonOperator from "@/business/components/report/emergencypublish/common";
+import * as commonOperator from "@/common/naguri/naguri";
 
 export default {
   inheritAttrs: false,
@@ -767,16 +766,16 @@ export default {
         this.preData.submitLoading = true
         const { data: apiResponse } = await this.$axios.post('naguri/em_api/publish', this.formData, {headers, timeout: 5000}).catch((error) => {
           console.log(error)
-          notificationTips('error', '提交失败，请检查表单内容！或联系 @Pauri')
+          commonOperator.notificationTips('error', '提交失败，请检查表单内容！或联系 @Pauri')
           this.preData.submitLoading = false
         })
         console.log(apiResponse)
         this.submitFormResponse = apiResponse
         if (apiResponse.publish < 1) {
-          messageTips('error', '提交失败，请检查表单内容！')
+          commonOperator.messageTips('error', '提交失败，请检查表单内容！')
           this.preData.submitLoading = false
         } else {
-          messageTips('success', '提交成功，请关注Slack审批！')
+          commonOperator.messageTips('success', '提交成功，请关注Slack审批！')
           this.$refs['emergencyChangeForm'].resetFields()
           this.sleep(500).then(() => {
             this.preData.submitLoading = false
