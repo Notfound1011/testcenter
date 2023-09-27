@@ -64,7 +64,7 @@
         <div class="table-area">
           <el-table height="100%" :data="curlAssembleResponse.results"
                     :header-cell-style="{background:'#eef1f6',color:'#606266'}"
-                    style="background: transparent; overflow:auto;">
+                    style="background: transparent;">
             <el-table-column type="expand">
               <template slot-scope="scope">
                 <el-form labelPosition="right" label-width="120px" ref="form_ref_extend" :model="scope.row" :rules="form_rule" inline class="demo-table-expand" >
@@ -138,7 +138,7 @@
             </el-table-column>
           </el-table>
           <el-pagination background :pager-count=12 :current-page = "curlAssemblePage.currentPage"
-                         layout="prev, pager, next" :total="curlAssemblePage.curlAssembleCount"
+                         layout="total, prev, pager, next" :total="curlAssemblePage.curlAssembleCount"
                          @current-change="handleCurrentChange" :page-size=20></el-pagination>
         </div>
       </div>
@@ -149,7 +149,7 @@
 <script>
 import MsMainContainer from "@/business/components/common/components/MsMainContainer.vue";
 import MsContainer from "@/business/components/common/components/MsContainer.vue";
-import * as commonOperator from "@/business/components/report/emergencypublish/common";
+import * as commonOperator from "@/common/naguri/naguri";
 
 export default {
   name: "remoteCurl",
@@ -206,7 +206,7 @@ export default {
       })
       this.deleteRes = deleteRes
       await commonOperator.sleep(300);
-      this.reload();
+      await this.getCurlAssemble(1, 20)
       commonOperator.notificationTips('success', "response is success.")
     },
     handleCurrentChange (val) {
@@ -269,7 +269,7 @@ export default {
         commonOperator.saveCrucialData(this.routerPath, null, res);
         if (actionType === 'save' && formDataOverride == null) {
           await commonOperator.sleep(300);
-          this.reload();
+          await this.getCurlAssemble(1, 20)
         }
       } catch (error) {
         commonOperator.messageTips('error', error);

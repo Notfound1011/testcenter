@@ -1,28 +1,30 @@
 <template>
   <ms-container>
     <ms-main-container>
-      <el-alert title="公告：Phemex站点导航上线啦😁" v-show="tips.status"
-                description="Phemex导航，现将常用站点归集，如有跳转失效或者新增更换，请联系QA！"
-                @close="tipsStatus('save')"
-                type="info" effect="dark" style="margin-bottom: 10px" show-icon></el-alert>
-      <div class="main-container">
-        <div class="left-container">
-          <section :key="data.id" v-for="data in this.envBtn" class="btn_box">
-            <p class="box_header">{{ data['btn_desc'] }}</p>
-            <el-button :disabled="!env_btn['btn_status']"
-                       :key="env_btn.id"
-                       v-for="env_btn in data['btn_info']"
-                       @click="openTarget(env_btn['btn_link'])">{{ env_btn['btn_text'] }}</el-button>
-          </section>
-        </div>
-        <div class="right-container">
-          <section :key="item.id" v-for="item in this.lowPriorityBtn" class="btn_box">
-            <p class="box_header">{{ item['btn_desc'] }}</p>
-            <el-button :disabled="!env_btn['btn_status']"
-                       :key="env_btn.id"
-                       v-for="env_btn in item['btn_info']"
-                       @click="openTarget(env_btn['btn_link'])">{{ env_btn['btn_text'] }}</el-button>
-          </section>
+      <div style="display: flex; flex-direction: column">
+        <!-- <el-alert title="公告：Phemex站点导航上线啦😁" v-show="tips.status"
+                  description="Phemex导航，现将常用站点归集，如有跳转失效或者新增更换，请联系QA！"
+                  @close="tipsStatus('save')"
+                  type="info" effect="dark" show-icon></el-alert> -->
+        <div class="main-container">
+          <div class="left-container">
+            <section :key="data.id" v-for="data in this.envBtn" class="btn_box">
+              <p class="box_header">{{ data['btn_desc'] }}</p>
+              <el-button :disabled="!env_btn['btn_status']"
+                         :key="env_btn.id"
+                         v-for="env_btn in data['btn_info']"
+                         @click="openTarget(env_btn['btn_link'])">{{ env_btn['btn_text'] }}</el-button>
+            </section>
+          </div>
+          <div class="right-container">
+            <section :key="item.id" v-for="item in this.lowPriorityBtn" class="btn_box">
+              <p class="box_header">{{ item['btn_desc'] }}</p>
+              <el-button :disabled="!env_btn['btn_status']"
+                         :key="env_btn.id"
+                         v-for="env_btn in item['btn_info']"
+                         @click="openTarget(env_btn['btn_link'])">{{ env_btn['btn_text'] }}</el-button>
+            </section>
+          </div>
         </div>
       </div>
     </ms-main-container>
@@ -32,6 +34,7 @@
 <script>
 import MsMainContainer from "@/business/components/common/components/MsMainContainer";
 import MsContainer from "@/business/components/common/components/MsContainer";
+import * as commonOperator from "@/common/naguri/naguri";
 
 export default {
   name: "site_navigation",
@@ -67,7 +70,8 @@ export default {
       this.ctlTipsStatus(type, this.routerPath)
     },
     async initBtnData () {
-      const { data: codeRes } = await this.$axios.get('naguri/navi_api/navigation_list')
+      const headers = commonOperator.parseNaguriHeader()
+      const { data: codeRes } = await this.$axios.get('naguri/navi_api/navigation_list', {headers, timeout: 5000})
       this.envBtn = codeRes['env_btn']
       this.lowPriorityBtn = codeRes['low_priority_btn']
     }

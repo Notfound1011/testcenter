@@ -61,7 +61,7 @@
 
 <script>
 
-import * as commonOperator from "@/business/components/report/emergencypublish/common";
+import * as commonOperator from "@/common/naguri/naguri";
 
 export default {
   name: "account",
