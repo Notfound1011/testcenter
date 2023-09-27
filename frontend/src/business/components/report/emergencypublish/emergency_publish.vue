@@ -416,6 +416,7 @@ import MsMainContainer from "@/business/components/common/components/MsMainConta
 import MsContainer from "@/business/components/common/components/MsContainer";
 import {messageTips, notificationTips} from "@/business/components/report/emergencypublish/common"
 import * as echarts from 'echarts';
+import * as commonOperator from "@/business/components/report/emergencypublish/common";
 
 export default {
   inheritAttrs: false,
@@ -708,52 +709,63 @@ export default {
       return new Promise((resolve) => setTimeout(resolve, time));
     },
     async statisticsResponse () {
-      const { data: apiResponse } = await this.$axios.get('naguri/em_api/statistics')
+      const headers = commonOperator.parseNaguriHeader()
+      const { data: apiResponse } = await this.$axios.get('naguri/em_api/statistics', {headers, timeout: 5000})
       this.statistics = apiResponse
     },
     async serviceResponse () {
-      const { data: apiResponse } = await this.$axios.get('naguri/em_api/service_list')
+      const headers = commonOperator.parseNaguriHeader()
+      const { data: apiResponse } = await this.$axios.get('naguri/em_api/service_list', {headers, timeout: 5000})
       this.serviceNameOptions = apiResponse
     },
     async publishTypeResponse () {
-      const { data: apiResponse } = await this.$axios.get('naguri/em_api/publish_type_list')
+      const headers = commonOperator.parseNaguriHeader()
+      const { data: apiResponse } = await this.$axios.get('naguri/em_api/publish_type_list', {headers, timeout: 5000})
       this.emergencyPublishTypeOptions = apiResponse
     },
     async publishListResponse (page=1, pageSize=20) {
-      const { data: apiResponse } = await this.$axios.get('naguri/em_api/publish?page='+page+'&page_size='+pageSize)
+      const headers = commonOperator.parseNaguriHeader()
+      const { data: apiResponse } = await this.$axios.get('naguri/em_api/publish?page='+page+'&page_size='+pageSize, {headers, timeout: 5000})
       this.emPublishDataResponse = apiResponse
       this.publishPage.emPublishCount = apiResponse['count']
     },
     async monthlyStatisticalResponse () {
-      const { data: apiResponse } = await this.$axios.get('naguri/em_api/monthly_statistics')
+      const headers = commonOperator.parseNaguriHeader()
+      const { data: apiResponse } = await this.$axios.get('naguri/em_api/monthly_statistics', {headers, timeout: 5000})
       this.monthlyStatistical = apiResponse
     },
     async topInfoResponse () {
-      const { data: apiResponse } = await this.$axios.get('naguri/em_api/top_info')
+      const headers = commonOperator.parseNaguriHeader()
+      const { data: apiResponse } = await this.$axios.get('naguri/em_api/top_info', {headers, timeout: 5000})
       this.topInfo = apiResponse
     },
     async techUserListResponse () {
-      const { data: apiResponse } = await this.$axios.get('naguri/em_api/tech_user_list')
+      const headers = commonOperator.parseNaguriHeader()
+      const { data: apiResponse } = await this.$axios.get('naguri/em_api/tech_user_list', {headers, timeout: 5000})
       this.techUserListDataResponse = apiResponse
     },
     async emUserInfoResponse () {
-      const { data: apiResponse } = await this.$axios.put('naguri/em_api/tech_user_list', {"email": JSON.parse(window.localStorage.getItem('Admin-Token'))['email']})
+      const headers = commonOperator.parseNaguriHeader()
+      const { data: apiResponse } = await this.$axios.put('naguri/em_api/tech_user_list', {"email": JSON.parse(window.localStorage.getItem('Admin-Token'))['email']}, {headers, timeout: 5000})
       this.formData.developer.users = this.formData.reviewer.users = this.formData.submitter.users = [apiResponse['user_id']]
     },
     async getRollbackAction () {
-      const { data: apiResponse } = await this.$axios.get('naguri/em_api/get_collect_type?type=2')
+      const headers = commonOperator.parseNaguriHeader()
+      const { data: apiResponse } = await this.$axios.get('naguri/em_api/get_collect_type?type=2', {headers, timeout: 5000})
       this.rollbackOptions = apiResponse
     },
     async onPublishStatusResponse () {
-      const { data: apiResponse } = await this.$axios.get('naguri/em_api/on_publish')
+      const headers = commonOperator.parseNaguriHeader()
+      const { data: apiResponse } = await this.$axios.get('naguri/em_api/on_publish', {headers, timeout: 5000})
       this.onPublish = apiResponse
     },
     on_submit_form () {
       console.log(this.formData)
+      const headers = commonOperator.parseNaguriHeader()
       this.$refs.emergencyChangeForm.validate(async valid => {
         if (!valid) return
         this.preData.submitLoading = true
-        const { data: apiResponse } = await this.$axios.post('naguri/em_api/publish', this.formData).catch((error) => {
+        const { data: apiResponse } = await this.$axios.post('naguri/em_api/publish', this.formData, {headers, timeout: 5000}).catch((error) => {
           console.log(error)
           notificationTips('error', '提交失败，请检查表单内容！或联系 @Pauri')
           this.preData.submitLoading = false

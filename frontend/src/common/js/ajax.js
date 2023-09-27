@@ -7,7 +7,7 @@ import {getCurrentProjectID, getCurrentWorkspaceId} from "@/common/js/utils";
 export function registerRequestHeaders() {
   axios.interceptors.request.use(config => {
     let user = JSON.parse(localStorage.getItem(TokenKey));
-    if (user && user.csrfToken) {
+    if (user && user.csrfToken && !config.url.trim().startsWith('naguri')) {
       config.headers['CSRF-TOKEN'] = user.csrfToken;
     }
     // 包含 工作空间 项目的标识
