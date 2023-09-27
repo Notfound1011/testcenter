@@ -39,7 +39,7 @@
           </el-table-column>
           <el-table-column label="相关链接" align="center" width="81">
             <template slot-scope="scope">
-              <el-popover placement="right" width="273" trigger="hover">
+              <el-popover :disabled="!scope.row['publish_link'].length" placement="right" width="273" trigger="hover">
                 <el-table :data="scope.row['publish_link']" border :header-cell-style="{background:'#eef1f6',color:'#606266'}">
                   <el-table-column property="link_type" label="链接类型" width="120"></el-table-column>
                   <el-table-column property="link_alias" label="链接别名" width="150">
