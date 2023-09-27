@@ -67,7 +67,7 @@
                     style="background: transparent; overflow:auto;">
             <el-table-column type="expand">
               <template slot-scope="scope">
-                <el-form labelPosition="right" label-width="120px" ref="form_ref" :model="scope.row" :rules="form_rule" inline class="demo-table-expand" >
+                <el-form labelPosition="right" label-width="120px" ref="form_ref_extend" :model="scope.row" :rules="form_rule" inline class="demo-table-expand" >
                   <el-form-item label="Curl Target">
                     <el-tag effect="plain" :type="commonOperator.tagStyle(scope.row['curl_method'])" size="mini" style="margin: 2px" class="cusFont">
                       {{ scope.row['curl_method'] | uppercase }}
