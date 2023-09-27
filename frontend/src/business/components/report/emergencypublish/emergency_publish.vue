@@ -224,7 +224,7 @@
                      background
                      :pager-count=12
                      :current-page = "publishPage.currentPage"
-                     layout="prev, pager, next"
+                     layout="total, prev, pager, next"
                      :total="publishPage.emPublishCount"
                      @current-change="handleCurrentChange"
                      :page-size=20></el-pagination>
