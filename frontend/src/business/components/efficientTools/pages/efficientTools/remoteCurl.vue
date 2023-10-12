@@ -99,7 +99,13 @@
                   <el-form-item v-if="!scope.row['is_creator']" label="Shared by">
                     <span style="text-decoration: underline;font-weight: bold"> @{{ scope.row['curl_creator'] }}</span>
                   </el-form-item>
+                  <div class="extendBtn" v-if="!scope.row['is_creator']">
+                    <el-button size="mini" type="success" :loading="loadings.rowSend"
+                               @click="onSubmitForm('send', scope.row, true, 'rowSend')">Send Curl</el-button>
+                  </div>
                   <div class="extendBtn" v-if="scope.row['is_creator']">
+                    <el-button size="mini" type="success" :loading="loadings.rowSend"
+                               @click="onSubmitForm('send', scope.row, true, 'rowSend')">Send Curl</el-button>
                     <el-button size="mini" type="warning" :loading="loadings.rowSave"
                                @click="onSubmitForm('save', scope.row, true, 'rowSave')">Apply Edit</el-button>
                     <template>
