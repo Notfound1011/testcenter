@@ -36,6 +36,14 @@ module.exports = {
           '^/api/tc/pyServer': '/'
         }
       },
+      '/api/tc/codeCoverage': {
+        target: "http://3.1.250.199:8080",
+        // target: "http://172.24.0.204:8080",
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api/tc/codeCoverage': '/'
+        }
+      },
       '/api/tc/jenkins': {
         target: "http://3.1.250.199:6001",
         changeOrigin: true,

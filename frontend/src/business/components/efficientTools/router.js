@@ -47,6 +47,10 @@ export default {
     {
       path: '/efficientTools/chainSettings',
       component: () => import('@/business/components/efficientTools/pages/phemexProduct/chainSettings.vue'),
+    },
+    {
+      path: '/efficientTools/codeCoverage',
+      component: () => import('@/business/components/efficientTools/pages/whiteBoxTesting/codeCoverage.vue'),
     }
   ]
 }
