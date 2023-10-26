@@ -154,7 +154,11 @@ export default {
           'naguri/ef_api/quick_register', this.form_data,
           {headers, timeout: 5000}
         ).catch((error) => {
-          commonOperator.messageTips('error', error)
+          if (error.response.data['error']) {
+            commonOperator.messageTips('error', error.response.data['error']);
+          } else {
+            commonOperator.messageTips('error', 'error');
+          }
           this.loading = false
         })
         this.res_result = res
