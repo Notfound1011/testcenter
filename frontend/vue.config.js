@@ -37,7 +37,8 @@ module.exports = {
         }
       },
       '/api/tc/codeCoverage': {
-        target: "http://3.1.250.199:8080",
+        target: "http://127.0.0.1:8080",
+        // target: "http://3.1.250.199:8080",
         // target: "http://172.24.0.204:8080",
         changeOrigin: true,
         pathRewrite: {
