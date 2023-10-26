@@ -15,8 +15,8 @@
           <el-table-column label="compareType" prop="compareType" align="center" width="120">
             <template slot-scope="scope">
               <span v-if="scope.row['compareType'] === null">--</span>
-              <el-link v-if="scope.row['compareType'] === 1" type="success">Commit号</el-link>
-              <el-link v-else-if="scope.row['compareType'] === 2" type="primary">分支</el-link>
+              <el-link v-if="scope.row['compareType'] === 2" type="success">Commit号</el-link>
+              <el-link v-else-if="scope.row['compareType'] === 1" type="primary">分支</el-link>
               <span v-else style="font-weight: bold">{{ scope.row['compareType'] }}</span>
             </template>
           </el-table-column>
