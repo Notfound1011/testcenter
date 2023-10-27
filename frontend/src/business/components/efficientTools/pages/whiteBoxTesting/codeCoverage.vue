@@ -11,15 +11,16 @@
                   :header-cell-style="{background:'#eef1f6',color:'#606266'}"
                   style="width: 100%;background: transparent; overflow:auto;"
                   border highlight-current-row>
-          <el-table-column label="serverId" prop="serverId" align="center" width="80"></el-table-column>
-          <el-table-column label="compareType" prop="compareType" align="center" width="120">
+          <el-table-column label="#" type="index" width="60"></el-table-column>
+          <el-table-column label="serverName" prop="serverName" align="center"></el-table-column>
+          <!-- <el-table-column label="compareType" prop="compareType" align="center" width="120">
             <template slot-scope="scope">
               <span v-if="scope.row['compareType'] === null">--</span>
               <el-link v-if="scope.row['compareType'] === 2" type="success">Commit号</el-link>
               <el-link v-else-if="scope.row['compareType'] === 1" type="primary">分支</el-link>
               <span v-else style="font-weight: bold">{{ scope.row['compareType'] }}</span>
             </template>
-          </el-table-column>
+          </el-table-column> -->
           <el-table-column label="currentBranch" prop="currentBranch" align="center" width="180">
             <template slot-scope="scope">
               <span v-if="scope.row['currentBranch'] === null">--</span>
@@ -105,14 +106,14 @@
             </el-select>
           </el-form-item>
           <el-col :span="12">
-            <el-form-item label="Current Commit" prop="currentCommit">
+            <el-form-item label="Current Commit No." prop="currentCommit">
               <el-select v-model="formData.currentCommit" placeholder="pls select branch first." filterable clearable :style="{width: '80%'}">
                 <el-option v-for="(item, index) in res.coverageBranchCommitRes['values']" :key="index" :label="item['displayId']" :value="item['displayId']"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="Compare Commit" prop="compareCommit">
+            <el-form-item label="Compare Commit No." prop="compareCommit">
               <el-select v-model="formData.compareCommit" placeholder="pls select branch first." filterable clearable :style="{width: '80%'}">
                 <el-option v-for="(item, index) in res.coverageBranchCommitRes['values']" :key="index" :label="item['displayId']" :value="item['displayId']"></el-option>
               </el-select>
@@ -187,7 +188,7 @@ export default {
   },
   computed: {
     reportURL() {
-      return `http://3.1.250.199:8080/${this.preData.reportPath}`;
+      return `http://tc.cmex.corp/api/tc/codeCoverage/${this.preData.reportPath}`;
     },
   },
   created() {
