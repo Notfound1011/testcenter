@@ -11,8 +11,13 @@
                   :header-cell-style="{background:'#eef1f6',color:'#606266'}"
                   style="width: 100%;background: transparent; overflow:auto;"
                   border highlight-current-row>
-          <el-table-column label="#" type="index" width="60"></el-table-column>
-          <el-table-column label="serverName" prop="serverName" align="center"></el-table-column>
+          <el-table-column label="#" type="index" width="45"></el-table-column>
+          <el-table-column label="serverName" prop="serverName" align="center">
+            <template slot-scope="scope">
+              <span v-if="scope.row['serverName'] === null">--</span>
+              <span v-else style="font-weight: bold">{{ scope.row['serverName'] }}</span>
+            </template>
+          </el-table-column>
           <!-- <el-table-column label="compareType" prop="compareType" align="center" width="120">
             <template slot-scope="scope">
               <span v-if="scope.row['compareType'] === null">--</span>
@@ -63,19 +68,27 @@
               </el-popover>
             </template>
           </el-table-column>
+          <el-table-column label="creatTime" prop="creatTime" align="center" width="160">
+            <template slot-scope="scope">
+              <span v-if="scope.row['creatTime'] === null">--</span>
+              <span v-else>{{ scope.row['creatTime'] }}</span>
+            </template>
+          </el-table-column>
           <el-table-column label="Action" align="center">
             <template slot-scope="scope">
-              <el-button v-if="scope.row['reportPath'] !== null" type="success" size="medium"
+              <el-button :disabled="scope.row['reportPath'] === null" type="success" size="medium"
                          @click="openReportDialog(scope.row['reportPath'])">查看报告</el-button>
             </template>
           </el-table-column>
         </el-table>
       </div>
-      <el-dialog title="查看报告" width="80%"
+      <!-- 查看报告dialog -->
+      <el-dialog title="查看报告" custom-class="report-dialog"
                  :visible="preData.reportDialogVisible"
                  @close="closeReportDialog">
         <iframe :src="reportURL" width="100%" height="100%"></iframe>
       </el-dialog>
+      <!-- 创建报告dialog -->
       <el-dialog
         @open="coFormParamsInit" width="30%" top="13vh"
         title="Create Coverage Report" :with-header="false"
@@ -221,7 +234,7 @@ export default {
       this.formData.currentCommit = ''
       this.formData.compareCommit = ''
       if (Array.isArray(value) && value.length !== 0) {
-        this.formData.serverId = value[value.length - 1];
+        this.formData.serverId = value[0];
         this.res.coverageBranchRes = this.getCoverageBranch(this.formData.serverId)
       }
     },
@@ -266,9 +279,11 @@ export default {
         commonOperator.messageTips('error', error.response.data)
       })
       apiResponse.data.forEach(item => {
+        item.projectConfigId = item['id']
         item.serverName = item['repos'];
         delete item['repos'];
       });
+      console.log(apiResponse.data)
       this.res.coverageServerConfigRes = apiResponse['data']
     },
     async getListCoveragePage (page=1, pageSize=20) {
@@ -333,7 +348,7 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 15px 20px;
-  height: 480px;
+  height: 90%;
 }
 .button-container {
   text-align: center;
@@ -341,5 +356,10 @@ export default {
     margin-top: 25px;
     width: 100%;
   }
+}
+/deep/ .report-dialog {
+  margin-top: 5vh !important;
+  width: 80% !important;
+  height: 90% !important;
 }
 </style>
