@@ -60,6 +60,11 @@
               <span v-else>{{ scope.row['creatTime'] }}</span>
             </template>
           </el-table-column>
+          <el-table-column label="creator" prop="creator" align="center">
+            <template slot-scope="scope">
+              <el-tag style="font-weight: bold">@{{ scope.row['creator'] }}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column label="Action" align="center" width="130">
             <template slot-scope="scope">
               <el-button :disabled="scope.row['reportPath'] === null" type="success" size="medium"
@@ -168,7 +173,9 @@ export default {
         currentCommit: '',
         startTime: '',
         endTime: '',
-        compareType: 2
+        compareType: 2,
+        creator: '',
+        creatorId: ''
       },
       res: {
         coverageListRes: {data: []},
@@ -193,6 +200,7 @@ export default {
   },
   created() {
     this.getListCoveragePage()
+    this.techUserListResponse()
   },
   methods: {
     sleep (time) {
@@ -284,6 +292,12 @@ export default {
       this.res.coverageListRes = apiResponse['data']
       this.listCoveragePage.listCoverageCount = apiResponse['data']['total']
     },
+    async techUserListResponse () {
+      const headers = commonOperator.parseNaguriHeader()
+      const { data: apiResponse } = await this.$axios.put('naguri/em_api/tech_user_list', {"email": JSON.parse(window.localStorage.getItem('Admin-Token'))['email']}, {headers, timeout: 5000})
+      this.formData.creator = apiResponse['display_name']
+      this.formData.creatorId = apiResponse['user_id']
+    },
     // for submit
     on_submit_form() {
       this.$refs['codeCoverageFormRef'].validate(async (valid) => {
@@ -292,6 +306,7 @@ export default {
         delete sendForm['selectId']
         sendForm['startTime'] = sendForm['startTime'].toLocaleString().replaceAll('/', '-')
         sendForm['endTime'] = sendForm['endTime'].toLocaleString().replaceAll('/', '-')
+        console.log(sendForm)
         const headers = commonOperator.parseNaguriHeader()
         const { data: apiResponse } = await this.$axios.post(
           'codeCoverage/report/creat ', sendForm,
