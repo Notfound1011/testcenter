@@ -112,14 +112,21 @@
           <el-col :span="12">
             <el-form-item label="Current Commit No." prop="currentCommit">
               <el-select v-model="formData.currentCommit" placeholder="pls select branch first." filterable clearable :style="{width: '80%'}">
-                <el-option v-for="(item, index) in res.coverageBranchCommitRes['values']" :key="index" :label="item['displayId']" :value="item['displayId']"></el-option>
+                <el-option v-for="(item, index) in res.coverageBranchCommitRes['values']"
+                           :key="index" :label="item['displayId']" :value="item['displayId']">
+                  <span style="float: left">{{ item['displayId'] }}</span>
+                  <el-tag size="mini" v-if="item['isMerge']" style="float: right;margin-top: 8px;font-weight: bold">M</el-tag>
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="Compare Commit No." prop="compareCommit">
               <el-select v-model="formData.compareCommit" placeholder="pls select branch first." filterable clearable :style="{width: '80%'}">
-                <el-option v-for="(item, index) in res.coverageBranchCommitRes['values']" :key="index" :label="item['displayId']" :value="item['displayId']"></el-option>
+                <el-option v-for="(item, index) in res.coverageBranchCommitRes['values']" :key="index" :label="item['displayId']" :value="item['displayId']">
+                  <span style="float: left">{{ item['displayId'] }}</span>
+                  <el-tag size="mini" v-if="item['isMerge']" style="float: right;margin-top: 8px;font-weight: bold">M</el-tag>
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
