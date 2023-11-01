@@ -4,13 +4,13 @@
       <!-- 操作按钮区域 -->
       <div class="table_action">
         <el-button style="margin: 0 auto 0 20px;" icon="el-icon-circle-plus-outline" type="warning" @click="preData.dialogVisible = true">Create Coverage Report</el-button>
+        <el-button type="warning" plain icon="el-icon-refresh-right" @click="getListCoveragePage(1,20)">refresh</el-button>
       </div>
       <!-- 表格数据区域 -->
       <div class="table_are">
-        <el-table :data="res.coverageListRes['data']" height="100%"
+        <el-table :data="res.coverageListRes['data']" height="100%" stripe border
                   :header-cell-style="{background:'#eef1f6',color:'#606266'}"
-                  style="width: 100%;background: transparent; overflow:auto;"
-                  border highlight-current-row>
+                  style="width: 100%;background: transparent; overflow:auto;">
           <el-table-column label="#" type="index" width="45"></el-table-column>
           <el-table-column label="serverName" prop="serverName" align="center">
             <template slot-scope="scope">
@@ -18,24 +18,10 @@
               <span v-else style="font-weight: bold">{{ scope.row['serverName'] }}</span>
             </template>
           </el-table-column>
-          <!-- <el-table-column label="compareType" prop="compareType" align="center" width="120">
-            <template slot-scope="scope">
-              <span v-if="scope.row['compareType'] === null">--</span>
-              <el-link v-if="scope.row['compareType'] === 2" type="success">Commit号</el-link>
-              <el-link v-else-if="scope.row['compareType'] === 1" type="primary">分支</el-link>
-              <span v-else style="font-weight: bold">{{ scope.row['compareType'] }}</span>
-            </template>
-          </el-table-column> -->
           <el-table-column label="currentBranch" prop="currentBranch" align="center" width="180">
             <template slot-scope="scope">
               <span v-if="scope.row['currentBranch'] === null">--</span>
               <span v-else style="font-weight: bold">{{ scope.row['currentBranch'] }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="compareBranch" prop="compareBranch" align="center" width="180">
-            <template slot-scope="scope">
-              <span v-if="scope.row['compareBranch'] === null">--</span>
-              <span v-else style="font-weight: bold">{{ scope.row['compareBranch'] }}</span>
             </template>
           </el-table-column>
           <el-table-column label="currentCommit" prop="currentCommit" align="center">
@@ -52,7 +38,7 @@
           </el-table-column>
           <el-table-column label="startTime" prop="startTime" align="center" width="160"></el-table-column>
           <el-table-column label="endTime" prop="endTime" align="center" width="160"></el-table-column>
-          <el-table-column label="taskStatus" prop="taskStatus" align="center">
+          <el-table-column label="taskStatus" prop="taskStatus" align="center" width="100">
             <template slot-scope="scope">
               <el-tag v-if="scope.row['taskStatus'] === 0" type="info">未开始</el-tag>
               <el-tag v-else-if="scope.row['taskStatus'] === 1" type="warning">生成中</el-tag>
@@ -74,7 +60,7 @@
               <span v-else>{{ scope.row['creatTime'] }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="Action" align="center">
+          <el-table-column label="Action" align="center" width="130">
             <template slot-scope="scope">
               <el-button :disabled="scope.row['reportPath'] === null" type="success" size="medium"
                          @click="openReportDialog(scope.row['reportPath'])">查看报告</el-button>
@@ -113,8 +99,8 @@
                               placeholder="pls select end time."></el-date-picker>
             </el-form-item>
           </el-col>
-          <el-form-item label="Target Branch" prop="branch">
-            <el-select v-model="formData.branch" placeholder="pls select server first." filterable clearable :style="{width: '90%'}" @change="handleBranchChange">
+          <el-form-item label="Current Branch" prop="currentBranch">
+            <el-select v-model="formData.currentBranch" placeholder="pls select server first." filterable clearable :style="{width: '90%'}" @change="handleBranchChange">
               <el-option v-for="(item, index) in res.coverageBranchRes['values']" :key="index" :label="item['displayId']" :value="item['displayId']"></el-option>
             </el-select>
           </el-form-item>
@@ -166,7 +152,7 @@ export default {
       },
       formRule: {
         selectId: [{ required: true, message: 'pls select target server.', trigger: 'blur' }],
-        branch: [{ required: true, message: 'pls select target branch.', trigger: 'blur' }],
+        currentBranch: [{ required: true, message: 'pls select current branch.', trigger: 'blur' }],
         compareCommit: [{ required: true, message: 'pls select compare commit.', trigger: 'blur' }],
         currentCommit: [{ required: true, message: 'pls select current commit.', trigger: 'blur' }],
         startTime: [{ required: true, message: 'pls select start time.', trigger: 'blur' }],
@@ -175,8 +161,9 @@ export default {
       },
       formData: {
         selectId: [],
+        projectId: '',
         serverId: '',
-        branch: '',
+        currentBranch: '',
         compareCommit: '',
         currentCommit: '',
         startTime: '',
@@ -225,17 +212,18 @@ export default {
       this.formData.endTime = new Date(new Date().getTime() + 30 * 60 * 1000)
     },
     handleBranchChange(value) {
-      this.res.coverageBranchCommitRes = this.getCoverageBranchCommit(this.formData.serverId, value)
+      this.res.coverageBranchCommitRes = this.getCoverageBranchCommit(this.formData.projectId, value)
       this.formData.currentCommit = ''
       this.formData.compareCommit = ''
     },
     handleServerConfChange(value) {
-      this.formData.branch = ''
+      this.formData.currentBranch = ''
       this.formData.currentCommit = ''
       this.formData.compareCommit = ''
       if (Array.isArray(value) && value.length !== 0) {
-        this.formData.serverId = value[0];
-        this.res.coverageBranchRes = this.getCoverageBranch(this.formData.serverId)
+        this.formData.projectId = value[0]
+        this.formData.serverId = value[value.length - 1];
+        this.res.coverageBranchRes = this.getCoverageBranch(this.formData.projectId)
       }
     },
     handleClose(done) {
@@ -279,7 +267,6 @@ export default {
         commonOperator.messageTips('error', error.response.data)
       })
       apiResponse.data.forEach(item => {
-        item.projectConfigId = item['id']
         item.serverName = item['repos'];
         delete item['repos'];
       });
