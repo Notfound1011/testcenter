@@ -3,8 +3,9 @@
     <ms-main-container class="container_main">
       <!-- 操作按钮区域 -->
       <div class="table_action">
-        <el-button style="margin: 0 auto 0 20px;" icon="el-icon-circle-plus-outline" type="warning" @click="preData.dialogVisible = true">Create Coverage Report</el-button>
-        <el-button type="warning" plain icon="el-icon-refresh-right" @click="getListCoveragePage(1,20)">refresh</el-button>
+        <!-- <div class="input-text">serverName：</div><el-autocomplete clearable :fetch-suggestions="serverNameSearch" placeholder="select serverName." @select="handleServerNameSelect" style="width: 15%"></el-autocomplete> -->
+        <el-button size="medium" type="primary" icon="el-icon-circle-plus-outline" @click="preData.dialogVisible = true">Create Coverage Report</el-button>
+        <el-button size="medium" type="primary" icon="el-icon-refresh-right" @click="getListCoveragePage(1,20)">Reload Data</el-button>
       </div>
       <!-- 表格数据区域 -->
       <div class="table_are">
@@ -18,7 +19,7 @@
               <span v-else style="font-weight: bold">{{ scope.row['serverName'] }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="currentBranch" prop="currentBranch" align="center" width="180">
+          <el-table-column label="currentBranch" prop="currentBranch" align="center">
             <template slot-scope="scope">
               <span v-if="scope.row['currentBranch'] === null">--</span>
               <span v-else style="font-weight: bold">{{ scope.row['currentBranch'] }}</span>
@@ -38,20 +39,23 @@
           </el-table-column>
           <el-table-column label="startTime" prop="startTime" align="center" width="160"></el-table-column>
           <el-table-column label="endTime" prop="endTime" align="center" width="160"></el-table-column>
-          <el-table-column label="taskStatus" prop="taskStatus" align="center" width="100">
+          <el-table-column label="taskStatus" prop="taskStatus" align="center" width="110">
             <template slot-scope="scope">
-              <el-tag v-if="scope.row['taskStatus'] === 0" type="info">未开始</el-tag>
-              <el-tag v-else-if="scope.row['taskStatus'] === 1" type="warning">生成中</el-tag>
-              <el-tag v-else-if="scope.row['taskStatus'] === 2" type="danger">生成失败</el-tag>
-              <el-tag v-else-if="scope.row['taskStatus'] === 3" type="success">完成</el-tag>
+              <el-tag style="font-weight: bold" v-if="scope.row['taskStatus'] === 0" type="info">Not Started</el-tag>
+              <el-tag style="font-weight: bold" v-else-if="scope.row['taskStatus'] === 1" type="warning">In Progress</el-tag>
+              <el-tag style="font-weight: bold" v-else-if="scope.row['taskStatus'] === 2" type="danger">Failed</el-tag>
+              <el-tag style="font-weight: bold" v-else-if="scope.row['taskStatus'] === 3" type="success">Completed</el-tag>
               <span v-else style="font-weight: bold">{{ scope.row['taskStatus'] }}</span>
             </template>
           </el-table-column>
           <el-table-column label="description" prop="description" align="center" width="100">
             <template slot-scope="scope">
-              <el-popover :disabled="scope.row['description'] === null || scope.row['description'] === ''" placement="left" width="200" trigger="hover" :content="scope.row['description']">
-                <el-button :disabled="scope.row['description'] === null || scope.row['description'] === ''" type="text" size="mini" icon="el-icon-view" slot="reference">view</el-button>
-              </el-popover>
+              <div v-if="scope.row['description'] !== null && scope.row['description'] !== ''">
+                <el-popover placement="left" width="200" trigger="hover" :content="scope.row['description']">
+                  <el-button type="text" size="mini" icon="el-icon-view" slot="reference">view</el-button>
+                </el-popover>
+              </div>
+              <span v-else>--</span>
             </template>
           </el-table-column>
           <el-table-column label="creatTime" prop="creatTime" align="center" width="160">
@@ -60,15 +64,15 @@
               <span v-else>{{ scope.row['creatTime'] }}</span>
             </template>
           </el-table-column>
-          <el-table-column label="creator" prop="creator" align="center">
+          <el-table-column label="creator" prop="creator" align="center" width="110">
             <template slot-scope="scope">
-              <el-tag style="font-weight: bold">@{{ scope.row['creator'] }}</el-tag>
+              <el-tag size="medium">@{{ scope.row['creator'] }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="Action" align="center" width="130">
+          <el-table-column label="Action" align="center" width="140">
             <template slot-scope="scope">
               <el-button :disabled="scope.row['reportPath'] === null" type="success" size="medium"
-                         @click="openReportDialog(scope.row['reportPath'])">查看报告</el-button>
+                         @click="openReportDialog(scope.row['reportPath'])">View Report</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -88,7 +92,7 @@
           <el-form-item label="Target Server" prop="selectId">
             <el-cascader v-model="formData.selectId" :options="res.coverageServerConfigRes" change-on-select
                          :props="coverageServerConfigProps" :style="{width: '90%'}" placeholder="pls select server."
-                         separator=" # " clearable @change="handleServerConfChange"></el-cascader>
+                         separator=" # " clearable @change="handleServerConfChange" filterable></el-cascader>
           </el-form-item>
           <el-col :span="12">
             <el-form-item label="Start Time" prop="startTime">
@@ -114,7 +118,8 @@
               <el-select v-model="formData.currentCommit" placeholder="pls select branch first." filterable clearable :style="{width: '80%'}">
                 <el-option v-for="(item, index) in res.coverageBranchCommitRes['values']"
                            :key="index" :label="item['displayId']" :value="item['displayId']">
-                  <span style="float: left">{{ item['displayId'] }}</span>
+                  <span v-if="item['isMerge']" style="float: left; font-weight: bold">{{ item['displayId'] }}</span>
+                  <span v-else style="float: left">{{ item['displayId'] }}</span>
                   <el-tag size="mini" v-if="item['isMerge']" style="float: right;margin-top: 8px;font-weight: bold">M</el-tag>
                 </el-option>
               </el-select>
@@ -124,7 +129,8 @@
             <el-form-item label="Compare Commit No." prop="compareCommit">
               <el-select v-model="formData.compareCommit" placeholder="pls select branch first." filterable clearable :style="{width: '80%'}">
                 <el-option v-for="(item, index) in res.coverageBranchCommitRes['values']" :key="index" :label="item['displayId']" :value="item['displayId']">
-                  <span style="float: left">{{ item['displayId'] }}</span>
+                  <span v-if="item['isMerge']" style="float: left; font-weight: bold">{{ item['displayId'] }}</span>
+                  <span v-else style="float: left">{{ item['displayId'] }}</span>
                   <el-tag size="mini" v-if="item['isMerge']" style="float: right;margin-top: 8px;font-weight: bold">M</el-tag>
                 </el-option>
               </el-select>
@@ -213,6 +219,15 @@ export default {
     sleep (time) {
       return new Promise((resolve) => setTimeout(resolve, time));
     },
+    // handleServerNameSelect (item) {
+    //   console.log("已选择：" + item)
+    // },
+    // serverNameSearch(queryString, cb) {
+    //   this.getCoverageConfigs()
+    //   console.log("输入查询：" + queryString)
+    //   console.log("接口返回值：" + this.res.coverageServerConfigRes)
+    //   const serverList = []
+    // },
     openReportDialog(reportPath) {
       this.preData.reportPath = reportPath;
       this.preData.reportDialogVisible= true;
@@ -336,17 +351,18 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.input-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
 .container_main {
   display: flex;
   flex-direction: column;
 }
 .table_action {
-  margin-bottom: 6px;
+  margin-bottom: 10px;
   display: flex;
-  justify-content: flex-end;
-  .el-input {
-    margin: 0 auto 0 0 !important;
-  }
 }
 .table_are {
   display: flex;
