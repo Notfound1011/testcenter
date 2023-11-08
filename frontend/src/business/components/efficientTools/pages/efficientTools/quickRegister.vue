@@ -26,7 +26,7 @@
               <el-form-item label="Mail Suffix" prop="mail_suffix">
                 <el-radio-group v-model="form_data.mail_suffix" size="small">
                   <el-tooltip content="mail prefix need input full mail address." placement="top">
-                    <el-radio-button border label="custom">CustomSuffix</el-radio-button>
+                    <el-radio-button border label="custom">Custom</el-radio-button>
                   </el-tooltip>
                   <el-radio-button border label="cmexpro">@cmexpro.com</el-radio-button>
                   <el-radio-button border label="phemex">@phemex.com</el-radio-button>
@@ -60,7 +60,7 @@
           <el-table height="100%" :data="testUserDataResponse.results" border stripe
                     :header-cell-style="{background:'#eef1f6',color:'#606266'}"
                     style="background: transparent;">
-            <el-table-column label="Env" prop="env" width="70"></el-table-column>
+            <el-table-column label="Env" prop="env" width="60"></el-table-column>
             <el-table-column label="UserId" align="center" prop="user_id"></el-table-column>
             <el-table-column label="Given Prefix" align="center" prop="mail_prefix" width="270"></el-table-column>
             <el-table-column label="Account Email" align="center" prop="email" width="300"></el-table-column>
@@ -211,8 +211,7 @@ export default {
 }
 .form_area{
   padding-top: 20px;
-  width: 550px;
-  min-width: 550px;
+  min-width: 450px;
   flex: 1;
 }
 .table-area{
@@ -226,6 +225,6 @@ export default {
   width: 80%;
 }
 .el-form{
-  margin-top: 10px;
+  margin: 10px 0 0 -40px;
 }
 </style>
