@@ -363,6 +363,7 @@ export default {
 .table_action {
   margin-bottom: 10px;
   display: flex;
+  justify-content: flex-start;
 }
 .table_are {
   display: flex;
