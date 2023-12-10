@@ -60,6 +60,9 @@ export function saveCrucialData (routePath, data = null, result = null) {
 
 // 数据初始化表单部分
 export function initCrucialFromData(routePath, formData = []) {
+  const targetUrls = [
+    '/efficientTools/spotFakeRecharge'
+  ]
   const keys = Object.keys(formData);
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];
@@ -68,7 +71,7 @@ export function initCrucialFromData(routePath, formData = []) {
     if (storedValue !== null) {
       try {
         formData[key] = storedValue;
-        if (routePath === '/efficientTools/spotFakeRecharge')
+        if (targetUrls.includes(routePath))
         {
           formData[key] = JSON.parse(storedValue);
         }
