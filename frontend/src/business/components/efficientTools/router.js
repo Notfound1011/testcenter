@@ -51,6 +51,10 @@ export default {
     {
       path: '/efficientTools/codeCoverage',
       component: () => import('@/business/components/efficientTools/pages/whiteBoxTesting/codeCoverage.vue'),
+    },
+    {
+      path: '/efficientTools/privileges',
+      component: () => import('@/business/components/efficientTools/pages/efficientTools/getPrivileges.vue'),
     }
   ]
 }
