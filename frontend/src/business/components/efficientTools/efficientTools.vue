@@ -2,19 +2,29 @@
   <ms-container>
     <el-aside>
       <el-menu :default-active="activePage" router>
-        <el-submenu :index="item['id'] + ''" v-for="item in allMenu" :key="item['id']">
-          <template slot="title">
-            <i :class="item['icon_class']"></i>
-            <span>{{ item['menu_name'] }}</span>
-          </template>
-          <el-menu-item :index="subItem['menu_path']" v-for="subItem in item['sub_menus']" :key="subItem['parent_id']"
-                        @click="saveClickMenu(subItem['menu_path'])">
+        <!-- Check if there are sub_menus for each item -->
+        <template v-for="item in allMenu">
+          <el-submenu v-if="item['sub_menus'] && item['sub_menus'].length > 0" :index="item['id'] + ''" :key="item['id']">
             <template slot="title">
-              <i :class="subItem['icon_class']"></i>
-              <span>{{ subItem['menu_name'] }}</span>
+              <i :class="item['icon_class']"></i>
+              <span>{{ item['menu_name'] }}</span>
+            </template>
+            <el-menu-item :index="subItem['menu_path']" v-for="subItem in item['sub_menus']" :key="subItem['parent_id']"
+                          @click="saveClickMenu(subItem['menu_path'])">
+              <template slot="title">
+                <i :class="subItem['icon_class']"></i>
+                <span>{{ subItem['menu_name'] }}</span>
+              </template>
+            </el-menu-item>
+          </el-submenu>
+          <!-- If no sub_menus, treat it as a one-level menu -->
+          <el-menu-item v-else :index="item['menu_path']" :key="item['id']" @click="saveClickMenu(item['menu_path'])">
+            <template slot="title">
+              <i :class="item['icon_class']"></i>
+              <span>{{ item['menu_name'] }}</span>
             </template>
           </el-menu-item>
-        </el-submenu>
+        </template>
       </el-menu>
     </el-aside>
     <el-main>

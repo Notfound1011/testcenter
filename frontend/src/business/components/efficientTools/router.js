@@ -55,6 +55,10 @@ export default {
     {
       path: '/efficientTools/privileges',
       component: () => import('@/business/components/efficientTools/pages/efficientTools/getPrivileges.vue'),
+    },
+    {
+      path: '/efficientTools/appGallery',
+      component: () => import('@/business/components/efficientTools/pages/appGallery.vue'),
     }
   ]
 }
