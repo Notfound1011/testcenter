@@ -1,83 +1,54 @@
 <template>
   <ms-container>
     <ms-main-container>
-      <el-radio-group v-model="form_data.channel" size="small" @change="changePage">
-        <el-radio-button border label="ALL">ALL</el-radio-button>
-        <el-radio-button border label="iOS">iOS</el-radio-button>
-        <el-radio-button border label="Android">Android</el-radio-button>
-      </el-radio-group>
-      <div class="table-area">
-        <el-table height="100%" :data="privilegesRecordResponse.results" border stripe
-                  :header-cell-style="{background:'#eef1f6',color:'#606266'}"
-                  :style="{ height: tableHeight }"
-                  style="background: transparent;">
-          <el-table-column label="Channel" prop="channel" align="center">
-            <template slot-scope="scope">
-              <span style="font-weight: bold">{{scope.row['channel']}}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="Build Time" prop="build_time" align="center"></el-table-column>
-          <el-table-column label="Version Desc" prop="version_desc" align="center" width="300"></el-table-column>
-          <el-table-column v-if="['iOS', 'ALL'].includes(this.form_data.channel)" label="iPA" prop="ipa_image_url" align="center">
-            <template slot-scope="scope">
-              <div v-if="scope.row['ipa_image_url'] !== null && scope.row['ipa_image_url'] !== ''">
-                <el-popover placement="left" width="200" trigger="hover">
-                  <img :src="scope.row['ipa_image_url']" alt="QR Code" style="max-width: 100%; max-height: 100%;">
-                  <el-button style="font-weight: bold" type="text" size="mini" icon="el-icon-view" slot="reference">View QR Code</el-button>
-                </el-popover>
-              </div>
-              <span v-else>--</span>
-            </template>
-          </el-table-column>
-          <el-table-column v-if="['Android', 'ALL'].includes(this.form_data.channel)" label="Apk" prop="apk_image_url" align="center">
-            <template slot-scope="scope">
-              <div v-if="scope.row['apk_image_url'] !== null && scope.row['apk_image_url'] !== ''">
-                <el-popover placement="left" width="200" trigger="hover">
-                  <img :src="scope.row['apk_image_url']" alt="QR Code" style="max-width: 100%; max-height: 100%;">
-                  <el-button style="font-weight: bold" type="text" size="mini" icon="el-icon-view" slot="reference">View QR Code</el-button>
-                </el-popover>
-              </div>
-              <span v-else>--</span>
-            </template>
-          </el-table-column>
-          <el-table-column v-if="['Android', 'ALL'].includes(this.form_data.channel)" label="Aab" prop="abb_image_url" align="center">
-            <template slot-scope="scope">
-              <div v-if="scope.row['abb_image_url'] !== null && scope.row['abb_image_url'] !== ''">
-                <el-popover placement="left" width="200" trigger="hover">
-                  <img :src="scope.row['abb_image_url']" alt="QR Code" style="max-width: 100%; max-height: 100%;">
-                  <el-button style="font-weight: bold" type="text" size="mini" icon="el-icon-view" slot="reference">View QR Code</el-button>
-                </el-popover>
-              </div>
-              <span v-else>--</span>
-            </template>
-          </el-table-column>
-          <el-table-column v-if="['Android', 'ALL'].includes(this.form_data.channel)" label="Apk Url" prop="apk_url" align="center">
-            <template slot-scope="scope">
-              <span v-if="scope.row['apk_url'] === null">--</span>
-              <span v-else style="font-weight: bold">
-                <el-button style="font-weight: bold" @click="copyToClipboard(scope.row['apk_url'])" size="mini" type="text">Copy Apk Url</el-button>
-              </span>
-            </template>
-          </el-table-column>
-          <el-table-column v-if="['Android', 'ALL'].includes(this.form_data.channel)" label="Aab Url" prop="abb_url" align="center">
-            <template slot-scope="scope">
-              <span v-if="scope.row['abb_url'] === null">--</span>
-              <span v-else style="font-weight: bold">
-                <el-button style="font-weight: bold" @click="copyToClipboard(scope.row['abb_url'])" size="mini" type="text">Copy Aab Url</el-button>
-              </span>
-            </template>
-          </el-table-column>
-          <el-table-column label="Builder" prop="builder" align="center"></el-table-column>
-          <el-table-column label="Jenkins" prop="build_url" align="center">
-            <template slot-scope="scope">
-              <el-link type="primary" :href="scope.row['build_url']" target="_blank">To Jekins</el-link>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-pagination background :pager-count=12 :current-page = "privilegesRecord.currentPage"
-                       layout="total, prev, pager, next" :total="privilegesRecord.privilegesRecordCount"
-                       @current-change="handleCurrentChange" :page-size=40 style="margin-top: 5px">
-        </el-pagination>
+      <div class="timeline-area">
+        <div class="timeline-area-ios-block">
+          <el-timeline>
+            <div class="timeline-title-font">Phemex App iOS</div>
+            <el-timeline-item size="large" v-for="(items, date) in appGalleryDataIos" :key="date" :timestamp="date" placement="top">
+              <el-card class="timeline-card" :body-style="cardBodyStyle" v-for="(item, index) in items" :key="index">
+                <div class="timeline-card-text">
+                  <h4>{{ item['version_desc'] }}</h4>
+                  <div v-if="item['version_description'] != null">{{ item['version_description'] }}</div>
+                  <div v-else>no change log.</div>
+                  <p>{{ item['builder'] }} build at {{ item['build_time'] }}</p>
+                </div>
+                <div class="timeline-card-image">
+                  <button @click="toggleImage(date, index, 'ios')">
+                    <img style="width: 130px;height: 130px" :src="item['ipa_image_url']" :style="{ filter: showImage[`${date}-${index}-ios`] ? 'blur(0)' : 'blur(5px)' }">
+                  </button>
+                </div>
+              </el-card>
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+        <div class="timeline-area-and-block">
+          <el-timeline>
+            <div class="timeline-title-font">Phemex App Android</div>
+            <el-timeline-item size="large" v-for="(itemsAnd, dateAnd) in appGalleryDataAnd" :key="dateAnd" :timestamp="dateAnd" placement="top">
+              <el-card class="timeline-card" :body-style="cardBodyStyle" v-for="(itemAnd, indexAnd) in itemsAnd" :key="indexAnd">
+                <div class="timeline-card-text">
+                  <h4>{{ itemAnd['version_desc'] }}</h4>
+                  <div v-if="itemAnd['version_description'] != null">{{ itemAnd['version_description'] }}</div>
+                  <div v-else>no change log.</div>
+                  <div>
+                    <el-button style="font-weight: bold" @click="copyToClipboard(itemAnd['apk_url'])"
+                               icon="el-icon-document-copy" size="mini" type="text">Copy Apk Link</el-button>
+                    <el-button style="font-weight: bold" @click="copyToClipboard(itemAnd['abb_url'])"
+                               icon="el-icon-document-copy" size="mini" type="text">Copy Aab Link</el-button>
+                  </div>
+                  <p>{{ itemAnd['builder'] }} build at {{ itemAnd['build_time'] }}</p>
+                </div>
+                <div class="timeline-card-image">
+                  <button @click="toggleImage(dateAnd, indexAnd, 'and')">
+                    <img style="width: 130px;height: 130px" :src="itemAnd['apk_image_url']" :style="{ filter: showImage[`${dateAnd}-${indexAnd}-and`] ? 'blur(0)' : 'blur(5px)' }">
+                  </button>
+                </div>
+              </el-card>
+            </el-timeline-item>
+          </el-timeline>
+        </div>
+        <!-- <div class="timeline-area-empty-block"></div> -->
       </div>
     </ms-main-container>
   </ms-container>
@@ -101,36 +72,21 @@ export default {
   inject: ["reload"],
   data () {
     return {
-      form_data: {
-        channel: "ALL"
-      },
-      tableHeight: 'calc(90vh - 65px)',
-      form_rule: {},
-      res_result: [],
-      tableData: [],
       loading: false,
+      showImage: [],
       routerPath: this.$route.path.toString(),
-      privilegesRecordResponse: {results: []},
-      privilegesRecord: {privilegesRecordCount: 0, currentPage: 1,},
+      appGalleryDataIos: [],
+      appGalleryDataAnd: [],
+      cardBodyStyle : {
+        display: 'flex',
+        flexDirection: 'row'
+      }
     }
   },
   created () {
-    this.form_data = commonOperator.initCrucialFromData(this.routerPath, this.form_data)
-    this.res_result = commonOperator.initCrucialResultData(this.routerPath)
     this.getPrivilegesRecord()
   },
-  watch: {
-    'form_data.channel': function(newVal, oldVal) {
-      console.log('form_data.channel changed:', newVal, oldVal);
-      this.adjustTableHeight();
-    },
-  },
   methods: {
-    adjustTableHeight() {
-      console.log('Adjusting table height...');
-      this.tableHeight = 'calc(90vh - 65px)';
-      this.$forceUpdate();
-    },
     copyToClipboard(text) {
       const textarea = document.createElement('textarea');
       textarea.value = text;
@@ -138,33 +94,65 @@ export default {
       textarea.select();
       document.execCommand('copy');
       document.body.removeChild(textarea);
-      this.$message.success('Copied to clipboard.');
+      this.$message.success('Copied ' + text);
     },
-    handleCurrentChange (val) {
-      this.getPrivilegesRecord(val)
+    toggleImage(date, index, channel) {
+      const key = `${date}-${index}-${channel}`;
+      this.$set(this.showImage, key, !this.showImage[key]);
     },
-    changePage(){
-      this.privilegesRecord = {privilegesRecordCount: 0, currentPage: 1,}
-      this.getPrivilegesRecord(1, 30)
-    },
-    async getPrivilegesRecord (page=1, pageSize=30) {
+    async getPrivilegesRecord () {
       const headers = commonOperator.parseNaguriHeader()
       const { data: apiResponse } = await this.$axios.get(
-        `naguri/ef_api/app_gallery?page=${page}&page_size=${pageSize}&channel=${this.form_data.channel}`,
+        `naguri/ef_api/app_gallery_v2`,
         {headers, timeout: 5000}
       ).catch((error) => {
         commonOperator.messageTips('error', error)
       })
-      this.privilegesRecordResponse = apiResponse['data']
-      this.privilegesRecord.privilegesRecordCount = apiResponse['data']['count']
+      this.appGalleryDataIos = apiResponse['data']['iOS']
+      this.appGalleryDataAnd = apiResponse['data']['Android']
     }
   }
 }
 </script>
 
 <style lang="less" scoped>
-.table-area{
-  height: calc(90vh - 65px);
-  padding-top: 5px;
+/deep/.el-timeline-item__timestamp.is-top {
+  padding-top: 1px;
+  font-size: 18px;
+  color: #312f2f;
+  font-weight: bold;
+}
+.timeline-card {
+  margin: 10px;
+  width: 75%;
+  .timeline-card-text {
+    flex: 1;
+  }
+  .timeline-card-image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+.timeline-title-font {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+.timeline-area {
+  display: flex;
+  padding-top: 15px;
+  padding-left: 50px;
+  flex-direction: row;
+  .timeline-area-ios-block {
+    flex: 1;
+  }
+  .timeline-area-and-block {
+    flex: 1;
+  }
+  .timeline-area-empty-block {
+    flex: 1;
+  }
 }
 </style>
