@@ -4,7 +4,10 @@
       <div class="timeline-area">
         <div class="timeline-area-ios-block">
           <el-timeline>
-            <div class="timeline-title-font">Phemex App iOS</div>
+            <div class="timeline-title-font">
+              <el-button :loading="loading" size="mini" icon="el-icon-refresh-left" circle @click="getPrivilegesRecord"></el-button>
+              Phemex App iOS
+            </div>
             <el-timeline-item size="large" v-for="(items, date) in appGalleryDataIos" :key="date" :timestamp="date" placement="top">
               <el-card class="timeline-card" :body-style="cardBodyStyle" v-for="(item, index) in items" :key="index">
                 <div class="timeline-card-text">
@@ -29,7 +32,10 @@
         </div>
         <div class="timeline-area-and-block">
           <el-timeline>
-            <div class="timeline-title-font">Phemex App Android</div>
+            <div class="timeline-title-font">
+              <el-button :loading="loading" size="mini" icon="el-icon-refresh-left" circle @click="getPrivilegesRecord"></el-button>
+              Phemex App Android
+            </div>
             <el-timeline-item size="large" v-for="(itemsAnd, dateAnd) in appGalleryDataAnd" :key="dateAnd" :timestamp="dateAnd" placement="top">
               <el-card class="timeline-card" :body-style="cardBodyStyle" v-for="(itemAnd, indexAnd) in itemsAnd" :key="indexAnd">
                 <div class="timeline-card-text">
@@ -64,6 +70,7 @@
 import MsMainContainer from "@/business/components/common/components/MsMainContainer.vue";
 import MsContainer from "@/business/components/common/components/MsContainer.vue";
 import * as commonOperator from "@/common/naguri/naguri";
+import {fullScreenLoading, stopFullScreenLoading} from "@/common/js/utils";
 
 export default {
   name: "appGallery.vue",
@@ -107,6 +114,8 @@ export default {
       this.$set(this.showImage, key, !this.showImage[key]);
     },
     async getPrivilegesRecord () {
+      this.loading = true
+      const loading = fullScreenLoading(this, 'loading...');
       const headers = commonOperator.parseNaguriHeader()
       const { data: apiResponse } = await this.$axios.get(
         `naguri/ef_api/app_gallery_v2`,
@@ -116,6 +125,8 @@ export default {
       })
       this.appGalleryDataIos = apiResponse['data']['iOS']
       this.appGalleryDataAnd = apiResponse['data']['Android']
+      stopFullScreenLoading(loading,1);
+      this.loading = false
     }
   }
 }
