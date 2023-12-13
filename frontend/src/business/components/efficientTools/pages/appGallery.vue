@@ -128,7 +128,7 @@ export default {
 }
 .timeline-card {
   margin: 10px;
-  width: 75%;
+  width: 82%;
   .timeline-card-text {
     flex: 1;
   }
