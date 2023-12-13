@@ -94,6 +94,19 @@
                          :props="coverageServerConfigProps" :style="{width: '90%'}" placeholder="pls select server."
                          separator=" # " clearable @change="handleServerConfChange" filterable></el-cascader>
           </el-form-item>
+          <el-form-item label="Include Server" prop="selectIncludeId">
+            <el-cascader
+              v-model="formData.selectIncludeId"
+              :options="includeServerOption"
+              :props="includeServerConfigProps"
+              :style="{ width: '90%' }"
+              placeholder="pls select include server."
+              separator=" # "
+              clearable
+              @change="handleIncludeServerConfChange"
+              filterable
+            ></el-cascader>
+          </el-form-item>
           <el-col :span="12">
             <el-form-item label="Start Time" prop="startTime">
               <el-date-picker type="datetime" v-model="formData.startTime"
@@ -170,6 +183,7 @@ export default {
       },
       formRule: {
         selectId: [{ required: true, message: 'pls select target server.', trigger: 'blur' }],
+        selectIncludeId: [{ required: true, message: 'pls select include server.', trigger: 'blur' }],
         currentBranch: [{ required: true, message: 'pls select current branch.', trigger: 'blur' }],
         compareCommit: [{ required: true, message: 'pls select compare commit.', trigger: 'blur' }],
         currentCommit: [{ required: true, message: 'pls select current commit.', trigger: 'blur' }],
@@ -179,8 +193,10 @@ export default {
       },
       formData: {
         selectId: [],
+        selectIncludeId: [],
         projectId: '',
         serverId: '',
+        includeServerId: [],
         currentBranch: '',
         compareCommit: '',
         currentCommit: '',
@@ -190,6 +206,7 @@ export default {
         creator: '',
         creatorId: ''
       },
+      includeServerOption: [],
       res: {
         coverageListRes: {data: []},
         coverageServerConfigRes: [],
@@ -203,6 +220,14 @@ export default {
         "children": "serverConfigs",
         "checkStrictly": false,
         "expandTrigger": "hover"
+      },
+      includeServerConfigProps: {
+        "value": "id",
+        "label": "serverName",
+        "children": "serverConfigs",
+        "checkStrictly": false,
+        "expandTrigger": "hover",
+        "multiple": true
       },
     }
   },
@@ -219,15 +244,6 @@ export default {
     sleep (time) {
       return new Promise((resolve) => setTimeout(resolve, time));
     },
-    // handleServerNameSelect (item) {
-    //   console.log("已选择：" + item)
-    // },
-    // serverNameSearch(queryString, cb) {
-    //   this.getCoverageConfigs()
-    //   console.log("输入查询：" + queryString)
-    //   console.log("接口返回值：" + this.res.coverageServerConfigRes)
-    //   const serverList = []
-    // },
     openReportDialog(reportPath) {
       this.preData.reportPath = reportPath;
       this.preData.reportDialogVisible= true;
@@ -246,14 +262,34 @@ export default {
       this.formData.currentCommit = ''
       this.formData.compareCommit = ''
     },
-    handleServerConfChange(value) {
+    async handleServerConfChange(value) {
       this.formData.currentBranch = ''
       this.formData.currentCommit = ''
       this.formData.compareCommit = ''
+      this.formData.selectIncludeId = ''
       if (Array.isArray(value) && value.length !== 0) {
         this.formData.projectId = value[0]
         this.formData.serverId = value[value.length - 1];
         this.res.coverageBranchRes = this.getCoverageBranch(this.formData.projectId)
+      }
+
+      let targetId = this.formData.selectId[0];
+      let idToRemove = this.formData.selectId[1];
+      const re_server = await this.getCoverageConfigs4include()
+      let targetData = re_server.find(item => item.id === targetId);
+      if (targetData) {
+        targetData.serverConfigs = targetData.serverConfigs.filter(config => config.id !== idToRemove);
+      }
+      this.includeServerOption = targetData
+    },
+    handleIncludeServerConfChange(value) {
+      if (Array.isArray(value) && value.length !== 0) {
+        this.formData.includeServerId = value.reduce((result, currentArray) => {
+          // 将当前数组的第二个元素添加到结果数组中
+          result.push(currentArray[1]);
+          return result;
+        }, [])
+        console.log(this.formData.includeServerId)
       }
     },
     handleClose(done) {
@@ -300,8 +336,21 @@ export default {
         item.serverName = item['repos'];
         delete item['repos'];
       });
-      console.log(apiResponse.data)
       this.res.coverageServerConfigRes = apiResponse['data']
+    },
+    async getCoverageConfigs4include () {
+      const headers = commonOperator.parseNaguriHeader()
+      const { data: apiResponse } = await this.$axios.get(
+        'codeCoverage/config/getConfigs',
+        {headers, timeout: 5000}
+      ).catch((error) => {
+        commonOperator.messageTips('error', error.response.data)
+      })
+      apiResponse.data.forEach(item => {
+        item.serverName = item['repos'];
+        delete item['repos'];
+      });
+      return apiResponse['data']
     },
     async getListCoveragePage (page=1, pageSize=20) {
       const headers = commonOperator.parseNaguriHeader()

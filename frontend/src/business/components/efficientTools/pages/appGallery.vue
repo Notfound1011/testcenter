@@ -11,6 +11,10 @@
                   <h4>{{ item['version_desc'] }}</h4>
                   <div v-if="item['version_description'] != null">{{ item['version_description'] }}</div>
                   <div v-else>no change log.</div>
+                  <div>
+                    <el-button style="font-weight: bold" @click="copyToClipboard(item['ipa_url'])"
+                               icon="el-icon-document-copy" size="mini" type="text">Copy iPA Link</el-button>
+                  </div>
                   <p>{{ item['builder'] }} build at {{ item['build_time'] }}</p>
                 </div>
                 <div class="timeline-card-image">
