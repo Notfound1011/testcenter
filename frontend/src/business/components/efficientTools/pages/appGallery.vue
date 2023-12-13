@@ -20,7 +20,7 @@
                 <div class="timeline-card-image">
                   <button @click="toggleImage(date, index, 'ios')">
                     <img alt="click to see." :style="{ width: showImage[`${date}-${index}-ios`] ? '130px' : '130px', height: showImage[`${date}-${index}-ios`] ? '130px' : '130px', cursor: 'pointer' }"
-                         :src="showImage[`${date}-${index}-ios`] ? item['ipa_image_url'] : 'https://static.phemex.com/pubimg/6bc2cb5c521b368e273da786a8bd730334b38cba79389770708d239afb22e428.png'">
+                         :src="showImage[`${date}-${index}-ios`] ? item['ipa_image_url'] : require('../images/erweima.png')">
                   </button>
                 </div>
               </el-card>
@@ -47,7 +47,7 @@
                 <div class="timeline-card-image">
                   <button @click="toggleImage(dateAnd, indexAnd, 'and')">
                     <img alt="click to see." :style="{ width: showImage[`${dateAnd}-${indexAnd}-and`] ? '130px' : '130px', height: showImage[`${dateAnd}-${indexAnd}-and`] ? '130px' : '130px', cursor: 'pointer' }"
-                         :src="showImage[`${dateAnd}-${indexAnd}-and`] ? itemAnd['apk_image_url'] : 'https://static.phemex.com/pubimg/6bc2cb5c521b368e273da786a8bd730334b38cba79389770708d239afb22e428.png'">
+                         :src="showImage[`${dateAnd}-${indexAnd}-and`] ? itemAnd['apk_image_url'] : require('../images/erweima.png')">
                   </button>
                 </div>
               </el-card>
