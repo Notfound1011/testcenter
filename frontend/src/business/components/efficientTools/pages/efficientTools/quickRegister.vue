@@ -5,7 +5,7 @@
         <div class="form_area">
           <el-card>
             <div slot="header" class="clearfix">
-              <span class="card_header">Quickly Register</span>
+              <span class="card_header">Quick Registration</span>
             </div>
             <el-form ref="form_ref" :model="form_data" :rules="form_rule" label-width="150px" size="medium" >
               <el-form-item label="Environment" prop="env">
@@ -41,6 +41,9 @@
               <el-form-item label="Group" prop="group">
                 <el-input v-model="form_data['group']" placeholder="referral group code if you need" clearable></el-input>
               </el-form-item>
+              <el-form-item label="Remark" prop="remark">
+                <el-input v-model="form_data['remark']" placeholder="for account remark if you need." clearable></el-input>
+              </el-form-item>
               <el-form-item size="medium">
                 <el-button icon="el-icon-s-promotion" type="primary" @click="on_submit_form" :loading="loading" style="width: 70%">do register</el-button>
               </el-form-item>
@@ -61,13 +64,14 @@
                     :header-cell-style="{background:'#eef1f6',color:'#606266'}"
                     style="background: transparent;">
             <el-table-column label="Env" prop="env" width="60"></el-table-column>
-            <el-table-column label="UserId" align="center" prop="user_id"></el-table-column>
-            <el-table-column label="Given Prefix" align="center" prop="mail_prefix" width="270"></el-table-column>
-            <el-table-column label="Account Email" align="center" prop="email" width="300"></el-table-column>
-            <el-table-column label="Referral" align="center" prop="user_referral"></el-table-column>
-            <el-table-column label="Password" align="center" prop="pass_word"></el-table-column>
-            <el-table-column label="Group" align="center" prop="group"></el-table-column>
-            <el-table-column label="Referral By" align="center" prop="referral"></el-table-column>
+            <el-table-column label="UserId" align="center" prop="user_id" width="100"></el-table-column>
+            <!-- <el-table-column label="Given Prefix" align="center" prop="mail_prefix" width="270"></el-table-column> -->
+            <el-table-column label="Account Email" align="center" prop="email" width="330"></el-table-column>
+            <el-table-column label="Referral" align="center" prop="user_referral" width="100"></el-table-column>
+            <el-table-column label="Password" align="center" prop="pass_word" width="150"></el-table-column>
+            <el-table-column label="Group" align="center" prop="group" width="70"></el-table-column>
+            <el-table-column label="Referral By" align="center" prop="referral" width="100"></el-table-column>
+            <el-table-column label="Remark" prop="remark"></el-table-column>
           </el-table>
           <el-pagination background :pager-count=12 :current-page = "testUserDataPage.currentPage"
                          layout="total, prev, pager, next" :total="testUserDataPage.testUserDataCount"
@@ -97,7 +101,8 @@ export default {
   data () {
     return {
       form_data: {
-        env: 'fat', site: 'GL', mail_prefix: '', mail_suffix: 'cmexpro', group: null, referral: null, password: null,
+        env: 'fat', site: 'GL', mail_prefix: '', mail_suffix: 'cmexpro',
+        group: null, referral: null, password: null, remark: ""
       },
       form_rule: {
         env: [{ required: true, message: 'must select environment pls.' }],
@@ -121,6 +126,7 @@ export default {
     this.getCurrentUserMailPrefix()
     this.form_data = commonOperator.initCrucialFromData(this.routerPath, this.form_data)
     this.res_result = commonOperator.initCrucialResultData(this.routerPath)
+    this.form_data.remark = ""
     this.generateTableData()
     this.getRegisterTestUsers()
   },
