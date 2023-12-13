@@ -156,6 +156,7 @@
 import MsMainContainer from "@/business/components/common/components/MsMainContainer.vue";
 import MsContainer from "@/business/components/common/components/MsContainer.vue";
 import * as commonOperator from "@/common/naguri/naguri";
+import {fullScreenLoading, stopFullScreenLoading} from "@/common/js/utils";
 
 export default {
   name: "remoteCurl",
@@ -226,15 +227,18 @@ export default {
       callback();
     },
     async getCurlAssemble (page=1, pageSize=20) {
+      const loading = fullScreenLoading(this, 'loading...');
       const headers = commonOperator.parseNaguriHeader()
       const { data: apiResponse } = await this.$axios.get(
         'naguri/ef_api/curl_assemble?page='+page+'&page_size='+pageSize,
         {headers, timeout: 5000}
       ).catch((error) => {
         commonOperator.messageTips('error', error)
+        stopFullScreenLoading(loading,1);
       })
       this.curlAssembleResponse = apiResponse
       this.curlAssemblePage.curlAssembleCount = apiResponse['count']
+      stopFullScreenLoading(loading,1);
     },
     async getCurlServerChange (type) {
       const headers = commonOperator.parseNaguriHeader()

@@ -134,6 +134,7 @@ export default {
   padding-top: 20px;
   width: 600px;
   min-width: 600px;
+  padding-left: 70px;
 }
 .res_area{
   padding-top: 20px;

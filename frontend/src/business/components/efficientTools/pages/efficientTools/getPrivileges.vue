@@ -66,6 +66,7 @@
 import MsMainContainer from "@/business/components/common/components/MsMainContainer.vue";
 import MsContainer from "@/business/components/common/components/MsContainer.vue";
 import * as commonOperator from "@/common/naguri/naguri";
+import {fullScreenLoading, stopFullScreenLoading} from "@/common/js/utils";
 
 export default {
   name: "quickRegister.vue",
@@ -122,16 +123,19 @@ export default {
       console.log(this.form_data)
     },
     async getPrivilegesRecord (page=1, pageSize=30) {
+      const loading = fullScreenLoading(this, 'loading...');
       const headers = commonOperator.parseNaguriHeader()
       const { data: apiResponse } = await this.$axios.get(
         'naguri/ef_api/privileges_record?page='+page+'&page_size='+pageSize,
         {headers, timeout: 5000}
       ).catch((error) => {
         commonOperator.messageTips('error', error)
+        stopFullScreenLoading(loading,1);
       })
       this.privilegesRecordResponse = apiResponse['data']
       console.log(this.privilegesRecordResponse)
       this.privilegesRecord.privilegesRecordCount = apiResponse['data']['count']
+      stopFullScreenLoading(loading,1);
     },
     async getVoucherOption () {
       const headers = commonOperator.parseNaguriHeader()

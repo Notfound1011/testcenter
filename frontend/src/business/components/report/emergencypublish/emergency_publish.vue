@@ -427,7 +427,10 @@ export default {
       rules: {
         publish_type: [{required: true, type: 'array', message: '请至少选择一个紧急发布类型', trigger: 'change'}],
         publish_service: [{required: true, type: 'array', message: '请至少选择一个相关变更服务', trigger: 'change'}],
-        publish_reason: [{required: true, message: '请输入紧急变更概述',trigger: 'blur'}],
+        publish_reason: [
+          {required: true, message: '请输入紧急变更概述',trigger: 'blur'},
+          { pattern: /\S/, message: '请输入有效的紧急变更概述，不能全为空格', trigger: 'blur' }
+        ],
         links: {
           jiraLink: {link: [
               { required: false, message: '请输入相关JIRA链接', trigger: 'blur' },

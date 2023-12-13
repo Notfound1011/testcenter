@@ -49,6 +49,7 @@
 import MsMainContainer from "@/business/components/common/components/MsMainContainer.vue";
 import MsContainer from "@/business/components/common/components/MsContainer.vue";
 import * as commonOperator from "@/common/naguri/naguri";
+import {fullScreenLoading, stopFullScreenLoading} from "@/common/js/utils";
 
 export default {
   name: "currencyConfig",
@@ -80,13 +81,16 @@ export default {
   },
   methods: {
     async getSymbolConfig (overrideEnv='') {
+      const loading = fullScreenLoading(this, 'loading...');
       const apiEnv = overrideEnv || this.apiEnv
       const { data: symbolConfigRes } = await this.$axios.get(
         `/pyServer/public/test-data/tools/get-currency-config?env=${apiEnv}&currency=BTC&getAll=true`,
       ).catch((error) => {
         commonOperator.messageTips('error', error)
+        stopFullScreenLoading(loading,1);
       })
       this.symbolConfig = symbolConfigRes['data'];
+      stopFullScreenLoading(loading,1);
     }
   }
 }

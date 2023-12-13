@@ -166,6 +166,7 @@
 import MsMainContainer from "@/business/components/common/components/MsMainContainer";
 import MsContainer from "@/business/components/common/components/MsContainer";
 import * as commonOperator from "@/common/naguri/naguri";
+import {fullScreenLoading, stopFullScreenLoading} from "@/common/js/utils";
 
 export default {
   inheritAttrs: false,
@@ -353,15 +354,18 @@ export default {
       return apiResponse['data']
     },
     async getListCoveragePage (page=1, pageSize=20) {
+      const loading = fullScreenLoading(this, 'loading...');
       const headers = commonOperator.parseNaguriHeader()
       const { data: apiResponse } = await this.$axios.post(
         'codeCoverage/report/list?pageNum='+page+'&pageSize='+pageSize,
         {headers, timeout: 5000}
       ).catch((error) => {
+        stopFullScreenLoading(loading,1);
         commonOperator.messageTips('error', error.response.data)
       })
       this.res.coverageListRes = apiResponse['data']
       this.listCoveragePage.listCoverageCount = apiResponse['data']['total']
+      stopFullScreenLoading(loading,1);
     },
     async techUserListResponse () {
       const headers = commonOperator.parseNaguriHeader()

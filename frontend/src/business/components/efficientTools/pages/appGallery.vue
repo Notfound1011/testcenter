@@ -122,6 +122,7 @@ export default {
         {headers, timeout: 5000}
       ).catch((error) => {
         commonOperator.messageTips('error', error)
+        stopFullScreenLoading(loading,1);
       })
       this.appGalleryDataIos = apiResponse['data']['iOS']
       this.appGalleryDataAnd = apiResponse['data']['Android']

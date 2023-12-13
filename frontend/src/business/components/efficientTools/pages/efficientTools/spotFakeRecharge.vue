@@ -159,6 +159,7 @@ export default {
   min-width: 500px;
   margin-left: 20px;
   height: 100%;
+  padding-left: 50px;
 }
 .card_header{
   font-weight: bold;

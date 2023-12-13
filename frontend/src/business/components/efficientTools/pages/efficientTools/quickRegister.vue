@@ -86,6 +86,7 @@
 import MsMainContainer from "@/business/components/common/components/MsMainContainer.vue";
 import MsContainer from "@/business/components/common/components/MsContainer.vue";
 import * as commonOperator from "@/common/naguri/naguri";
+import {fullScreenLoading, stopFullScreenLoading} from "@/common/js/utils";
 
 export default {
   name: "quickRegister.vue",
@@ -176,15 +177,18 @@ export default {
       })
     },
     async getRegisterTestUsers (page=1, pageSize=30) {
+      const loading = fullScreenLoading(this, 'loading...');
       const headers = commonOperator.parseNaguriHeader()
       const { data: apiResponse } = await this.$axios.get(
         'naguri/ef_api/quick_register?page='+page+'&page_size='+pageSize,
         {headers, timeout: 5000}
       ).catch((error) => {
+        stopFullScreenLoading(loading,1);
         commonOperator.messageTips('error', error)
       })
       this.testUserDataResponse = apiResponse
       this.testUserDataPage.testUserDataCount = apiResponse['count']
+      stopFullScreenLoading(loading,1);
     },
   }
 }
