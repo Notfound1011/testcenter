@@ -130,12 +130,12 @@ export default {
         {headers, timeout: 5000}
       ).catch((error) => {
         commonOperator.messageTips('error', error)
+      }).finally(() => {
         stopFullScreenLoading(loading,1);
-      })
+        this.loading = false
+      });
       this.privilegesRecordResponse = apiResponse['data']
-      console.log(this.privilegesRecordResponse)
       this.privilegesRecord.privilegesRecordCount = apiResponse['data']['count']
-      stopFullScreenLoading(loading,1);
     },
     async getVoucherOption () {
       const headers = commonOperator.parseNaguriHeader()

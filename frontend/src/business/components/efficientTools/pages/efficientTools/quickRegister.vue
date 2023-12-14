@@ -183,12 +183,13 @@ export default {
         'naguri/ef_api/quick_register?page='+page+'&page_size='+pageSize,
         {headers, timeout: 5000}
       ).catch((error) => {
-        stopFullScreenLoading(loading,1);
         commonOperator.messageTips('error', error)
-      })
+      }).finally(() => {
+        stopFullScreenLoading(loading,1);
+        this.loading = false
+      });
       this.testUserDataResponse = apiResponse
       this.testUserDataPage.testUserDataCount = apiResponse['count']
-      stopFullScreenLoading(loading,1);
     },
   }
 }

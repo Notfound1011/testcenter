@@ -234,11 +234,12 @@ export default {
         {headers, timeout: 5000}
       ).catch((error) => {
         commonOperator.messageTips('error', error)
+      }).finally(() => {
         stopFullScreenLoading(loading,1);
-      })
+        this.loading = false
+      });
       this.curlAssembleResponse = apiResponse
       this.curlAssemblePage.curlAssembleCount = apiResponse['count']
-      stopFullScreenLoading(loading,1);
     },
     async getCurlServerChange (type) {
       const headers = commonOperator.parseNaguriHeader()

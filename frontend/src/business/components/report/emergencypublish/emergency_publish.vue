@@ -416,6 +416,7 @@ import MsMainContainer from "@/business/components/common/components/MsMainConta
 import MsContainer from "@/business/components/common/components/MsContainer";
 import * as echarts from 'echarts';
 import * as commonOperator from "@/common/naguri/naguri";
+import {fullScreenLoading, stopFullScreenLoading} from "@/common/js/utils";
 
 export default {
   inheritAttrs: false,
@@ -726,14 +727,30 @@ export default {
       this.emergencyPublishTypeOptions = apiResponse
     },
     async publishListResponse (page=1, pageSize=20) {
+      const loading = fullScreenLoading(this, 'loading...');
       const headers = commonOperator.parseNaguriHeader()
-      const { data: apiResponse } = await this.$axios.get('naguri/em_api/publish?page='+page+'&page_size='+pageSize, {headers, timeout: 5000})
+      const { data: apiResponse } = await this.$axios.get(
+        'naguri/em_api/publish?page='+page+'&page_size='+pageSize,
+        {headers, timeout: 5000}
+      ).catch((error) => {
+        commonOperator.messageTips('error', error)
+      }).finally(() => {
+        stopFullScreenLoading(loading,1);
+      });
       this.emPublishDataResponse = apiResponse
       this.publishPage.emPublishCount = apiResponse['count']
     },
     async monthlyStatisticalResponse () {
+      const loading = fullScreenLoading(this, 'loading...');
       const headers = commonOperator.parseNaguriHeader()
-      const { data: apiResponse } = await this.$axios.get('naguri/em_api/monthly_statistics', {headers, timeout: 5000})
+      const { data: apiResponse } = await this.$axios.get(
+        'naguri/em_api/monthly_statistics',
+        {headers, timeout: 5000}
+      ).catch((error) => {
+        commonOperator.messageTips('error', error)
+      }).finally(() => {
+        stopFullScreenLoading(loading,1);
+      });
       this.monthlyStatistical = apiResponse
     },
     async topInfoResponse () {

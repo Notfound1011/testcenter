@@ -110,10 +110,11 @@ export default {
         `/pyServer/public/test-data/tools/get-symbol-config?env=${apiEnv}&symbol=BTC&getAll=true&symbolType=Spot`,
       ).catch((error) => {
         commonOperator.messageTips('error', error)
+      }).finally(() => {
         stopFullScreenLoading(loading,1);
-      })
+        this.loading = false
+      });
       this.symbolConfig = symbolConfigRes['data'];
-      stopFullScreenLoading(loading,1);
     }
   }
 }

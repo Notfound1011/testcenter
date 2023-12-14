@@ -79,10 +79,11 @@ export default {
         `/pyServer/public/test-data/tools/get-spot-margin-currency-config?env=${useEnv}&currency=BTC&getAll=true`,
       ).catch((error) => {
         commonOperator.messageTips('error', error)
+      }).finally(() => {
         stopFullScreenLoading(loading,1);
-      })
+        this.loading = false
+      });
       this.symbolConfig = symbolConfigRes['data'];
-      stopFullScreenLoading(loading,1);
     }
   }
 }

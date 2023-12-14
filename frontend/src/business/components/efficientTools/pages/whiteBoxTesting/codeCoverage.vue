@@ -360,12 +360,13 @@ export default {
         'codeCoverage/report/list?pageNum='+page+'&pageSize='+pageSize,
         {headers, timeout: 5000}
       ).catch((error) => {
-        stopFullScreenLoading(loading,1);
         commonOperator.messageTips('error', error.response.data)
-      })
+      }).finally(() => {
+        stopFullScreenLoading(loading,1);
+        this.loading = false
+      });
       this.res.coverageListRes = apiResponse['data']
       this.listCoveragePage.listCoverageCount = apiResponse['data']['total']
-      stopFullScreenLoading(loading,1);
     },
     async techUserListResponse () {
       const headers = commonOperator.parseNaguriHeader()
