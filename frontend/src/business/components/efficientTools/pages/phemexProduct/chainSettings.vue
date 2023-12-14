@@ -95,10 +95,11 @@ export default {
         {headers, timeout: 5000}
       ).catch((error) => {
         commonOperator.messageTips('error', error)
+      }).finally(() => {
         stopFullScreenLoading(loading,1);
-      })
+        this.loading = false
+      });
       this.symbolConfig = symbolConfigRes['data'];
-      stopFullScreenLoading(loading,1);
     }
   }
 }

@@ -11,14 +11,20 @@
             <el-timeline-item size="large" v-for="(items, date) in appGalleryDataIos" :key="date" :timestamp="date" placement="top">
               <el-card class="timeline-card" :body-style="cardBodyStyle" v-for="(item, index) in items" :key="index">
                 <div class="timeline-card-text">
-                  <h4>{{ item['version_desc'] }}</h4>
-                  <div v-if="item['version_description'] != null">{{ item['version_description'] }}</div>
-                  <div v-else>no change log.</div>
+                  <p class="card-text-title">{{ item['version_desc'] }}</p>
+                  <pre v-if="item['version_description'] != null">{{ item['version_description'] }}</pre>
+                  <pre v-else>no change log.</pre>
                   <div>
                     <el-button style="font-weight: bold" @click="copyToClipboard(item['ipa_url'])"
                                icon="el-icon-document-copy" size="mini" type="text">Copy iPA Link</el-button>
                   </div>
-                  <p>{{ item['builder'] }} build at {{ item['build_time'] }}</p>
+                  <div>
+                    <p>
+                      @{{ item['builder'] }}
+                      build <a target="_blank" style="font-style: italic;" :href="item['build_url']"> #{{ item['build_number'] }}</a>
+                      at {{ item['build_time'] }}
+                    </p>
+                  </div>
                 </div>
                 <div class="timeline-card-image">
                   <button @click="toggleImage(date, index, 'ios')">
@@ -39,16 +45,20 @@
             <el-timeline-item size="large" v-for="(itemsAnd, dateAnd) in appGalleryDataAnd" :key="dateAnd" :timestamp="dateAnd" placement="top">
               <el-card class="timeline-card" :body-style="cardBodyStyle" v-for="(itemAnd, indexAnd) in itemsAnd" :key="indexAnd">
                 <div class="timeline-card-text">
-                  <h4>{{ itemAnd['version_desc'] }}</h4>
-                  <div v-if="itemAnd['version_description'] != null">{{ itemAnd['version_description'] }}</div>
-                  <div v-else>no change log.</div>
+                  <p class="card-text-title">{{ itemAnd['version_desc'] }}</p>
+                  <pre v-if="itemAnd['version_description'] != null">{{ itemAnd['version_description'] }}</pre>
+                  <pre v-else>no change log.</pre>
                   <div>
                     <el-button style="font-weight: bold" @click="copyToClipboard(itemAnd['apk_url'])"
                                icon="el-icon-document-copy" size="mini" type="text">Copy Apk Link</el-button>
                     <el-button style="font-weight: bold" @click="copyToClipboard(itemAnd['abb_url'])"
                                icon="el-icon-document-copy" size="mini" type="text">Copy Aab Link</el-button>
                   </div>
-                  <p>{{ itemAnd['builder'] }} build at {{ itemAnd['build_time'] }}</p>
+                  <div>
+                    @{{ itemAnd['builder'] }}
+                    build <a target="_blank" style="font-style: italic;" :href="itemAnd['build_url']"> #{{ itemAnd['build_number'] }}</a>
+                    at {{ itemAnd['build_time'] }}
+                  </div>
                 </div>
                 <div class="timeline-card-image">
                   <button @click="toggleImage(dateAnd, indexAnd, 'and')">
@@ -122,12 +132,12 @@ export default {
         {headers, timeout: 5000}
       ).catch((error) => {
         commonOperator.messageTips('error', error)
+      }).finally(() => {
         stopFullScreenLoading(loading,1);
-      })
+        this.loading = false
+      });
       this.appGalleryDataIos = apiResponse['data']['iOS']
       this.appGalleryDataAnd = apiResponse['data']['Android']
-      stopFullScreenLoading(loading,1);
-      this.loading = false
     }
   }
 }
@@ -145,6 +155,11 @@ export default {
   width: 82%;
   .timeline-card-text {
     flex: 1;
+    min-width: 345px;
+    .card-text-title {
+      font-weight: bold;
+      font-size: 16px;
+    }
   }
   .timeline-card-image {
     flex: 1;

@@ -35,6 +35,7 @@
 import MsMainContainer from "@/business/components/common/components/MsMainContainer";
 import MsContainer from "@/business/components/common/components/MsContainer";
 import * as commonOperator from "@/common/naguri/naguri";
+import {fullScreenLoading, stopFullScreenLoading} from "@/common/js/utils";
 
 export default {
   name: "site_navigation",
@@ -70,8 +71,16 @@ export default {
       this.ctlTipsStatus(type, this.routerPath)
     },
     async initBtnData () {
+      const loading = fullScreenLoading(this, 'loading...');
       const headers = commonOperator.parseNaguriHeader()
-      const { data: codeRes } = await this.$axios.get('naguri/navi_api/navigation_list', {headers, timeout: 5000})
+      const { data: codeRes } = await this.$axios.get(
+        'naguri/navi_api/navigation_list',
+        {headers, timeout: 5000}
+      ).catch((error) => {
+        commonOperator.messageTips('error', error)
+      }).finally(() => {
+        stopFullScreenLoading(loading,1);
+      });
       this.envBtn = codeRes['env_btn']
       this.lowPriorityBtn = codeRes['low_priority_btn']
     }
