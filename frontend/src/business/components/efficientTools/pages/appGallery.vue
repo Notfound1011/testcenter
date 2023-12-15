@@ -3,74 +3,83 @@
     <ms-main-container>
       <div class="timeline-area">
         <div class="timeline-area-ios-block">
-          <el-timeline>
-            <div class="timeline-title-font">
-              <el-button :loading="loading" size="mini" icon="el-icon-refresh-left" circle @click="getPrivilegesRecord"></el-button>
-              Phemex App iOS
-            </div>
-            <el-timeline-item size="large" v-for="(items, date) in appGalleryDataIos" :key="date" :timestamp="date" placement="top">
-              <el-card class="timeline-card" :body-style="cardBodyStyle" v-for="(item, index) in items" :key="index">
-                <div class="timeline-card-text">
-                  <p class="card-text-title">{{ item['version_desc'] }}</p>
-                  <pre v-if="item['version_description'] != null">{{ item['version_description'] }}</pre>
-                  <pre v-else>no change log.</pre>
-                  <div>
-                    <el-button style="font-weight: bold" @click="copyToClipboard(item['ipa_url'])"
-                               icon="el-icon-document-copy" size="mini" type="text">Copy iPA Link</el-button>
+          <div class="timeline-title-font">
+            <span>Phemex App iOS </span>
+            <el-tooltip class="item" effect="dark" content="click to refresh" placement="right">
+              <el-button :loading="loading" size="small" icon="el-icon-refresh-left" circle @click="getPrivilegesRecord"></el-button>
+            </el-tooltip>
+          </div>
+          <div class="block-content">
+            <el-timeline>
+              <el-timeline-item size="large" v-for="(items, date) in appGalleryDataIos" :key="date" :timestamp="date" placement="top">
+                <el-card class="timeline-card" :body-style="cardBodyStyle" v-for="(item, index) in items" :key="index">
+                  <div class="timeline-card-text">
+                    <p class="card-text-title">{{ item['version_desc'] }}</p>
+                    <pre v-if="item['version_description'] != null">{{ item['version_description'] }}</pre>
+                    <pre v-else>no change log.</pre>
+                    <div>
+                      <el-button style="font-weight: bold" @click="copyToClipboard(item['ipa_url'])"
+                                 icon="el-icon-document-copy" size="mini" type="text">Copy iPA Link</el-button>
+                    </div>
+                    <div class="timeline-card-footer">
+                      <p class="timeline-card-builder">@{{ item['builder'] }}</p>
+                      <p>build</p>
+                      <p><a target="_blank" style="font-style: italic;" :href="item['build_url']"> #{{ item['build_number'] }}</a></p>
+                      <p>at</p>
+                      <p>{{ item['build_time'] }}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p>
-                      @{{ item['builder'] }}
-                      build <a target="_blank" style="font-style: italic;" :href="item['build_url']"> #{{ item['build_number'] }}</a>
-                      at {{ item['build_time'] }}
-                    </p>
+                  <div class="timeline-card-image">
+                    <button @click="toggleImage(date, index, 'ios')">
+                      <img alt="click to see." :style="{ width: showImage[`${date}-${index}-ios`] ? '130px' : '130px', height: showImage[`${date}-${index}-ios`] ? '130px' : '130px', cursor: 'pointer' }"
+                           :src="showImage[`${date}-${index}-ios`] ? item['ipa_image_url'] : require('../images/erweima.png')">
+                    </button>
                   </div>
-                </div>
-                <div class="timeline-card-image">
-                  <button @click="toggleImage(date, index, 'ios')">
-                    <img alt="click to see." :style="{ width: showImage[`${date}-${index}-ios`] ? '130px' : '130px', height: showImage[`${date}-${index}-ios`] ? '130px' : '130px', cursor: 'pointer' }"
-                         :src="showImage[`${date}-${index}-ios`] ? item['ipa_image_url'] : require('../images/erweima.png')">
-                  </button>
-                </div>
-              </el-card>
-            </el-timeline-item>
-          </el-timeline>
+                </el-card>
+              </el-timeline-item>
+            </el-timeline>
+          </div>
         </div>
         <div class="timeline-area-and-block">
-          <el-timeline>
-            <div class="timeline-title-font">
-              <el-button :loading="loading" size="mini" icon="el-icon-refresh-left" circle @click="getPrivilegesRecord"></el-button>
-              Phemex App Android
-            </div>
-            <el-timeline-item size="large" v-for="(itemsAnd, dateAnd) in appGalleryDataAnd" :key="dateAnd" :timestamp="dateAnd" placement="top">
-              <el-card class="timeline-card" :body-style="cardBodyStyle" v-for="(itemAnd, indexAnd) in itemsAnd" :key="indexAnd">
-                <div class="timeline-card-text">
-                  <p class="card-text-title">{{ itemAnd['version_desc'] }}</p>
-                  <pre v-if="itemAnd['version_description'] != null">{{ itemAnd['version_description'] }}</pre>
-                  <pre v-else>no change log.</pre>
-                  <div>
-                    <el-button style="font-weight: bold" @click="copyToClipboard(itemAnd['apk_url'])"
-                               icon="el-icon-document-copy" size="mini" type="text">Copy Apk Link</el-button>
-                    <el-button style="font-weight: bold" @click="copyToClipboard(itemAnd['abb_url'])"
-                               icon="el-icon-document-copy" size="mini" type="text">Copy Aab Link</el-button>
+          <div class="timeline-title-font">
+            <span>Phemex App Android </span>
+            <el-tooltip class="item" effect="dark" content="click to refresh" placement="right">
+              <el-button :loading="loading" size="small" icon="el-icon-refresh-left" circle @click="getPrivilegesRecord"></el-button>
+            </el-tooltip>
+          </div>
+          <div class="block-content">
+            <el-timeline>
+              <el-timeline-item size="large" v-for="(itemsAnd, dateAnd) in appGalleryDataAnd" :key="dateAnd" :timestamp="dateAnd" placement="top">
+                <el-card class="timeline-card" :body-style="cardBodyStyle" v-for="(itemAnd, indexAnd) in itemsAnd" :key="indexAnd">
+                  <div class="timeline-card-text">
+                    <p class="card-text-title">{{ itemAnd['version_desc'] }}</p>
+                    <pre v-if="itemAnd['version_description'] != null">{{ itemAnd['version_description'] }}</pre>
+                    <pre v-else>no change log.</pre>
+                    <div>
+                      <el-button style="font-weight: bold" @click="copyToClipboard(itemAnd['apk_url'])"
+                                 icon="el-icon-document-copy" size="mini" type="text">Copy Apk Link</el-button>
+                      <el-button style="font-weight: bold" @click="copyToClipboard(itemAnd['abb_url'])"
+                                 icon="el-icon-document-copy" size="mini" type="text">Copy Aab Link</el-button>
+                    </div>
+                    <div class="timeline-card-footer">
+                      <p class="timeline-card-builder">@{{ itemAnd['builder'] }}</p>
+                      <p>build</p>
+                      <p><a target="_blank" style="font-style: italic;" :href="itemAnd['build_url']"> #{{ itemAnd['build_number'] }}</a></p>
+                      <p>at</p>
+                      <p>{{ itemAnd['build_time'] }}</p>
+                    </div>
                   </div>
-                  <div>
-                    @{{ itemAnd['builder'] }}
-                    build <a target="_blank" style="font-style: italic;" :href="itemAnd['build_url']"> #{{ itemAnd['build_number'] }}</a>
-                    at {{ itemAnd['build_time'] }}
+                  <div class="timeline-card-image">
+                    <button @click="toggleImage(dateAnd, indexAnd, 'and')">
+                      <img alt="click to see." :style="{ width: showImage[`${dateAnd}-${indexAnd}-and`] ? '130px' : '130px', height: showImage[`${dateAnd}-${indexAnd}-and`] ? '130px' : '130px', cursor: 'pointer' }"
+                           :src="showImage[`${dateAnd}-${indexAnd}-and`] ? itemAnd['apk_image_url'] : require('../images/erweima.png')">
+                    </button>
                   </div>
-                </div>
-                <div class="timeline-card-image">
-                  <button @click="toggleImage(dateAnd, indexAnd, 'and')">
-                    <img alt="click to see." :style="{ width: showImage[`${dateAnd}-${indexAnd}-and`] ? '130px' : '130px', height: showImage[`${dateAnd}-${indexAnd}-and`] ? '130px' : '130px', cursor: 'pointer' }"
-                         :src="showImage[`${dateAnd}-${indexAnd}-and`] ? itemAnd['apk_image_url'] : require('../images/erweima.png')">
-                  </button>
-                </div>
-              </el-card>
-            </el-timeline-item>
-          </el-timeline>
+                </el-card>
+              </el-timeline-item>
+            </el-timeline>
+          </div>
         </div>
-        <!-- <div class="timeline-area-empty-block"></div> -->
       </div>
     </ms-main-container>
   </ms-container>
@@ -160,6 +169,14 @@ export default {
       font-weight: bold;
       font-size: 16px;
     }
+    .timeline-card-footer {
+      display: flex;
+      flex-direction: row;
+      .timeline-card-builder {
+        font-weight: bold;
+        color: #4b1980;
+      }
+    }
   }
   .timeline-card-image {
     flex: 1;
@@ -180,12 +197,22 @@ export default {
   flex-direction: row;
   .timeline-area-ios-block {
     flex: 1;
+    .block-content {
+      padding-top: 10px;
+      height: calc(90vh - 60px);
+      overflow: auto;
+    }
   }
   .timeline-area-and-block {
     flex: 1;
+    .block-content {
+      padding-top: 10px;
+      height: calc(90vh - 60px);
+      overflow: auto;
+    }
   }
-  .timeline-area-empty-block {
-    flex: 1;
-  }
+}
+.timeline-card-footer p {
+  margin-right: 5px;
 }
 </style>
