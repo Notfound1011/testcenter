@@ -7,7 +7,7 @@
             <div slot="header" class="clearfix">
               <span class="card_header">Quick Registration</span>
             </div>
-            <el-form ref="form_ref" :model="form_data" :rules="form_rule" label-width="150px" size="medium" >
+            <el-form ref="form_ref" :model="form_data" :rules="form_rule" label-width="150px" size="medium" class="out-form">
               <el-form-item label="Environment" prop="env">
                 <el-radio-group v-model="form_data.env" size="medium">
                   <el-radio-button border label="fat">fat</el-radio-button>
@@ -45,34 +45,60 @@
                 <el-input v-model="form_data['remark']" placeholder="for account remark if you need." clearable></el-input>
               </el-form-item>
               <el-form-item size="medium">
-                <el-button icon="el-icon-s-promotion" type="primary" @click="on_submit_form" :loading="loading" style="width: 70%">do register</el-button>
+                <el-button icon="el-icon-s-promotion" type="primary" @click="on_submit_form" :loading="loading" style="width: 70%">do registration</el-button>
               </el-form-item>
             </el-form>
-          </el-card>
-          <el-card style="margin-top: 10px">
-            <div slot="header">
-              <span class="card_header">Response</span>
-            </div>
-            <el-table :data="tableData" :show-header="false" border>
-              <el-table-column width="100px" prop="key"></el-table-column>
-              <el-table-column prop="value"></el-table-column>
-            </el-table>
+            <div></div>
+            <pre class="code-container">{{ res_result }}</pre>
           </el-card>
         </div>
         <div class="table-area">
           <el-table height="100%" :data="testUserDataResponse.results" border stripe
                     :header-cell-style="{background:'#eef1f6',color:'#606266'}"
                     style="background: transparent;">
-            <el-table-column label="Env" prop="env" width="60"></el-table-column>
-            <el-table-column label="UserId" align="center" prop="user_id" width="100"></el-table-column>
-            <!-- <el-table-column label="Given Prefix" align="center" prop="mail_prefix" width="270"></el-table-column> -->
-            <el-table-column label="Account Email" align="center" prop="email" width="330"></el-table-column>
-            <el-table-column label="Referral" align="center" prop="user_referral" width="100"></el-table-column>
+            <el-table-column label="userInfo" align="center" prop="user_id" width="155">
+              <template slot-scope="scope">
+                {{ scope.row['user_id'] }} # {{ scope.row['user_referral'] }}
+              </template>
+            </el-table-column>
+            <el-table-column label="Account Email" align="center" prop="email"></el-table-column>
             <el-table-column label="Password" align="center" prop="pass_word" width="150"></el-table-column>
-            <el-table-column label="Group" align="center" prop="group" width="70"></el-table-column>
-            <el-table-column label="Referral By" align="center" prop="referral" width="100"></el-table-column>
-            <el-table-column label="Remark" prop="remark"></el-table-column>
+            <el-table-column label="Referral By" align="center" prop="referral" width="100">
+              <template slot-scope="scope">
+                <span v-if="scope.row['referral'] === null || scope.row['referral'] === ''">--</span>
+                <span v-else>{{ scope.row['referral'] }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="Remark" prop="remark">
+              <template slot-scope="scope">
+                {{ scope.row['env'] }} {{ scope.row['remark'] }}
+              </template>
+            </el-table-column>
+            <el-table-column label="CreateAt" align="center" prop="c_time" width="170"></el-table-column>
+            <el-table-column label="Action" prop="action" width="80" align="center">
+              <template slot-scope="scope">
+                <el-button type="warning" icon="el-icon-edit" size="mini" @click="editRow(scope.row)"></el-button>
+              </template>
+            </el-table-column>
           </el-table>
+          <!-- 编辑对话框 -->
+          <el-dialog :visible.sync="editDialogVisible" title="Edit User Data" @close="cancelEdit" width="65%">
+            <el-form :model="editedRow" size="medium" label-position="right">
+              <el-row>
+                <el-col :span="12" v-for="(value, key) in editedRow" :key="key">
+                  <el-form-item style="text-align: right; padding-right: 10px;" :prop="key">
+                    <span style="font-weight: bold; margin:10px">{{ key }}</span>
+                    <el-input :disabled="shouldDisableField(key)" v-model="editedRow[key]"></el-input>
+                  </el-form-item>
+                </el-col>
+              </el-row>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+              <el-button @click="cancelEdit">Cancel</el-button>
+              <el-button type="primary" @click="saveEdit">Save</el-button>
+            </div>
+          </el-dialog>
+          <!-- 编辑对话框 -->
           <el-pagination background :pager-count=12 :current-page = "testUserDataPage.currentPage"
                          layout="total, prev, pager, next" :total="testUserDataPage.testUserDataCount"
                          @current-change="handleCurrentChange" :page-size=40 style="margin-top: 5px"></el-pagination>
@@ -121,6 +147,8 @@ export default {
       routerPath: this.$route.path.toString(),
       testUserDataResponse: {results: []},
       testUserDataPage: {testUserDataCount: 0, currentPage: 1,},
+      editDialogVisible: false,
+      editedRow: {}
     }
   },
   created () {
@@ -129,9 +157,22 @@ export default {
     this.res_result = commonOperator.initCrucialResultData(this.routerPath)
     this.form_data.remark = ""
     this.generateTableData()
-    this.getRegisterTestUsers()
+    this.testUserDataPage.currentPage = commonOperator.getCurrentPageNo(this.routerPath)
+    this.getRegisterTestUsers(this.testUserDataPage.currentPage)
   },
   methods: {
+    shouldDisableField(key) {
+      return ![
+        'remark', 'user_otp', 'api_key', 'api_sec', 'pass_word'
+      ].includes(key);
+    },
+    editRow(row) {
+      this.editedRow = { ...row };
+      this.editDialogVisible = true;
+    },
+    cancelEdit() {
+      this.editDialogVisible = false;
+    },
     // 获取当前人邮箱前缀
     getCurrentUserMailPrefix() {
       const local_mail = JSON.parse(window.localStorage.getItem('Admin-Token'))['email']
@@ -139,7 +180,6 @@ export default {
       this.form_data.mail_prefix = parts[0]
       const suffix = parts[1].split('.')
       this.form_data.mail_suffix = suffix[0]
-      console.log(suffix[0])
     },
     // 绘制请求结果table
     generateTableData() {
@@ -148,6 +188,7 @@ export default {
       });
     },
     handleCurrentChange (val) {
+      commonOperator.setCurrentPageNo(this.routerPath, val)
       this.getRegisterTestUsers(val)
     },
     // 执行请求发送
@@ -173,7 +214,8 @@ export default {
         this.generateTableData()
         this.loading = false
         commonOperator.messageTips('success', 'response is success.')
-        await this.getRegisterTestUsers(1,30);
+        const currentPageNo = commonOperator.getCurrentPageNo(this.routerPath)
+        await this.getRegisterTestUsers(currentPageNo);
       })
     },
     async getRegisterTestUsers (page=1, pageSize=30) {
@@ -190,6 +232,22 @@ export default {
       });
       this.testUserDataResponse = apiResponse
       this.testUserDataPage.testUserDataCount = apiResponse['count']
+    },
+    async saveEdit() {
+      const loading = fullScreenLoading(this, 'loading...');
+      const headers = commonOperator.parseNaguriHeader()
+      const { data: apiResponse } = await this.$axios.put(
+        'naguri/ef_api/quick_register', this.editedRow,
+        {headers, timeout: 5000}
+      ).catch((error) => {
+        commonOperator.messageTips('error', error)
+      }).finally(() => {
+        stopFullScreenLoading(loading,1);
+        this.loading = false
+      });
+      const currentPageNo = commonOperator.getCurrentPageNo(this.routerPath)
+      await this.getRegisterTestUsers(currentPageNo)
+      this.editDialogVisible = false;
     },
   }
 }
@@ -235,7 +293,18 @@ export default {
 .el-input{
   width: 80%;
 }
-.el-form{
+.out-form{
   margin: 10px 0 0 -40px;
+}
+.code-container {
+  flex: 1;
+  background-color: #242a2e;
+  color: #ffffff;
+  font-family: "Monaco", "Courier New", monospace;
+  font-size: 14px;
+  padding: 10px;
+  border-radius: 10px;
+  overflow: auto;
+  max-height: calc(39vh - 100px) !important
 }
 </style>

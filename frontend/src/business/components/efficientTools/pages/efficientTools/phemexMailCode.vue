@@ -5,7 +5,7 @@
         <el-col class="form_area">
           <el-card>
             <div slot="header" class="clearfix">
-              <span class="card_header">Query Phemex Email Code</span>
+              <span class="card_header">Get Phemex Email Verification Code</span>
             </div>
             <el-form :model="form_data" :rules="form_rule" ref="form_ref" label-width="80px" size="medium">
               <el-form-item label="Query Email" prop="email">

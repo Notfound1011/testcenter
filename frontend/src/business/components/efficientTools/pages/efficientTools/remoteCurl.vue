@@ -5,7 +5,7 @@
         <div class="form_area">
           <el-card>
             <div slot="header">
-              <span class="card_header">Send Remote Curl</span>
+              <span class="card_header">Execution Curl Command</span>
             </div>
             <div class="card_body">
               <el-form ref="form_ref" :model="form_data" :rules="form_rule" label-width="150px" size="medium" style="margin-left: -25px">
@@ -197,7 +197,8 @@ export default {
     this.getCurlServerChange('init')
     this.form_data = commonOperator.initCrucialFromData(this.routerPath, this.form_data)
     this.res_result = commonOperator.initCrucialResultData(this.routerPath)
-    this.getCurlAssemble()
+    this.curlAssemblePage.currentPage = commonOperator.getCurrentPageNo(this.routerPath)
+    this.getCurlAssemble(this.curlAssemblePage.currentPage)
   },
   methods: {
     openLink() {
@@ -213,10 +214,12 @@ export default {
       })
       this.deleteRes = deleteRes
       await commonOperator.sleep(300);
-      await this.getCurlAssemble(1, 20)
+      const currentPageNo = commonOperator.getCurrentPageNo(this.routerPath)
+      await this.getCurlAssemble(currentPageNo)
       commonOperator.notificationTips('success', "response is success.")
     },
     handleCurrentChange (val) {
+      commonOperator.setCurrentPageNo(this.routerPath, val)
       this.getCurlAssemble(val)
     },
     validateLinks(rule, value, callback) {
@@ -280,7 +283,8 @@ export default {
         commonOperator.saveCrucialData(this.routerPath, null, res);
         if (actionType === 'save' && formDataOverride == null) {
           await commonOperator.sleep(300);
-          await this.getCurlAssemble(1, 20)
+          const currentPageNo = commonOperator.getCurrentPageNo(this.routerPath)
+          await this.getCurlAssemble(currentPageNo)
         }
       } catch (error) {
         commonOperator.messageTips('error', error);

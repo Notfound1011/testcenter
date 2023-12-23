@@ -20,11 +20,11 @@
                   v-permission="['PROJECT_API_DEFINITION:READ','PROJECT_API_SCENARIO:READ','PROJECT_API_REPORT:READ']">
       {{ $t('commons.api') }}
     </el-menu-item>
-    <el-menu-item index="/performance" v-if="check('performance')"
+    <!-- <el-menu-item index="/performance" v-if="check('performance')"
                   onselectstart="return false"
                   v-permission="['PROJECT_PERFORMANCE_TEST:READ','PROJECT_PERFORMANCE_REPORT:READ']">
       {{ $t('commons.performance') }}
-    </el-menu-item>
+    </el-menu-item> -->
     <el-menu-item index="/reports" v-if="check('reports')" onselectstart="return false"
                   v-permission="['PROJECT_REPORT_ANALYSIS:READ']">
       {{ $t('commons.quality_market.title') }}

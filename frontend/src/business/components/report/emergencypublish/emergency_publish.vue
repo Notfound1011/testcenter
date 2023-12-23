@@ -540,7 +540,8 @@ export default {
     }
   },
   created() {
-    this.publishListResponse()
+    this.publishPage.currentPage = commonOperator.getCurrentPageNo(this.routerPath)
+    this.publishListResponse(this.publishPage.currentPage)
     this.onPublishStatusResponse()
     this.topInfoResponse()
   },
@@ -686,6 +687,7 @@ export default {
       });
     },
     handleCurrentChange (val) {
+      commonOperator.setCurrentPageNo(this.routerPath, val)
       this.publishListResponse(val)
     },
     publishStatusTag (status) {
@@ -800,9 +802,10 @@ export default {
           this.sleep(500).then(() => {
             this.preData.submitLoading = false
             this.preData.dialogVisible = false
-            this.reload()
           })
         }
+        const currentPageNo = commonOperator.getCurrentPageNo(this.routerPath)
+        await this.publishListResponse(currentPageNo)
       })
     }
   }

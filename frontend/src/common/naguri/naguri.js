@@ -84,6 +84,16 @@ export function initCrucialFromData(routePath, formData = []) {
   return formData;
 }
 
+export function setCurrentPageNo (routerPath, pageNo='1') {
+  const mixKey = `${routerPath}#currentPageNo`
+  window.localStorage.setItem(mixKey, pageNo)
+}
+
+export function getCurrentPageNo(routerPath) {
+  const mixKey = window.localStorage.getItem(`${routerPath}#currentPageNo`);
+  return mixKey ? parseInt(mixKey) : 1;
+}
+
 // 数据初始化返回值部分
 export function initCrucialResultData (routerPath) {
   let resResult

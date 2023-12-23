@@ -103,7 +103,8 @@ export default {
   created () {
     this.form_data = commonOperator.initCrucialFromData(this.routerPath, this.form_data)
     this.res_result = commonOperator.initCrucialResultData(this.routerPath)
-    this.getPrivilegesRecord()
+    this.privilegesRecord.currentPage = commonOperator.getCurrentPageNo(this.routerPath)
+    this.getPrivilegesRecord(this.privilegesRecord.currentPage)
     this.getVoucherOption()
     this.validateInput()
   },
@@ -112,6 +113,7 @@ export default {
       this.form_data.users = this.form_data.users.replace(/[^0-9\n]/g, "");
     },
     handleCurrentChange (val) {
+      commonOperator.setCurrentPageNo(this.routerPath, val)
       this.getPrivilegesRecord(val)
     },
     handleSelectChange() {
@@ -173,7 +175,8 @@ export default {
         commonOperator.saveCrucialData(this.routerPath, null, res)
         this.loading = false
         commonOperator.messageTips('success', 'response is success.')
-        await this.getPrivilegesRecord(1,30);
+        const currentPageNo = commonOperator.getCurrentPageNo(this.routerPath)
+        await this.getPrivilegesRecord(currentPageNo);
       })
     },
   }

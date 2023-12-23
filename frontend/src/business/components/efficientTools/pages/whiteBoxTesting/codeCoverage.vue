@@ -238,7 +238,8 @@ export default {
     },
   },
   created() {
-    this.getListCoveragePage()
+    this.listCoveragePage.currentPage = commonOperator.getCurrentPageNo(this.routerPath)
+    this.getListCoveragePage(this.listCoveragePage.currentPage)
     this.techUserListResponse()
   },
   methods: {
@@ -303,6 +304,7 @@ export default {
         .catch(_ => {});
     },
     handleCurrentChange (val) {
+      commonOperator.setCurrentPageNo(this.routerPath, val)
       this.getListCoveragePage(val)
     },
     async getCoverageBranchCommit (serverId, branch) {
@@ -396,7 +398,8 @@ export default {
           this.preData.submitLoading = false
           this.preData.dialogVisible = false
           this.$refs['codeCoverageFormRef'].resetFields()
-          this.getListCoveragePage()
+          const currentPageNo = commonOperator.getCurrentPageNo(this.routerPath)
+          this.getListCoveragePage(currentPageNo)
         })
       });
     }
