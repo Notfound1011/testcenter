@@ -36,7 +36,7 @@
 import MsMainContainer from "@/business/components/common/components/MsMainContainer";
 import MsContainer from "@/business/components/common/components/MsContainer";
 import MsAsideContainer from "@/business/components/common/components/MsAsideContainer";
-import {jenkinsAuth} from "@/common/js/utils";
+import {jenkinsAuth, noRepeat} from "@/common/js/utils";
 
 export default {
   components: {MsMainContainer, MsContainer, MsAsideContainer},
@@ -57,38 +57,52 @@ export default {
     return {
       JenkinsJobList: [],
       json: {
-        Jenkins_Crumb:''
+        Jenkins_Crumb: ''
       },
-      open_list:["1"],
+      open_list: ["1"],
       jenkins_auth: jenkinsAuth()
     }
   },
   methods: {
-    setJenkinsInfo() {
-      this.$axios.get("/jenkins/crumbIssuer/api/xml",
-        {
+    async setJenkinsInfo() {
+      try {
+        // 获取 Jenkins Crumb
+        const crumbRes = await this.$axios.get("/jenkins/crumbIssuer/api/xml", {
           params: {'xpath': 'concat(//crumbRequestField,":",//crumb)'},
           headers: {'Authorization': this.jenkins_auth}
-        }).then(res => {
-        if (res.status === 200) {
-          this.json.Jenkins_Crumb = res.data.split(":")[1];
+        });
+        if (crumbRes.status === 200) {
+          this.json.Jenkins_Crumb = crumbRes.data.split(":")[1];
           localStorage.setItem("JenkinsInfo", JSON.stringify(this.json));
+        } else {
+          throw new Error('Failed to retrieve Jenkins Crumb');
         }
-      })
-      // 获取jobList任务列表
-      // this.$axios.post("/jenkins/api/json?tree=jobs[name,url,builds[number,result,duration,timestamp,url]{0,1}]", null,
-      //   {headers: {'Authorization': 'Basic dGVzdDoxMjM0NTY=', 'Jenkins-Crumb': this.Jenkins_Crumb}}).then((res) => {
-      //   if (res.status === 200) {
-      //     this.tableData = res.data.jobs
-      //     this.tableData.forEach(e => {
-      //       this.JenkinsJobList.push(e.name)
-      //     })
-      //   }
-      //   this.json.JenkinsJobList = noRepeat(this.JenkinsJobList);
-      //   localStorage.setItem("JenkinsInfo", JSON.stringify(this.json));
-      // }).catch(() => {
-      //   }
-      // )
+        // 使用获取到的 Jenkins Crumb 获取 job 列表
+        const jobListRes = await this.$axios.post("/jenkins/api/json?tree=jobs[name,url,description,builds[number,result,duration,timestamp,url]{0,1}]", null, {
+          headers: {
+            'Authorization': this.jenkins_auth,
+            'Jenkins-Crumb': this.json.Jenkins_Crumb // 注意这里使用已经设置好的 Jenkins_Crumb
+          }
+        });
+        if (jobListRes.status === 200) {
+          const datas = jobListRes.data.jobs;
+
+          // 先按照构建的时间戳进行排序
+          datas.sort((a, b) => {
+            const aTimestamp = (a.builds && a.builds.length > 0) ? a.builds[0].timestamp : 0;
+            const bTimestamp = (b.builds && b.builds.length > 0) ? b.builds[0].timestamp : 0;
+            return bTimestamp - aTimestamp; // 降序排序
+          });
+          // 然后将每个任务的名称添加到 JenkinsJobList 数组中
+          this.JenkinsJobList = datas.map(job => job.name);
+          this.json.JenkinsJobList = noRepeat(this.JenkinsJobList);
+          localStorage.setItem("JenkinsInfo", JSON.stringify(this.json));
+        } else {
+          throw new Error('Failed to retrieve job list');
+        }
+      } catch (e) {
+        console.error(e);
+      }
     }
   }
 }

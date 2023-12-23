@@ -19,11 +19,10 @@ export default {
   },
   methods: {
     qaBugCreatedStat(data) {
-      let that = this
-      if (that.qaBugCreatedBarChart != null && that.qaBugCreatedBarChart != "" && that.qaBugCreatedBarChart != undefined) {
+      if (this.qaBugCreatedBarChart) {
         this.qaBugCreatedBarChart.dispose();
       }
-      that.qaBugCreatedBarChart = that.$echarts.init(document.getElementById(this.id));
+      this.qaBugCreatedBarChart = this.$echarts.init(document.getElementById(this.id));
 
       let datas = groupArray(data, 'creator')
       let xAxisData = []
@@ -60,7 +59,7 @@ export default {
         title: {
           text: 'BUG CREATED BY QA',
           subtext: 'summary of the bug qa created',
-          link: that.jira_address + "/issues/?jql=" + this.qaCreatedBugJQL,
+          link: this.jira_address + "/issues/?jql=" + this.qaCreatedBugJQL,
           textStyle: {
             fontSize: 18,
             color: "rgba(55, 96, 186, 1)"
@@ -157,42 +156,39 @@ export default {
           }
         ]
       }
-      that.qaBugCreatedBarChart.setOption(option, true)
+      this.qaBugCreatedBarChart.setOption(option, true)
       // legend切换时触发，更新options.xAxis中的值
-      that.qaBugCreatedBarChart.on('legendselectchanged', obj => {
-        var options = that.qaBugCreatedBarChart.getOption()
-        //这里是选择切换什么样的x轴，那么他会进行对Y值的切换
-        if (obj.name == '按人') {
-          options.xAxis = {
-            data: xAxisData,
-            name: '人',
-            nameLocation: 'center',
-            nameGap: 35,
-            axisLabel: {interval: 0, rotate: 30},
-            nameTextStyle: {
-              padding: 20,
-            }
+      this.qaBugCreatedBarChart.on('legendselectchanged', params => {
+        var options = this.qaBugCreatedBarChart.getOption()
+        // 定义X轴的基本配置
+        var baseXAxisOptions = {
+          nameLocation: 'center',
+          nameGap: 35,
+          axisLabel: {interval: 0, rotate: 30},
+          nameTextStyle: {
+            padding: 20,
           }
-        } else if (obj.name == '按组') {
+        };
+
+        // 根据图例选择更新X轴的数据和名称
+        if (params.name === '按人') {
           options.xAxis = {
-            data: groupData,
-            name: '组',
-            nameLocation: 'center',
-            nameGap: 35,
-            axisLabel: {interval: 0, rotate: 30},
-            nameTextStyle: {
-              padding: 20,
-            }
-            // 大多数数据更新了后，已经初始化后的图表X轴或者Y轴仍然不变。 因为xAxis或者yAxis，在初始化的时候赋值为一个对象，
-            // 而刷新数据的时候只是刷新xAxis的data部分，这个时候xAxis是找不到数组中到底哪个数据在刷新，
-            // 因此，你可以直接修改整个xAxis的值，而不是xAxis.data
-          }
+            ...baseXAxisOptions, // 展开基本配置
+            data: xAxisData,     // 使用人员数据
+            name: '人'
+          };
+        } else if (params.name === '按组') {
+          options.xAxis = {
+            ...baseXAxisOptions, // 展开基本配置
+            data: groupData,     // 使用组别数据
+            name: '组'
+          };
         }
-        that.qaBugCreatedBarChart.setOption(options, true)
+        this.qaBugCreatedBarChart.setOption(options, true)
       })
       //echarts series.bar的点击事件，触发跳转新页面
-      that.qaBugCreatedBarChart.on('click', 'series.bar', obj => {
-        let url = that.jira_address + "/issues/?jql=" + that.qaCreatedBugJQL + " AND creator"
+      this.qaBugCreatedBarChart.on('click', 'series.bar', obj => {
+        let url = this.jira_address + "/issues/?jql=" + this.qaCreatedBugJQL + " AND creator"
         if (groupData.includes(obj.name)) {
           switch (obj.name) {
             case this.groupData[0] :

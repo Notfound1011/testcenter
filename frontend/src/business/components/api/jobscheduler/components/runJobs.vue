@@ -1,59 +1,55 @@
 <template>
   <div>
-
-  <ms-container>
-    <ms-main-container>
-      <h2 style="font-weight:bold">{{ $t('api_test.job_scheduler.run_jobs') }}</h2>
-      <div style="margin: 20px">
-        <!-- table主体内容 -->
-        <el-table :data="tableData" style="width: 100%" border>
-          <el-table-column prop="name" label="job名称" show-overflow-tooltip width="200"></el-table-column>
-          <el-table-column prop="description" label="描述" show-overflow-tooltip width="180"></el-table-column>
-          <!--          <el-table-column prop="numExecutors" label="执行机器数量"  width="120"></el-table-column>-->
-          <el-table-column prop="url" label="jenkins地址" width="100" align="center">
-            <template slot-scope="scope">
-              <el-link :href="scope.row.url" target="_blank">
-                <div v-if="scope.row.url !== '' && scope.row.url != null">
-                  <i class="el-icon-link" style="font-size: 15px; color: blue"></i>
-                </div>
-              </el-link>
-            </template>
-          </el-table-column>
-          <el-table-column prop="allure_report" label="查看测试报告" width="120" align="center">
-            <template slot-scope="scope">
-              <el-link :href="scope.row.allure_report"
-                       v-if="scope.row.name !== 'JacocoTest'"
-                       target="_blank">
-                <div v-if="scope.row.allure_report !== '' && scope.row.allure_report != null">
-                  <i class="el-icon-view" style="font-size: 15px; color: blue"></i>
-                </div>
-              </el-link>
-            </template>
-          </el-table-column>
-          <el-table-column prop="duration" label="上次构建用时" width="110"></el-table-column>
-          <el-table-column prop="timestamp" label="上次构建时间" width="160"></el-table-column>
-          <el-table-column prop="result" label="上次构建结果" width="110">
-            <template slot-scope="scope">
-              <el-tag v-if="scope.row.result==='SUCCESS'" type="success" effect="dark">SUCCESS</el-tag>
-              <el-tag v-if="scope.row.result==='RUNNING'" type="success" effect="dark">RUNNING</el-tag>
-              <el-tag v-if="scope.row.result==='FAILURE'" type="danger" effect="dark">FAILURE</el-tag>
-              <el-tag v-if="scope.row.result==='UNSTABLE'" type="warning" effect="dark">UNSTABLE</el-tag>
-              <el-tag v-if="scope.row.result==='ABORTED'" type="info" effect="dark">ABORTED</el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="operation" label="操作" width="80">
-            <template slot-scope="scope">
-              <!--              <el-button type="primary" icon="el-icon-video-play" @click="runJobs(scope.row.name)" circle></el-button>-->
-              <el-button type="primary" icon="el-icon-video-play" @click="openDialog(scope.row)" circle></el-button>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-    </ms-main-container>
-  </ms-container>
-
-    <!-- dialog 动态宽度不好使了, 直接固定值 -->
-    <el-dialog title="调度参数（不修改则使用默认值）" :visible.sync="dialogVisible" width="1100px" :before-close="dialogClose">
+    <ms-container>
+      <ms-main-container>
+        <h2 style="font-weight:bold">{{ $t('api_test.job_scheduler.run_jobs') }}</h2>
+        <div style="margin: 20px">
+          <!-- table主体内容 -->
+          <el-table :data="tableData" style="width: 100%" border>
+            <el-table-column prop="name" label="job名称" show-overflow-tooltip width="200"></el-table-column>
+            <el-table-column prop="description" label="描述" show-overflow-tooltip width="180"></el-table-column>
+            <el-table-column prop="url" label="jenkins地址" width="100" align="center">
+              <template slot-scope="scope">
+                <el-link :href="scope.row.url" target="_blank">
+                  <div v-if="scope.row.url !== '' && scope.row.url != null">
+                    <i class="el-icon-link" style="font-size: 15px; color: blue"></i>
+                  </div>
+                </el-link>
+              </template>
+            </el-table-column>
+            <el-table-column prop="allure_report" label="查看测试报告" width="120" align="center">
+              <template slot-scope="scope">
+                <el-link :href="scope.row.allure_report"
+                         v-if="scope.row.name !== 'JacocoTest'"
+                         target="_blank">
+                  <div v-if="scope.row.allure_report !== '' && scope.row.allure_report != null">
+                    <i class="el-icon-view" style="font-size: 15px; color: blue"></i>
+                  </div>
+                </el-link>
+              </template>
+            </el-table-column>
+            <el-table-column prop="duration" label="上次构建用时" width="110"></el-table-column>
+            <el-table-column prop="timestamp" label="上次构建时间" width="160"></el-table-column>
+            <el-table-column prop="result" label="上次构建结果" width="110">
+              <template slot-scope="scope">
+                <el-tag v-if="scope.row.result==='SUCCESS'" type="success" effect="dark">SUCCESS</el-tag>
+                <el-tag v-if="scope.row.result==='RUNNING'" type="success" effect="dark">RUNNING</el-tag>
+                <el-tag v-if="scope.row.result==='FAILURE'" type="danger" effect="dark">FAILURE</el-tag>
+                <el-tag v-if="scope.row.result==='UNSTABLE'" type="warning" effect="dark">UNSTABLE</el-tag>
+                <el-tag v-if="scope.row.result==='ABORTED'" type="info" effect="dark">ABORTED</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="operation" label="操作" width="80">
+              <template slot-scope="scope">
+                <el-button type="primary" icon="el-icon-video-play" @click="openDialog(scope.row)" circle></el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </ms-main-container>
+    </ms-container>
+    <el-dialog title="调度参数（不修改则使用默认值）" :visible.sync="dialogVisible" width="1100px"
+               :before-close="dialogClose">
       <el-form :inline="true" :model="parameters" :rules="rules" ref="paramForm" label-width="140px" width="1000px">
         <el-row :gutter="24">
           <el-col :span="12">
@@ -78,8 +74,8 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-form-item :label=label.symbol_list prop="symbol_list" >
-          <el-input placeholder='输入交易symbol, 多条用","隔开' v-model="parameters.symbol_list" style="width: 843px" />
+        <el-form-item :label=label.symbol_list prop="symbol_list">
+          <el-input placeholder='输入交易symbol, 多条用","隔开' v-model="parameters.symbol_list" style="width: 843px"/>
           <el-tooltip class="item-tips" effect="dark"
                       content='设置交易symbol, 多条用","隔开; 依赖plan_type, 如果plan_type中不包含spot, contract将不执行'
                       placement="right">
@@ -106,13 +102,13 @@
           </el-col>
         </el-row>
         <el-form-item :label=label.case_id_list prop="case_id_list">
-          <el-input placeholder='填写case_id，多条用","隔开' v-model="parameters.case_id_list" style="width: 843px" >
+          <el-input placeholder='填写case_id，多条用","隔开' v-model="parameters.case_id_list" style="width: 843px">
           </el-input>
         </el-form-item>
         <el-row :gutter="24">
           <el-col :span="12">
             <el-form-item :label=label.total_spot_price_multiple prop="total_spot_price_multiple">
-              <el-input placeholder="USDT" v-model="parameters.total_spot_price_multiple" style="width: 300px" />
+              <el-input placeholder="USDT" v-model="parameters.total_spot_price_multiple" style="width: 300px"/>
               <el-tooltip class="item-tips" effect="dark"
                           content="设置倍数；价值基数为对应币对的最小quote价格" placement="right">
                 <i class="el-icon-question"/>
@@ -121,14 +117,14 @@
           </el-col>
           <el-col :span="12">
             <el-form-item :label=label.total_contract_number prop="total_contract_number">
-              <el-input placeholder="" v-model="parameters.total_contract_number" style="width: 300px" />
+              <el-input placeholder="" v-model="parameters.total_contract_number" style="width: 300px"/>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="24">
           <el-col :span="12">
             <el-form-item :label=label.execution_case_mark prop="execution_case_mark">
-              <el-input placeholder='' v-model="parameters.execution_case_mark" style="width: 300px" />
+              <el-input placeholder='' v-model="parameters.execution_case_mark" style="width: 300px"/>
               <el-tooltip class="item-tips" effect="dark" content='设置要执行的用例筛选的条件; 多条用","隔开'
                           placement="right">
                 <i class="el-icon-question"/>
@@ -137,7 +133,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item :label=label.not_execution_case_mark prop="not_execution_case_mark">
-              <el-input placeholder='' v-model="parameters.not_execution_case_mark" style="width: 300px" />
+              <el-input placeholder='' v-model="parameters.not_execution_case_mark" style="width: 300px"/>
               <el-tooltip class="item-tips" effect="dark"
                           content='设置不要执行的用例的筛选条件,多条用","隔开；线上账号kyc全部被剥夺, 需要过滤kyc的case.'
                           placement="right">
@@ -180,11 +176,10 @@
         </el-row>
       </el-form>
       <span slot="footer">
-            <el-button @click="dialogClose">取 消</el-button>
-            <el-button type="primary" @click="runConfirm">运 行</el-button>
-          </span>
+        <el-button @click="dialogClose">取 消</el-button>
+        <el-button type="primary" @click="runConfirm">运 行</el-button>
+      </span>
     </el-dialog>
-
     <el-dialog title="调度参数（不修改则使用默认值）" :visible.sync="turkeyDialogVisible" width="70%"
                :before-close="turkeyDialogClose">
       <el-form :inline="true" :model="turkeyParameters" :rules="rules" ref="turkeyParamForm" label-width="140px">
@@ -229,14 +224,16 @@
           </el-input>
         </el-form-item>
         <el-form-item :label=label.execution_case_mark prop="execution_case_mark" style="margin-left: 80px;">
-          <el-tooltip class="tooltip" effect="dark" content='设置要执行的用例筛选的条件; 多条用","隔开' placement="right">
+          <el-tooltip class="tooltip" effect="dark" content='设置要执行的用例筛选的条件; 多条用","隔开'
+                      placement="right">
             <i class="el-icon-question"/>
           </el-tooltip>
           <el-input placeholder='' v-model="turkeyParameters.execution_case_mark"
                     class="el-input_inner2"></el-input>
         </el-form-item>
         <el-form-item :label=label.not_execution_case_mark prop="not_execution_case_mark">
-          <el-tooltip class="tooltip" effect="dark" content='设置不要执行的用例的筛选条件,多条用","隔开' placement="right">
+          <el-tooltip class="tooltip" effect="dark" content='设置不要执行的用例的筛选条件,多条用","隔开'
+                      placement="right">
             <i class="el-icon-question"/>
           </el-tooltip>
           <el-input placeholder='' v-model="turkeyParameters.not_execution_case_mark"
@@ -252,9 +249,9 @@
         </el-form-item>
       </el-form>
       <span slot="footer">
-              <el-button @click="turkeyDialogClose">取 消</el-button>
-              <el-button type="primary" @click="turkeyRunConfirm">运 行</el-button>
-            </span>
+        <el-button @click="turkeyDialogClose">取 消</el-button>
+        <el-button type="primary" @click="turkeyRunConfirm">运 行</el-button>
+      </span>
     </el-dialog>
     <el-dialog title="任务调度" :visible.sync="normalDialogVisible" width="20%">
             <span slot="footer">
@@ -291,7 +288,7 @@ export default {
       json: {},
       JobInfoList: {},
       Jenkins_Crumb: '',
-      value: 'ApiAutoTestToPhemex',
+      value: 'Testnet_Smoking_Test',
       dialogVisible: false,
       turkeyDialogVisible: false,
       normalDialogVisible: false,
@@ -420,40 +417,52 @@ export default {
         this.turkeyParameters.ws_host = 'wss://ws.fat.phemex.com.tr'
       }
     },
-    getJobList() {
-      this.$axios.post("/jenkins/view/RunTest/api/json?tree=jobs[name,url,description,builds[number,result,duration,timestamp,url]{0,1}]", null,
-        {
+    async getJobList() {
+      try {
+        const res = await this.$axios.post("/jenkins/api/json?tree=jobs[name,url,description,builds[number,result,duration,timestamp,url]{0,1}]", null, {
           headers: {
             'Authorization': this.jenkins_auth,
             'Jenkins-Crumb': this.Jenkins_Crumb
           }
-        }).then((res) => {
+        });
         if (res.status === 200) {
-          this.tableData = res.data.jobs
-          this.tableData.forEach(e => {
-            this.JenkinsJobList.push(e.name)
-            if (e.builds.length !== 0) {
-              if (e.builds[0].result === null) {
-                e.result = "RUNNING"
-              } else {
-                e.result = e.builds[0].result
-                e.allure_report = e.builds[0].url + "allure/"
-              }
-              e.duration = formatTime(e.builds[0].duration)
-              e.timestamp = formatTimeStamp(e.builds[0].timestamp)
-            }
-          })
-          if (JSON.stringify(this.tableData).indexOf("RUNNING") !== -1 || JSON.stringify(this.tableData).indexOf("duration: \"0秒\"") !== -1) {
-            clearInterval(this.timer);
-            this.timer = null;
-            this.timer = setInterval(() => {
-              setTimeout(this.getJobList, 0)
-            }, 1000 * 5)
-          }
+          this.processJobListData(res.data.jobs);
+          this.setupRefreshTimer();
         }
-      }).catch((e) => {
-        console.log(e);
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    processJobListData(jobs) {
+      // 先按照构建的时间戳进行排序
+      this.tableData = jobs.sort((a, b) => {
+        const aTimestamp = (a.builds && a.builds.length > 0) ? a.builds[0].timestamp : 0;
+        const bTimestamp = (b.builds && b.builds.length > 0) ? b.builds[0].timestamp : 0;
+        return bTimestamp - aTimestamp; // 降序排序
+      });
+
+      this.tableData.forEach(e => {
+        this.JenkinsJobList.push(e.name)
+        if (e.builds.length !== 0) {
+          if (e.builds[0].result === null) {
+            e.result = "RUNNING"
+          } else {
+            e.result = e.builds[0].result
+            e.allure_report = e.builds[0].url + "allure/"
+          }
+          e.duration = formatTime(e.builds[0].duration)
+          e.timestamp = formatTimeStamp(e.builds[0].timestamp)
+        }
       })
+    },
+    setupRefreshTimer: function () {
+      if (JSON.stringify(this.tableData).indexOf("RUNNING") !== -1 || JSON.stringify(this.tableData).indexOf("duration: \"0秒\"") !== -1) {
+        clearInterval(this.timer);
+        this.timer = null;
+        this.timer = setInterval(() => {
+          setTimeout(this.getJobList, 0)
+        }, 1000 * 5)
+      }
     },
 
     runJobs(name, body) {
@@ -483,7 +492,7 @@ export default {
             title: "job执行成功",
             message: res.statusText
           });
-          if (name === 'ApiAutoTestToPhemex' || name === 'ApiAutoTestBaseAndDebug') {
+          if (name === 'Testnet_Smoking_Test' || name === 'ApiAutoTestBaseAndDebug') {
             this.dialogVisible = false;
           } else if (name === 'ApiAutoTestToTurkey') {
             this.turkeyDialogVisible = false;
@@ -527,16 +536,17 @@ export default {
           });
         })
       }
-    },
+    }
+    ,
 
-    // 打开对话框，按job名称弹出不一样的对话框
+// 打开对话框，按job名称弹出不一样的对话框
     openDialog(item) {
       if (item.name === 'ApiAutoTestToTurkey') {
         this.resetForm();
         this.turkeyDialogVisible = true;
         this.runName = item.name;
         this.turkeyParametersOrigin = JSON.parse(JSON.stringify(this.turkeyParameters));
-      } else if (item.name === 'ApiAutoTestToPhemex' || item.name === 'ApiAutoTestBaseAndDebug') {
+      } else if (item.name === 'Testnet_Smoking_Test' || item.name === 'ApiAutoTestBaseAndDebug') {
         this.resetForm();
         this.dialogVisible = true;
         this.runName = item.name;
@@ -545,7 +555,8 @@ export default {
         this.normalDialogVisible = true;
         this.runName = item.name;
       }
-    },
+    }
+    ,
     resetForm() {
       // 重置表单
       if (this.$refs['paramForm']) {
@@ -561,9 +572,10 @@ export default {
           return true;
         });
       }
-    },
+    }
+    ,
 
-    // 主站任务调度的弹框关闭
+// 主站任务调度的弹框关闭
     dialogClose() {
       if (isValueEqual(JSON.parse(JSON.stringify(this.parameters)), this.parametersOrigin)) {
         this.dialogVisible = false;   //如果前后数据没有变化，则直接关闭弹窗
@@ -575,8 +587,9 @@ export default {
           .catch(_ => {
           });
       }
-    },
-    // 土站任务调度的弹框关闭
+    }
+    ,
+// 土站任务调度的弹框关闭
     turkeyDialogClose() {
       if (isValueEqual(JSON.parse(JSON.stringify(this.turkeyParameters)), this.turkeyParametersOrigin)) {
         this.turkeyDialogVisible = false;   //如果前后数据没有变化，则直接关闭弹窗
@@ -588,21 +601,25 @@ export default {
           .catch(_ => {
           });
       }
-    },
-    // 无运行参数的普通任务调度的弹框关闭
+    }
+    ,
+// 无运行参数的普通任务调度的弹框关闭
     normalDialogClose() {
       this.normalDialogVisible = false;
-    },
+    }
+    ,
 
-    // 主站任务调度的弹框确认
+// 主站任务调度的弹框确认
     runConfirm() {
       this.runJobs(this.runName, this.parameters)
-    },
-    // 土站任务调度的弹框确认
+    }
+    ,
+// 土站任务调度的弹框确认
     turkeyRunConfirm() {
       this.runJobs(this.runName, this.turkeyParameters)
-    },
-    // 无运行参数的普通任务调度的弹框确认
+    }
+    ,
+// 无运行参数的普通任务调度的弹框确认
     normalRunConfirm() {
       this.runJobs(this.runName)
     }

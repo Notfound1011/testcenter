@@ -7,7 +7,7 @@
           <el-select v-model="value" filterable placeholder="切换job"
                      style='margin-bottom: 20px'>
             <el-option
-              v-for="item in options"
+              v-for="item in this.options"
               :key="item.value"
               :label="item.label"
               :value="item.value">
@@ -84,21 +84,9 @@ export default {
       loading: true,
       JobInfoList: {},
       Jenkins_Crumb: '',
-      options: [
-        {
-          "value": "ApiAutoTestToPhemex",
-          "label": "ApiAutoTestToPhemex"
-        },
-        {
-          "value": "ApiAutoTestToTurkey",
-          "label": "ApiAutoTestToTurkey"
-        },
-        {
-          "value": "ApiAutoTestBaseAndDebug",
-          "label": "ApiAutoTestBaseAndDebug"
-        }],
+      options: [],
       value: '',
-      defaultValue: 'ApiAutoTestToPhemex',
+      defaultValue: 'Testnet_Smoking_Test',
       tableDataNew: [],
       tableData: [
         {
@@ -125,6 +113,11 @@ export default {
   activated() {
     const JenkinsInfo = JSON.parse(localStorage.getItem("JenkinsInfo"));
     this.Jenkins_Crumb = JenkinsInfo.Jenkins_Crumb;
+    // 将字符串数组转换为对象数组
+    this.options = JenkinsInfo.JenkinsJobList.map(item => ({
+      value: item,
+      label: item
+    }));
     this.getJobInfoList(this.defaultValue)
   },
 
@@ -149,7 +142,7 @@ export default {
     getJobInfoList(jobName) {
       this.value = jobName
       if (jobName === '') {
-        jobName = 'ApiAutoTestToPhemex'
+        jobName = 'Testnet_Smoking_Test'
       }
       let url = "/jenkins/job/" + jobName + "/api/json?tree=builds[number,result,duration,timestamp,url]{0,50}"
       this.$axios.post(url, null,

@@ -22,7 +22,7 @@
         </el-col>
       </el-row>
     </div>
-    <div :id="id" style="width:95%;height:400%;margin: 20px">
+    <div :id="id" class="chart-container">
     </div>
   </div>
 </template>
@@ -138,6 +138,12 @@ export default {
 </script>
 
 <style scoped>
+.chart-container {
+  margin: 20px;
+  width: 95%;
+  height: 400px;
+}
+
 .header {
   margin: 20px;
 }

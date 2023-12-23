@@ -1,30 +1,30 @@
 <template>
-  <div :id="id" style="width: 95%;height:500%;margin: 20px"></div>
+  <BaseChart :chartId="id" :chartOptions="chartOptions"/>
 </template>
 
 <script>
-import {groupArray, jiraAddress, jiraAuth} from "@/common/js/utils";
+import {groupArray, jiraAddress} from "@/common/js/utils";
+import BaseChart from "@/business/components/report/bugstat/components/BaseChart.vue";
 import * as echarts from "echarts";
 
 export default {
   name: "bugTrendStat",
+  components: {BaseChart},
   props: ['id', 'qaCreatedBugJQL'],
   data() {
     return {
-      recentlyCreatedData: '',
-      jira_auth: jiraAuth(),
-      jira_address: jiraAddress(),
-      props: ['id', 'qaCreatedBugJQL'],
-      recentCreatedBugBarChart: null
+      chartData: null,
+      jira_address: jiraAddress()
+    }
+  },
+  computed: {
+    chartOptions() {
+      // 返回图表的配置
+      return this.getChartOptions(this.chartData); // 假设你有一个方法来获取图表选项
     }
   },
   methods: {
-    recentlyCreated(data) {
-      if (this.recentCreatedBugBarChart != null && this.recentCreatedBugBarChart != "" && this.recentCreatedBugBarChart != undefined) {
-        this.recentCreatedBugBarChart.dispose();
-      }
-      this.recentCreatedBugBarChart = this.$echarts.init(document.getElementById(this.id));
-
+    formatChartData(data) {
       var xAxisData = []
       var totalData = []
       let datas = groupArray(data, 'created')
@@ -58,7 +58,14 @@ export default {
         xAxisData.push(result[i].location);
         totalData.push(result[i].count);
       }
-      let option = {
+      return {
+        xAxisData: xAxisData,
+        totalData: totalData
+      };
+    },
+    getChartOptions(data) {
+      const result = this.formatChartData(data)
+      return {
         title: {
           text: '测试环境bug趋势',
           // subtext: '本年度bug',
@@ -83,7 +90,7 @@ export default {
         },
         tooltip: {},
         xAxis: {
-          data: xAxisData,
+          data: result.xAxisData,
           name: '月份',
           nameGap: 40,
           nameLocation: 'center',
@@ -122,22 +129,18 @@ export default {
                 ])
               }
             },
-            data: totalData
+            data: result.totalData
           }
         ]
       }
-      this.recentCreatedBugBarChart.setOption(option, true)
-      // //echarts series.bar的点击事件，触发跳转新页面
-      // this.recentCreatedBugBarChart.on('click', 'series.bar', obj => {
-      //   let url = this.jira_address + "/issues/?jql=" + this.qaCreatedBugJQL + " AND created"
-      //   url = url + " > " + obj.name
-      //   window.open(url, '_blank');
-      // });
+    },
+    recentlyCreated(data) {
+      this.chartData = data;
+      this.$forceUpdate();  // 强制Vue重新渲染组件
     }
   }
 }
 </script>
 
 <style scoped>
-
 </style>

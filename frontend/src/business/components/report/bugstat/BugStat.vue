@@ -136,9 +136,7 @@ export default {
       jira_auth: jiraAuth(),
       result: {},
       currentYear: new Date().getFullYear().toString(),
-      qaCreatedBugJQL: "issuetype = Bug AND status != Cancelled AND Developer is not EMPTY AND creator in membersOf(QA)",
-      onlineBugJQL: "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR Tester in membersOf(QA))",
-      timePicker: null,
+      timePicker: [this.startOfCurrentQuarter(), new Date().toISOString().split('T')[0]],
       pickerMinDate: "",//第一次选中的时间
       pickerOptions: {
         onPick: (obj) => {
@@ -181,108 +179,99 @@ export default {
     },
     onlineBug() {
       return this.onlineBugData
-    }
+    },
+    qaCreatedBugJQL() {
+      return this.buildJQL("issuetype = Bug AND status != Cancelled AND Developer is not EMPTY AND creator in membersOf(QA)", this.timePicker);
+    },
+    onlineBugJQL() {
+      return this.buildJQL("project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR Tester in membersOf(QA))", this.timePicker);
+    },
   },
   methods: {
-    search() {
-      let qaCreatedBugJQL = ""
-      let onlineBugJQL = ""
-      if (this.timePicker !== null) {
-        qaCreatedBugJQL = "issuetype = Bug AND status != Cancelled AND Developer is not EMPTY AND creator in membersOf(QA)" + " AND \"created\" >= " + this.timePicker[0] + " AND \"created\" <= " + this.timePicker[1]
-        onlineBugJQL = "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR Tester in membersOf(QA))" + " AND \"created\" >= " + this.timePicker[0] + " AND \"created\" <= " + this.timePicker[1]   // AND Tester in membersOf(QA)
-      } else if (this.timePicker == null) {
-        qaCreatedBugJQL = "issuetype = Bug AND status != Cancelled AND Developer is not EMPTY AND creator in membersOf(QA)" + " AND created > startOfYear()"
-        onlineBugJQL = "project = \"CS Technical Issues\" AND IssueTypes = Bug AND (labels in (qa-issue) OR Tester in membersOf(QA))" + " AND created > startOfYear()" // AND Tester in membersOf(QA)
+    buildJQL(baseJQL, timeRange) {
+      if (timeRange && timeRange.length === 2) {
+        return `${baseJQL} AND "created" >= "${timeRange[0]}" AND "created" <= "${timeRange[1]}"`;
       }
-      if (qaCreatedBugJQL.startsWith(" AND")) {
-        qaCreatedBugJQL = qaCreatedBugJQL.replace(/AND/, '').trim()
-      }
+      return `${baseJQL} AND created > startOfYear()`;
+    },
+
+    async search() {
       const loading = fullScreenLoading(this);
-      this.qaCreatedBugJQL = qaCreatedBugJQL
-      this.qaCreatedBugQuery(qaCreatedBugJQL)
-      this.onlineBugJQL = onlineBugJQL
-      this.onlineBugQuery(onlineBugJQL)
-      this.ldapUserQuery()
-      this.qaUserGroupQuery()
-      stopFullScreenLoading(loading, 2000);
+      try {
+        await Promise.all([
+          this.qaCreatedBugQuery(this.qaCreatedBugJQL),
+          this.onlineBugQuery(this.onlineBugJQL),
+          this.ldapUserQuery(),
+          this.qaUserGroupQuery()
+        ]);
+      } catch (error) {
+        this.$message.error(error.message);
+      } finally {
+        stopFullScreenLoading(loading, 2000);
+      }
+    },
+
+    async jiraQuery(JQL, fields) {
+      const maxResults = 1000;
+      const url = `/jira/rest/api/2/search?jql=${encodeURIComponent(JQL)}&maxResults=${maxResults}`;
+      const instance = this.$axios.create({
+        headers: {'Authorization': this.jira_auth}
+      });
+
+      const initResponse = await instance.get(`${url}&fields=creator`);
+      const total = initResponse.data.total;
+      const totalPages = Math.ceil(total / maxResults);
+
+      const promises = Array.from({length: totalPages}, (_, i) =>
+        instance.get(`${url}&fields=${fields}&startAt=${i * maxResults}`)
+      );
+
+      const responses = await Promise.all(promises);
+      return responses.flatMap(response => response.data.issues);
     },
 
     async qaCreatedBugQuery(JQL) {
-      let that = this;
-      const maxResults = 1000;
-      let initUrl = 'jira/rest/api/2/search?jql=' + JQL + "&maxResults=" + maxResults + "&fields=creator"
-      let url = 'jira/rest/api/2/search?jql=' + JQL + "&maxResults=" + maxResults + "&fields=creator,assignee,status,issuetype,project,customfield_10300,created"
-      const instance = that.$axios.create({
-        headers: {
-          'Authorization': that.jira_auth
-        }
-      });
-
-      const response = await instance.get(initUrl);
-      const totalData = response.data.total;
-      that.bugTotal = totalData
-
-      const totalPages = Math.ceil(totalData / maxResults);
-      const promiseArray = [];
-      for (let i = 0; i < totalPages; i++) {
-        promiseArray.push(instance.get(url + `&startAt=` + maxResults * `${i}`))
-      }
-      let resolvedPromises = await Promise.all(promiseArray)
-      let data = []
-      for (let i = 0; i < resolvedPromises.length; i++) {
-        data = data.concat(resolvedPromises[i].data.issues)
-      }
-      that.qaBugData = data
-      that.qaBugFlag = true
-      that.$refs.qaBugCreatedStat.qaBugCreatedStat(data)
-      that.$refs.bugByStatusPieStat.bugByStatus(data)
-      that.$refs.bugByProjectPieStat.bugByProject(data)
-      that.$refs.filterBugByUser.filterBugByUser(data)
-      that.$refs.filterBugByUser.filterBugByProject(data)
-      that.$refs.devBugStat.devBugStat(data)
-      that.$refs.bugTrendStat.recentlyCreated(data)
+      const fields = 'creator,assignee,status,issuetype,project,customfield_10300,created';
+      const data = await this.jiraQuery(JQL, fields);
+      this.bugTotal = data.length;
+      this.qaBugData = data;
+      this.qaBugFlag = true;
+      this.updateQaBugStats(data);
     },
+
     async onlineBugQuery(JQL) {
-      let that = this;
-      const maxResults = 1000;
-      let initUrl = 'jira/rest/api/2/search?jql=' + JQL + "&maxResults=" + maxResults + "&fields=creator"
-      let url = 'jira/rest/api/2/search?jql=' + JQL + "&maxResults=" + maxResults + "&fields=creator,assignee,status,issuetype,customfield_10406"
-      const instance = that.$axios.create({
-        headers: {
-          'Authorization': that.jira_auth
-        }
-      });
-      try {
-        const response = await instance.get(initUrl);
-        const totalData = response.data.total;
-        that.onlineBugTotal = totalData
-
-        const totalPages = Math.ceil(totalData / maxResults);
-        const promiseArray = [];
-        for (let i = 0; i < totalPages; i++) {
-          promiseArray.push(instance.get(url + `&startAt=` + maxResults * `${i}`))
-        }
-        let resolvedPromises = await Promise.all(promiseArray)
-        let data = []
-        for (let i = 0; i < resolvedPromises.length; i++) {
-          data = data.concat(resolvedPromises[i].data.issues)
-        }
-        that.onlineBugData = data
-        that.onlineBugFlag = true
-        that.$refs.onlineBugStat.onlineBugStat(data)
-        that.$refs.onlineBugRate.onlineBugRate(data)
-      } catch (err) {
-        that.$message.error(err)
-      }
+      const fields = 'creator,assignee,status,issuetype,customfield_10406';
+      const data = await this.jiraQuery(JQL, fields);
+      this.onlineBugTotal = data.length;
+      this.onlineBugData = data;
+      this.onlineBugFlag = true;
+      this.updateOnlineBugStats(data);
     },
-    ldapUserQuery() {
+
+    updateQaBugStats(data) {
+      this.$refs.qaBugCreatedStat.qaBugCreatedStat(data);
+      this.$refs.bugByStatusPieStat.bugByStatus(data);
+      this.$refs.bugByProjectPieStat.bugByProject(data);
+      this.$refs.filterBugByUser.filterBugByUser(data);
+      this.$refs.filterBugByUser.filterBugByProject(data)
+      this.$refs.devBugStat.devBugStat(data);
+      this.$refs.bugTrendStat.recentlyCreated(data);
+    },
+
+    updateOnlineBugStats(data) {
+      this.$refs.onlineBugStat.onlineBugStat(data);
+      this.$refs.onlineBugRate.onlineBugRate(data);
+    },
+
+    async ldapUserQuery() {
       let url = "dataFactory/ldap/getUsers"
       this.$axios.get(url).then(res => {
           this.ldapUser = res.data.data
         }
       )
     },
-    qaUserGroupQuery() {
+
+    async qaUserGroupQuery() {
       let url = "dataFactory/group/list"
       this.$axios.get(url).then(res => {
           let qaUserGroup = res.data.data
@@ -296,6 +285,31 @@ export default {
         }
       )
     },
+
+    startOfYear() {
+      const now = new Date();
+      const startOfYear = new Date(now.getFullYear(), 0, 1);
+      startOfYear.setMinutes(startOfYear.getMinutes() - startOfYear.getTimezoneOffset());
+      return startOfYear.toISOString().substring(0, 10);
+    },
+
+    startOfCurrentQuarter() {
+      const now = new Date();
+      const quarter = Math.floor(now.getMonth() / 3);
+      const startOfQuarter = new Date(now.getFullYear(), quarter * 3, 1);
+      startOfQuarter.setMinutes(startOfQuarter.getMinutes() - startOfQuarter.getTimezoneOffset());
+
+      // 检查当前日期是否在季度开始后的第一个月内
+      if (now - startOfQuarter < 30 * 24 * 60 * 60 * 1000) { // 30天的毫秒数
+        // 如果是，则计算上一个季度的开始日期
+        const startOfPreviousQuarter = new Date(startOfQuarter);
+        startOfPreviousQuarter.setMonth(startOfPreviousQuarter.getMonth() - 3);
+        return startOfPreviousQuarter.toISOString().substring(0, 10);
+      }
+
+      // 否则返回当前季度的开始日期
+      return startOfQuarter.toISOString().substring(0, 10);
+    }
   }
 }
 </script>

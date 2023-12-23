@@ -62,12 +62,10 @@ export default {
         return prev;
       }, {});
 
-      // console.log(groupPeople);//获得{[CBT-Derivatives]: 4, [BD]: 20, [WEB]: 22,…}
-
       //合并方法
       let userMap = {}; //首先声明一个空对象作作为 map
 
-      //遍历第一给数组
+      //遍历数组
       arr.forEach((item) => {
         userMap[item.user] = {
           user: item.user,
@@ -113,9 +111,8 @@ export default {
       let xAxisGroupData = []
       let totalGroupAvgData = []
       let totalGroupData = []
-      console.log("dest",dest)
       dest.forEach((item) => {
-        if (item.group !== '[leave office]'){
+        if (item.group !== '[leave office]') {
           let num = item.total / item.people
           item.avg = Math.floor(num * 100) / 100
           xAxisGroupData.push(item.group.split("[")[1].split("]")[0])
@@ -124,17 +121,16 @@ export default {
         }
       })
 
-      let that = this
-      if (that.devBugBarChart != null && that.devBugBarChart != "" && that.devBugBarChart != undefined) {
+      if (this.devBugBarChart) {
         this.devBugBarChart.dispose();
       }
-      that.devBugBarChart = that.$echarts.init(document.getElementById(this.id));
+      this.devBugBarChart = this.$echarts.init(document.getElementById(this.id));
 
       let option = {
         title: {
           text: 'DEVELOPER BUG ANALYSIS',
           subtext: 'summary of developer bug',
-          link: that.jira_address + "/issues/?jql=" + this.qaCreatedBugJQL,
+          link: this.jira_address + "/issues/?jql=" + this.qaCreatedBugJQL,
           textStyle: {
             fontSize: 18,
             color: "rgba(55, 96, 186, 1)"
@@ -254,53 +250,36 @@ export default {
           }
         ]
       }
-      that.devBugBarChart.setOption(option, true)
+      this.devBugBarChart.setOption(option, true)
       // legend切换时触发，更新options.xAxis中的值
-      that.devBugBarChart.on('legendselectchanged', obj => {
-        var options = that.devBugBarChart.getOption()
-        //这里是选择切换什么样的x轴，那么他会进行对Y值的切换
-        if (obj.name == '组人均') {
-          options.xAxis = {
-            data: xAxisGroupData,
-            name: '组人均',
+      this.devBugBarChart.on('legendselectchanged', params => {
+        var options = this.devBugBarChart.getOption()
+
+        // 通用的X轴对象配置函数
+        function getXAxisOption(name, data) {
+          return {
+            data: data,
+            name: name,
             nameLocation: 'center',
             nameGap: 65,
             axisLabel: {interval: 0, rotate: 30, margin: 10, overflow: "breakAll", width: 120},
             nameTextStyle: {
               padding: 20,
             }
-          }
-        } else if (obj.name == '按组') {
-          options.xAxis = {
-            data: xAxisGroupData,
-            name: '按组',
-            nameLocation: 'center',
-            nameGap: 65,
-            axisLabel: {interval: 0, rotate: 30, margin: 10, overflow: "breakAll", width: 120},
-            nameTextStyle: {
-              padding: 20,
-            }
-          }
-        } else if (obj.name == '按人') {
-          options.xAxis = {
-            data: xAxisData,
-            name: '按人',
-            nameLocation: 'center',
-            nameGap: 65,
-            axisLabel: {interval: 0, rotate: 30, margin: 10, overflow: "breakAll", width: 120},
-            nameTextStyle: {
-              padding: 20,
-            }
-            // 大多数数据更新了后，已经初始化后的图表X轴或者Y轴仍然不变。 因为xAxis或者yAxis，在初始化的时候赋值为一个对象，
-            // 而刷新数据的时候只是刷新xAxis的data部分，这个时候xAxis是找不到数组中到底哪个数据在刷新，
-            // 因此，你可以直接修改整个xAxis的值，而不是xAxis.data
-          }
+          };
         }
-        that.devBugBarChart.setOption(options, true)
+
+        // 根据图例名称更新X轴配置
+        if (params.name === '组人均' || params.name === '按组') {
+          options.xAxis = getXAxisOption(params.name, xAxisGroupData);
+        } else if (params.name === '按人') {
+          options.xAxis = getXAxisOption(params.name, xAxisData);
+        }
+        this.devBugBarChart.setOption(options, true)
       })
       //echarts series.bar的点击事件，触发跳转新页面
-      that.devBugBarChart.on('click', 'series.bar', obj => {
-        let url = that.jira_address + "/issues/?jql=" + that.qaCreatedBugJQL + " AND developer"
+      this.devBugBarChart.on('click', 'series.bar', obj => {
+        let url = this.jira_address + "/issues/?jql=" + this.qaCreatedBugJQL + " AND developer"
         if (xAxisData.includes(obj.name)) {
           url = url + " = " + obj.name
           window.open(url, '_blank');

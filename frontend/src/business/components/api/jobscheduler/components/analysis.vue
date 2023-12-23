@@ -5,7 +5,7 @@
       <el-select v-model="value" filterable placeholder="切换job"
                  style='margin-left: 40px;margin-bottom: 20px'>
         <el-option
-          v-for="item in options"
+          v-for="item in this.options"
           :key="item.value"
           :label="item.label"
           :value="item.value">
@@ -75,21 +75,9 @@ export default {
       allureOverallReport: '',
       Jenkins_Crumb: '',
       scheduling_times: '',
-      options: [
-        {
-          "value": "ApiAutoTestToPhemex",
-          "label": "ApiAutoTestToPhemex"
-        },
-        {
-          "value": "ApiAutoTestToTurkey",
-          "label": "ApiAutoTestToTurkey"
-        },
-        {
-          "value": "ApiAutoTestBaseAndDebug",
-          "label": "ApiAutoTestBaseAndDebug"
-        }],
-      value: 'ApiAutoTestToPhemex',
-      defaultValue: 'ApiAutoTestToPhemex',
+      options: [],
+      value: 'Testnet_Smoking_Test',
+      defaultValue: 'Testnet_Smoking_Test',
       historyTrendList: [],
       jenkins_auth: jenkinsAuth()
     }
@@ -97,6 +85,12 @@ export default {
   activated() {
     const JenkinsInfo = JSON.parse(localStorage.getItem("JenkinsInfo"));
     this.Jenkins_Crumb = JenkinsInfo.Jenkins_Crumb;
+    // 将字符串数组转换为对象数组
+    this.options = JenkinsInfo.JenkinsJobList.map(item => ({
+      value: item,
+      label: item
+    }));
+
     this.getInfoAll(this.value);
   },
 

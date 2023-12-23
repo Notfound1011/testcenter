@@ -156,8 +156,8 @@ export default {
     query(JQL) {
       let that = this;
       const maxResults = 1000;
-      let initUrl = 'jira/rest/api/2/search?jql=' + JQL + "&maxResults=" + maxResults + "&fields=creator"
-      let url = 'jira/rest/api/2/search?jql=' + JQL + "&maxResults=" + maxResults + "&fields=creator,assignee,status,issuetype"
+      let initUrl = '/jira/rest/api/2/search?jql=' + JQL + "&maxResults=" + maxResults + "&fields=creator"
+      let url = '/jira/rest/api/2/search?jql=' + JQL + "&maxResults=" + maxResults + "&fields=creator,assignee,status,issuetype"
       const instance = that.$axios.create({
         headers: {
           'Authorization': that.jira_auth
@@ -196,8 +196,8 @@ export default {
     backToDev(backToDevJQL) {
       let that = this;
       const maxResults = 1000;
-      let initUrl = 'jira/rest/api/2/search?jql=' + backToDevJQL + "&maxResults=" + maxResults + "&fields=creator"
-      let url = 'jira/rest/api/2/search?jql=' + backToDevJQL + "&maxResults=" + maxResults + "&fields=creator,assignee,status,issuetype,project"
+      let initUrl = '/jira/rest/api/2/search?jql=' + backToDevJQL + "&maxResults=" + maxResults + "&fields=creator"
+      let url = '/jira/rest/api/2/search?jql=' + backToDevJQL + "&maxResults=" + maxResults + "&fields=creator,assignee,status,issuetype,project"
       const instance = that.$axios.create({
         headers: {
           'Authorization': that.jira_auth

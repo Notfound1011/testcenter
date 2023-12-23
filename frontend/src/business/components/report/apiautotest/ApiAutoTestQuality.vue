@@ -83,15 +83,15 @@ export default {
       scheduling_times: '',
       options: [
         {
-          "value": "ApiAutoTestToPhemex",
-          "label": "ApiAutoTestToPhemex"
+          "value": "Testnet_Smoking_Test",
+          "label": "Testnet_Smoking_Test"
         },
         {
           "value": "ApiAutoTestToTurkey",
           "label": "ApiAutoTestToTurkey"
         }],
-      value: 'ApiAutoTestToPhemex',
-      defaultValue: 'ApiAutoTestToPhemex',
+      value: 'Testnet_Smoking_Test',
+      defaultValue: 'Testnet_Smoking_Test',
       historyTrendList: [],
       jenkins_auth: jenkinsAuth()
     }
